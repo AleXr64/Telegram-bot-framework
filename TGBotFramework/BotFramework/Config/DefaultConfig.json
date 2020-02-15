@@ -1,0 +1,13 @@
+﻿{
+  "token": null,
+  "userName": null,
+  "webHookURL": null,
+  "useSertificate": false,
+  "webHookSertPath": null,
+  "enableWebHook": false,
+  "sockS5Address": null,
+  "sockS5Port": null,
+  "sockS5User": null,
+  "sockS5Password": null,
+  "useSOCKS5": false
+}

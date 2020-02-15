@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release;Deploy</Configurations>
+    <PackageId>AleXr64.BotFramework</PackageId>
+    <Authors>AleXr64</Authors>
+    <Description>Framework to simplify writing telegram bots</Description>
+    <Copyright>@AleXr64</Copyright>
+    <PackageProjectUrl>https://github.com/AleXr64/Telegram-bot-framework</PackageProjectUrl>
+    <RepositoryType>https://github.com/AleXr64/Telegram-bot-framework</RepositoryType>
+    <PackageTags>Telegram Bots</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|AnyCPU'">
+    <OutputPath>../../build/bin</OutputPath>
+    <Optimize>true</Optimize>
+    <DocumentationFile>../../build/bin/BotFramework.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HttpToSocks5Proxy" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.0.50">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Telegram.Bot" Version="15.2.0" />
+  </ItemGroup>
+
+
+
+</Project>
