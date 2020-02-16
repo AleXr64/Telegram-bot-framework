@@ -1,4 +1,4 @@
-#tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
+#tool "nuget:?package=xunit.runner.console"
 #addin Cake.GitVersioning
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -6,7 +6,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Deploy");
-var slnPath = "../TGBotFramework/TGBotFramework.sln";
+var slnPath = "../TGBotFramework/BotFramework/BotFramework.csproj";
 var buildDirPath = "./bin";
 
 //////////////////////////////////////////////////////////////////////
@@ -18,12 +18,14 @@ var buildDir = Directory(buildDirPath);
 var buildSettings = new DotNetCoreBuildSettings
      {
          Framework = "netcoreapp3.1",
-         Configuration = "Deploy"
+         Configuration = "Deploy",
+         OutputDirectory = buildDirPath
        
      };
+
 var packSettings = new DotNetCorePackSettings 
      {
-         NoBuild = true,
+         OutputDirectory = buildDirPath,
          Configuration = "Deploy"
      };
 var nugetSettings = new DotNetCoreNuGetPushSettings {
@@ -51,6 +53,7 @@ Task("Build")
 });
 
 Task("Pack")
+    .IsDependentOn("Clean")
     .IsDependentOn("Build")
     .Does(()=>
 {
@@ -65,20 +68,21 @@ Task("PushNuget")
 });
 
 Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
+    .IsDependentOn("Clean")
     .Does(() =>
 {
-    NUnit3(buildDirPath + configuration + "/*.Tests.dll", new NUnit3Settings {
-        NoResults = true
-        });
+    var projectFiles = GetFiles("../TGBotFramework/*Tests/*.csproj");
+    foreach(var file in projectFiles)
+    {
+        DotNetCoreTest(file.FullPath);
+    }
 });
 
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
-Task("Default").IsDependentOn("PushNuget");
-   // .IsDependentOn("Run-Unit-Tests");
+Task("Default").IsDependentOn("Run-Unit-Tests").IsDependentOn("PushNuget");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
