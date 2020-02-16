@@ -56,7 +56,7 @@ namespace BotFramework
                     client = new TelegramBotClient(_config.Token);
                 }
 
-                factory = new EventHandlerFactory(_scopeFactory);
+                factory = new EventHandlerFactory();
                 factory.Find();
                 client.OnUpdate += Client_OnUpdate;
                 client.OnReceiveError += Client_OnReceiveError;
