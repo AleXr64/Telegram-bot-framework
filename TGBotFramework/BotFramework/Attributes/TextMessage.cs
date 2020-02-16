@@ -44,10 +44,14 @@ namespace BotFramework.Attributes
             var textMatch = false;
 
             if(_inChat != InChat.All) chatMatch = param.InChat == _inChat;
+            else
+                chatMatch = true;
 
             if(!string.IsNullOrEmpty(_text)) textMatch = _text == messageText;
+            else
+                textMatch = true;
 
-            return chatMatch || textMatch || Empty;
+            return Empty ? Empty : textMatch && chatMatch;
         }
     }
 }
