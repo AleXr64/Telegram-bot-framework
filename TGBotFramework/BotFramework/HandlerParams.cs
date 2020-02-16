@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using BotFramework.Attributes;
 using BotFramework.Setup;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -13,6 +11,7 @@ namespace BotFramework
     public sealed class HandlerParams
     {
         internal readonly IServiceProvider ServiceProvider;
+        private readonly string UserName;
 
         internal HandlerParams(ITelegramBotClient bot, Update update, IServiceProvider serviceProvider, string userName)
         {
@@ -36,9 +35,9 @@ namespace BotFramework
                     break;
                 case UpdateType.CallbackQuery:
                     From = update.CallbackQuery.From;
-               //     var __chat = Bot.GetChatAsync(update.CallbackQuery.ChatInstance);
-                 //   __chat.Wait();
-               //     Chat = __chat.Result;
+                    //     var __chat = Bot.GetChatAsync(update.CallbackQuery.ChatInstance);
+                    //   __chat.Wait();
+                    //     Chat = __chat.Result;
                     CallbackQuery = update.CallbackQuery;
                     break;
                 case UpdateType.EditedMessage:
@@ -84,6 +83,7 @@ namespace BotFramework
                         InChat = InChat.All;
                         break;
                 }
+
             CheckForCommand();
         }
 
@@ -92,24 +92,22 @@ namespace BotFramework
 
         public string CommandName { get; private set; } = string.Empty;
         public bool IsCommand { get; private set; }
-        public bool IsFullFormCommand { get; private set; } = false;
-        public Chat Chat { get; private set; }
-        public User From { get; private set; }
-        public Update Update { get; private set; }
-        public ITelegramBotClient Bot { get; private set; }
+        public bool IsFullFormCommand { get; private set; }
+        public Chat Chat { get; }
+        public User From { get; }
+        public Update Update { get; }
+        public ITelegramBotClient Bot { get; }
         public bool HasChat => Chat != null;
         public bool HasFrom => From != null;
         public UpdateType Type => Update.Type;
-        public InChat InChat { get; private set; }
-        private string UserName;
+        public InChat InChat { get; }
         public CallbackQuery CallbackQuery { get; }
 
         private void CheckForCommand()
         {
             if(Update.Type != UpdateType.Message)
-            {
                 return;
-            }
+
             if(Update.Message.Type != MessageType.Text)
                 return;
 
