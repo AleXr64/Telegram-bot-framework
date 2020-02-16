@@ -41,10 +41,7 @@ namespace BotFramework
 
     internal class EventHandlerFactory
     {
-        private readonly IServiceScopeFactory _scopeFactory;
         private readonly List<EventHandler> handlers = new List<EventHandler>();
-
-        public EventHandlerFactory(IServiceScopeFactory scopeFactory) { _scopeFactory = scopeFactory; }
 
         public void Find()
         {

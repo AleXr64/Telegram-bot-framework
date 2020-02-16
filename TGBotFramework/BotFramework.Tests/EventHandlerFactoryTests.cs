@@ -17,9 +17,8 @@ namespace BotFramework.Tests
             _services = new ServiceCollection();
             _proxy = new TestProxy();
             _services.AddSingleton(s => _proxy);
-            var scopeFactory = _services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
-            _factory = new EventHandlerFactory(scopeFactory);
+            _factory = new EventHandlerFactory();
         }
 
         private class TestProxy
