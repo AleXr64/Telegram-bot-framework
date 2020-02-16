@@ -42,13 +42,13 @@ namespace BotFramework
         public void Find()
         {
             var knowHandlers = new List<Type>();
-            var asseblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach(var assembly in asseblies)
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach(var assembly in assemblies)
                 try
                 {
-                    knowHandlers.AddRange(assembly.GetTypes()
-                                                  .Where(x => !x.IsAbstract &&
-                                                              x.IsSubclassOf(typeof(BotEventHandler))));
+                    var types = assembly.GetTypes()
+                                        .Where(x => !x.IsAbstract && x.IsSubclassOf(typeof(BotEventHandler)));
+                    knowHandlers.AddRange(types);
                 } catch(ReflectionTypeLoadException) { }
 
             foreach(var handler in knowHandlers)
