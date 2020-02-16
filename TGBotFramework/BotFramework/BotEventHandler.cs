@@ -13,7 +13,7 @@ namespace BotFramework
     public abstract class BotEventHandler
     {
         private HandlerParams _params;
-        protected ModuleCollection Modules { get; private set; }
+
         protected Chat Chat => _params.Chat;
         protected User From => _params.From;
         protected Update RawUpdate => _params.Update;
@@ -23,11 +23,7 @@ namespace BotFramework
         protected bool IsCallbackQuery => CallbackQuery != null;
         protected CallbackQuery CallbackQuery => _params.CallbackQuery;
 
-        internal void __Instantiate(HandlerParams param, IEnumerable<IBotFrameworkModule> modules)
-        {
-            _params = param;
-            Modules = new ModuleCollection(modules);
-        }
+        internal void __Instantiate(HandlerParams param) { _params = param; }
     }
 
     internal class EventHandler
@@ -77,28 +73,25 @@ namespace BotFramework
         public async Task ExecuteHandler(HandlerParams param)
         {
             bool executed;
-            var modules = param.ServiceProvider.GetServices<IBotFrameworkModule>().ToArray();
-            foreach(var telegramServiceHandler in modules) await telegramServiceHandler.PreHandler(param);
 
             var parametrized = handlers.Where(x => x.Parametrized)
                                        .Where(x => x.Attribute.CanHandleInternal(param))
                                        .ToList();
             foreach(var eventHandler in parametrized)
             {
-                executed = await Exec(eventHandler, param, modules);
+                executed = await Exec(eventHandler, param);
                 if(executed) return;
             }
 
             foreach(var eventHandler in handlers.Where(x => !x.Parametrized)
                                                 .Where(x => x.Attribute.CanHandleInternal(param)))
             {
-                executed = await Exec(eventHandler, param, modules);
+                executed = await Exec(eventHandler, param);
                 if(executed) return;
             }
         }
 
-        private async Task<bool> Exec(
-                EventHandler handler, HandlerParams param, IEnumerable<IBotFrameworkModule> modules)
+        private async Task<bool> Exec(EventHandler handler, HandlerParams param)
         {
             var provider = param.ServiceProvider;
             var method = handler.Method;
@@ -106,7 +99,7 @@ namespace BotFramework
             try
             {
                 var instance = (BotEventHandler)ActivatorUtilities.CreateInstance(provider, method.DeclaringType);
-                instance.__Instantiate(param, modules);
+                instance.__Instantiate(param);
                 object[] paramObjects;
                 if(handler.Parameters.Length > 0 && handler.Parametrized)
                 {
@@ -115,13 +108,13 @@ namespace BotFramework
                     var paramses = handler.Parameters;
                     if(parseOk)
                         paramObjects =
-                                paramses.Select(x =>
-                                             {
-                                                 return param.CommandParameters
-                                                             .First(p => p.Position == x.Position)
-                                                             .TypedValue;
-                                             })
-                                        .ToArray();
+                            paramses.Select(x =>
+                                         {
+                                             return param.CommandParameters
+                                                         .First(p => p.Position == x.Position)
+                                                         .TypedValue;
+                                         })
+                                    .ToArray();
                     else
                         return false;
                 }
