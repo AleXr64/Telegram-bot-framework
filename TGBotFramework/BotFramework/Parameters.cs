@@ -15,9 +15,9 @@ namespace BotFramework
         bool TryGetValueByRawUpdate(Update update, out T result);
     }
 
-    public class CommandParameter
+    public sealed class CommandParameter
     {
-        public CommandParameter(int position,  object typed)
+        internal CommandParameter(int position,  object typed)
         {
             Position = position;
             TypedValue = typed;
