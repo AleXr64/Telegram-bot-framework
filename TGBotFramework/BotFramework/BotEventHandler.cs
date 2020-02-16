@@ -51,7 +51,12 @@ namespace BotFramework
             var knowHandlers = new List<Type>();
             var asseblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach(var assembly in asseblies)
-                knowHandlers.AddRange(assembly.GetTypes().Where(x => !x.IsAbstract && x.IsSubclassOf(typeof(BotEventHandler))));
+                try
+                {
+                    knowHandlers.AddRange(assembly.GetTypes()
+                                                  .Where(x => !x.IsAbstract &&
+                                                              x.IsSubclassOf(typeof(BotEventHandler))));
+                } catch(ReflectionTypeLoadException) { }
 
             foreach(var handler in knowHandlers)
             {
