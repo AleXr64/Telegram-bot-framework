@@ -11,26 +11,37 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanFilterUserName()
         {
-            var command = new Command("test", CommandParseMode.Both);
+            var commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.Both);
+            var command = new ParametrizedCommand("test", CommandParseMode.Both);
+            
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
                                              null, "testbot");
+
+            Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            command = new Command("test", CommandParseMode.WithUsername);
+            commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.WithUsername);
+            command = new ParametrizedCommand("test", CommandParseMode.WithUsername);
+            
+            Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            command = new Command("test", CommandParseMode.WithoutUsername);
+            commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.WithoutUsername);
+            command = new ParametrizedCommand("test", CommandParseMode.WithoutUsername);
+
+            Assert.False(commandInChat.CanHandleInternal(paramses));
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } },
                                          null, "testbot");
+            Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
         }
 
         [Fact]
         public void CanHandleByText()
         {
-            var command = new Command("test");
+            var command = new ParametrizedCommand("test");
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } }, null,
                                              string.Empty);
             Assert.True(command.CanHandleInternal(paramses));
@@ -39,7 +50,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleByTextWithUsername()
         {
-            var command = new Command("test");
+            var command = new ParametrizedCommand("test");
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
                                              null, "testbot");
             Assert.True(command.CanHandleInternal(paramses));
@@ -48,7 +59,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInChannel()
         {
-            var command = new Command(InChat.Channel, "test");
+            var command = new ParametrizedCommand(InChat.Channel, "test");
             var paramses =
                 new HandlerParams(null,
                                   new Update
@@ -101,7 +112,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPrivateChat()
         {
-            var command = new Command(InChat.Private, "test");
+            var command = new ParametrizedCommand(InChat.Private, "test");
             var paramses =
                 new HandlerParams(null,
                                   new Update
@@ -151,7 +162,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPublicChat()
         {
-            var command = new Command(InChat.Public, "test");
+            var command = new ParametrizedCommand(InChat.Public, "test");
             var paramses =
                 new HandlerParams(null,
                                   new Update
