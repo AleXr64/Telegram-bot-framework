@@ -15,7 +15,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|AnyCPU'">
     <OutputPath>../../build/bin</OutputPath>
     <Optimize>true</Optimize>
-    <DocumentationFile>../../build/bin/BotFramework.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
+    <DefineConstants>TRACE;Deploy</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
