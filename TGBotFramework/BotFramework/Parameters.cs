@@ -41,7 +41,7 @@ namespace BotFramework
 
         public static string GetCommandName(this string str, string me = "")
         {
-            if(!IsCommand(str)) return string.Empty;
+            if(!str.IsCommand(me)) return string.Empty;
             var text = str.Substring(1);
             if(!string.IsNullOrEmpty(me))
             {
