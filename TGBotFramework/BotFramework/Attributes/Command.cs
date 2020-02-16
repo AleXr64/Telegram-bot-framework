@@ -3,12 +3,20 @@ using BotFramework.Setup;
 
 namespace BotFramework.Attributes
 {
+    /// <summary>
+    ///     Marks method as handler for command without parameters
+    /// </summary>
     public class Command: HandlerAttribute
     {
         private readonly InChat _type;
-        private readonly string text;
         private readonly CommandParseMode mode;
+        private readonly string text;
 
+        /// <summary>
+        ///     Marks method as handler for command without parameters
+        /// </summary>
+        /// <param name="type">Which chat type for handle <see cref="InChat" /></param>
+        /// <param name="Text">Command name</param>
         public Command(InChat type, string Text)
         {
             _type = type;
@@ -16,6 +24,10 @@ namespace BotFramework.Attributes
             mode = CommandParseMode.WithUsername;
         }
 
+        /// <summary>
+        ///     Marks method as handler for command without parameters
+        /// </summary>
+        /// <param name="Text">Command name</param>
         public Command(string Text)
         {
             text = Text;
@@ -23,6 +35,11 @@ namespace BotFramework.Attributes
             mode = CommandParseMode.WithUsername;
         }
 
+        /// <summary>
+        ///     Marks method as handler for command without parameters
+        /// </summary>
+        /// <param name="Text">Command name</param>
+        /// <param name="parseMode">Command parse mode <see cref="CommandParseMode" /></param>
         public Command(string Text, CommandParseMode parseMode)
         {
             text = Text;
@@ -30,6 +47,12 @@ namespace BotFramework.Attributes
             mode = parseMode;
         }
 
+        /// <summary>
+        ///     Marks method as handler for command without parameters
+        /// </summary>
+        /// <param name="type">>Which chat type for handle <see cref="InChat" /></param>
+        /// <param name="Text">Command name</param>
+        /// <param name="parseMode">Command parse mode <see cref="CommandParseMode" /></param>
         public Command(InChat type, string Text, CommandParseMode parseMode)
         {
             _type = type;
@@ -55,11 +78,13 @@ namespace BotFramework.Attributes
             switch(mode)
             {
                 case CommandParseMode.WithUsername:
-                    return string.Equals(text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase) && hParams.IsFullFormCommand;
-                    
+                    return string.Equals(text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase) &&
+                           hParams.IsFullFormCommand;
+
                 case CommandParseMode.WithoutUsername:
-                    return string.Equals(text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase) && !hParams.IsFullFormCommand;
-                    
+                    return string.Equals(text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase) &&
+                           !hParams.IsFullFormCommand;
+
                 case CommandParseMode.Both:
                     return string.Equals(text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase);
                 default:
