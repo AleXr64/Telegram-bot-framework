@@ -332,3 +332,4 @@ ASALocalRun/
 # cake
 /build/tools/
 /build/bin/
+/Examples/
