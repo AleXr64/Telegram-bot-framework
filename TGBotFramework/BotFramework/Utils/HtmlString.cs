@@ -28,7 +28,7 @@ namespace BotFramework.Utils
 
         public HtmlString Url(string url, string text) => UrlTagBuilder("a", $"href=\"{url}\"", text);
 
-        public HtmlString User(long id, string text) => UrlTagBuilder("a", $"tg://user?id={id}", text);
+        public HtmlString User(long id, string text) => Url( $"tg://user?id={id}", text);
 
         public HtmlString Text(string text)
         {
