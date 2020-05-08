@@ -7,9 +7,14 @@ namespace BotFramework.Utils
 {
     public static class BotExt
     {
-        public static Task<Message> SendHtmlStringAsync(this ITelegramBotClient bot, Chat chat, HtmlString message)
+        public static Task<Message> SendHtmlStringAsync(this ITelegramBotClient bot, Chat chat, HtmlString message, int? replyTo = null)
         {
-            return bot.SendTextMessageAsync(chat, message.ToString(), ParseMode.Html);
+            if(replyTo == null)
+            {
+                return bot.SendTextMessageAsync(chat, message.ToString(), ParseMode.Html);
+            }
+
+            return bot.SendTextMessageAsync(chat, message.ToString(), ParseMode.Html, replyToMessageId: replyTo.Value);
         }
     }
 }
