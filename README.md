@@ -16,6 +16,8 @@ Add new method, mark that with Attribute:
 
 And enjoy =)
 
+Example project can be found [here](https://github.com/AleXr64/Telegram-bot-framework-examples)
+
 Requires:
 
  - .net core 3.1
