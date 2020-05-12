@@ -71,6 +71,18 @@ namespace BotFramework.Tests.Attributes
 
             attribute = new TextMessage(InChat.Channel, "asd");
             Assert.False(attribute.CanHandleInternal(paramses));
+
+        }
+
+        [Fact]
+        public void CanHandleSomeEqualTextInMessageRegex()
+        {
+            var paramses = new HandlerParams(null, new Update() { Message = new Message() { Text = "Blah", Chat = new Chat() { Type = ChatType.Private } } }, null, "testbot");
+            var attribute = new TextMessage("foo|bar|Blah", true);
+            Assert.True(attribute.CanHandleInternal(paramses));
+
+            attribute = new TextMessage("foo", true);
+            Assert.False(attribute.CanHandleInternal(paramses));
         }
     }
 }
