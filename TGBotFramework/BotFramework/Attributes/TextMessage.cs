@@ -1,4 +1,5 @@
 ﻿using BotFramework.Setup;
+using System.Text.RegularExpressions;
 using Telegram.Bot.Types.Enums;
 
 namespace BotFramework.Attributes
@@ -8,6 +9,7 @@ namespace BotFramework.Attributes
         private readonly InChat _inChat;
         private readonly string _text;
         private readonly bool Empty;
+        private readonly bool _regexp = false;
 
         public TextMessage() { Empty = true; }
 
@@ -29,6 +31,28 @@ namespace BotFramework.Attributes
             _inChat = InChat.All;
         }
 
+        public TextMessage(InChat inChat, string text, bool regexp)
+        {
+            _inChat = inChat;
+            _text = text;
+            _regexp = regexp;
+        }
+
+        public TextMessage(InChat inChat, bool regexp)
+        {
+            _text = "";
+            _inChat = inChat;
+            _regexp = regexp;
+        }
+
+        public TextMessage(string text, bool regexp)
+        {
+            _text = text;
+            _inChat = InChat.All;
+            _regexp = regexp;
+        }
+
+
         protected override bool CanHandle(HandlerParams param)
         {
             if(param.Type != UpdateType.Message || param.Update.Message.Type != MessageType.Text)
@@ -43,15 +67,20 @@ namespace BotFramework.Attributes
             var chatMatch = false;
             var textMatch = false;
 
-            if(_inChat != InChat.All) chatMatch = param.InChat == _inChat;
+            if(_inChat != InChat.All) 
+                chatMatch = param.InChat == _inChat;
             else
                 chatMatch = true;
 
-            if(!string.IsNullOrEmpty(_text)) textMatch = _text == messageText;
-            else
-                textMatch = true;
+            if(Empty || string.IsNullOrEmpty(_text))
+                return chatMatch;
 
-            return Empty ? Empty : textMatch && chatMatch;
+            if(_regexp)
+                textMatch = Regex.IsMatch(messageText, _text);
+            else
+                textMatch = _text == messageText;
+
+            return textMatch && chatMatch;
         }
     }
 }
