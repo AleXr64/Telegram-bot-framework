@@ -43,25 +43,15 @@ namespace BotFramework.Attributes
             if(InChat != InChat.All && param.InChat != InChat)
                 return false;
 
-            var typeMatch = false;
-            switch(param.Type)
+            if(UpdateFlags.HasFlag(UpdateFlag.All))
+                return true;
+
+            return param.Type switch
                 {
-                    case UpdateType.Message:
-                    {
-                        typeMatch = UpdateFlags.HasFlag(UpdateFlag.Message) ;
-                        break;
-                    }
-                    case UpdateType.InlineQuery:
-                    {
-                        typeMatch = UpdateFlags.HasFlag(UpdateFlag.InlineQuery);
-                        break;
-                    }
-                    case UpdateType.ChosenInlineResult:
-                    {
-                        typeMatch = UpdateFlags.HasFlag(UpdateFlag.ChosenInlineResult);
-                        break;
-                    }
-                    /*UpdateType.CallbackQuery => UpdateFlags.HasFlag(UpdateFlag.CallbackQuery),
+                    UpdateType.Message => UpdateFlags.HasFlag(UpdateFlag.Message),
+                    UpdateType.InlineQuery => UpdateFlags.HasFlag(UpdateFlag.InlineQuery),
+                    UpdateType.ChosenInlineResult => UpdateFlags.HasFlag(UpdateFlag.ChosenInlineResult),
+                    UpdateType.CallbackQuery => UpdateFlags.HasFlag(UpdateFlag.CallbackQuery),
                     UpdateType.EditedMessage => UpdateFlags.HasFlag(UpdateFlag.EditedMessage),
                     UpdateType.ChannelPost => UpdateFlags.HasFlag(UpdateFlag.ChannelPost),
                     UpdateType.EditedChannelPost => UpdateFlags.HasFlag(UpdateFlag.EditedChannelPost),
@@ -69,10 +59,8 @@ namespace BotFramework.Attributes
                     UpdateType.PreCheckoutQuery => UpdateFlags.HasFlag(UpdateFlag.PreCheckoutQuery),
                     UpdateType.Poll => UpdateFlags.HasFlag(UpdateFlag.Poll),
                     UpdateType.PollAnswer => UpdateFlags.HasFlag(UpdateFlag.PollAnswer),
-                    _ => false*/
+                    _ => false
                 };
-
-            return typeMatch;
         }
     }
 }

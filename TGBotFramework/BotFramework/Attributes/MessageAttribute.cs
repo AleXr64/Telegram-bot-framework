@@ -131,112 +131,110 @@ namespace BotFramework.Attributes
 
         private bool IsMessageMatch(Telegram.Bot.Types.Message message)
         {
-            var messageMatch = false;
             if(MessageFlags.HasFlag(MessageFlag.All))
             {
-                messageMatch = true;
+                return true;
             }
-            else
+
+            var messageMatch = false;
+            if(MessageFlags.HasFlag(MessageFlag.HasForward))
             {
-                if(MessageFlags.HasFlag(MessageFlag.HasForward))
-                {
-                    messageMatch = (message.ForwardFrom != null || message.ForwardFromChat != null);
-                }
+                messageMatch = (message.ForwardFrom != null || message.ForwardFromChat != null);
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.IsReply))
-                {
-                    messageMatch = message.ReplyToMessage != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.IsReply))
+            {
+                messageMatch = message.ReplyToMessage != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasText))
-                {
-                    messageMatch = !string.IsNullOrEmpty(message.Text);
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasText))
+            {
+                messageMatch = !string.IsNullOrEmpty(message.Text);
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasEntity))
-                {
-                    messageMatch = message.Entities != null || message.CaptionEntities != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasEntity))
+            {
+                messageMatch = message.Entities != null || message.CaptionEntities != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasAudio))
-                {
-                    messageMatch = message.Audio != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasAudio))
+            {
+                messageMatch = message.Audio != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasDocument))
-                {
-                    messageMatch = message.Document != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasDocument))
+            {
+                messageMatch = message.Document != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasAnimation))
-                {
-                    messageMatch = message.Animation != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasAnimation))
+            {
+                messageMatch = message.Animation != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasGame))
-                {
-                    messageMatch = message.Game != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasGame))
+            {
+                messageMatch = message.Game != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasPhoto))
-                {
-                    messageMatch = message.Photo != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasPhoto))
+            {
+                messageMatch = message.Photo != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasSticker))
-                {
-                    messageMatch = message.Sticker != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasSticker))
+            {
+                messageMatch = message.Sticker != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasVideo))
-                {
-                    messageMatch = message.Video != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasVideo))
+            {
+                messageMatch = message.Video != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasVoice))
-                {
-                    messageMatch = message.Voice != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasVoice))
+            {
+                messageMatch = message.Voice != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasVideoNote))
-                {
-                    messageMatch = message.VideoNote != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasVideoNote))
+            {
+                messageMatch = message.VideoNote != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasCaption))
-                {
-                    messageMatch = !string.IsNullOrEmpty(message.Caption);
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasCaption))
+            {
+                messageMatch = !string.IsNullOrEmpty(message.Caption);
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasContact))
-                {
-                    messageMatch = message.Contact != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasContact))
+            {
+                messageMatch = message.Contact != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasLocation))
-                {
-                    messageMatch = message.Location != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasLocation))
+            {
+                messageMatch = message.Location != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasVenue))
-                {
-                    messageMatch = message.Venue != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasVenue))
+            {
+                messageMatch = message.Venue != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasPoll))
-                {
-                    messageMatch = message.Poll != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasPoll))
+            {
+                messageMatch = message.Poll != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasDice))
-                {
-                    messageMatch = message.Dice != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasDice))
+            {
+                messageMatch = message.Dice != null;
+            }
 
-                if(MessageFlags.HasFlag(MessageFlag.HasKeyboard))
-                {
-                    messageMatch = message.ReplyMarkup != null;
-                }
+            if(MessageFlags.HasFlag(MessageFlag.HasKeyboard))
+            {
+                messageMatch = message.ReplyMarkup != null;
             }
 
             return messageMatch;
