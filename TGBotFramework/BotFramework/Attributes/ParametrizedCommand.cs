@@ -2,7 +2,7 @@
 
 namespace BotFramework.Attributes
 {
-    public class ParametrizedCommand: Command
+    public class ParametrizedCommand: CommandAttribute
     {
         public ParametrizedCommand(string text)
             : base(text) { }

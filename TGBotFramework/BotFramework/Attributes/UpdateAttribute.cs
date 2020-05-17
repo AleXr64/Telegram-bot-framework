@@ -21,7 +21,7 @@ namespace BotFramework.Attributes
             PreCheckoutQuery,
             Poll,
             PollAnswer,
-            All
+            All = Message | InlineQuery | ChosenInlineResult | CallbackQuery | EditedMessage | ChannelPost | EditedChannelPost | ShippingQuery | PreCheckoutQuery | Poll | PollAnswer
         }
 
         internal UpdateFlag UpdateFlags;
@@ -43,20 +43,33 @@ namespace BotFramework.Attributes
             if(InChat != InChat.All && param.InChat != InChat)
                 return false;
 
-            var typeMatch = param.Type switch
+            var typeMatch = false;
+            switch(param.Type)
                 {
-                    UpdateType.Message => UpdateFlags.IsSet(UpdateFlag.Message),
-                    UpdateType.InlineQuery => UpdateFlags.IsSet(UpdateFlag.InlineQuery),
-                    UpdateType.ChosenInlineResult => UpdateFlags.IsSet(UpdateFlag.ChosenInlineResult),
-                    UpdateType.CallbackQuery => UpdateFlags.IsSet(UpdateFlag.CallbackQuery),
-                    UpdateType.EditedMessage => UpdateFlags.IsSet(UpdateFlag.EditedMessage),
-                    UpdateType.ChannelPost => UpdateFlags.IsSet(UpdateFlag.ChannelPost),
-                    UpdateType.EditedChannelPost => UpdateFlags.IsSet(UpdateFlag.EditedChannelPost),
-                    UpdateType.ShippingQuery => UpdateFlags.IsSet(UpdateFlag.ShippingQuery),
-                    UpdateType.PreCheckoutQuery => UpdateFlags.IsSet(UpdateFlag.PreCheckoutQuery),
-                    UpdateType.Poll => UpdateFlags.IsSet(UpdateFlag.Poll),
-                    UpdateType.PollAnswer => UpdateFlags.IsSet(UpdateFlag.PollAnswer),
-                    _ => false
+                    case UpdateType.Message:
+                    {
+                        typeMatch = UpdateFlags.HasFlag(UpdateFlag.Message) ;
+                        break;
+                    }
+                    case UpdateType.InlineQuery:
+                    {
+                        typeMatch = UpdateFlags.HasFlag(UpdateFlag.InlineQuery);
+                        break;
+                    }
+                    case UpdateType.ChosenInlineResult:
+                    {
+                        typeMatch = UpdateFlags.HasFlag(UpdateFlag.ChosenInlineResult);
+                        break;
+                    }
+                    /*UpdateType.CallbackQuery => UpdateFlags.HasFlag(UpdateFlag.CallbackQuery),
+                    UpdateType.EditedMessage => UpdateFlags.HasFlag(UpdateFlag.EditedMessage),
+                    UpdateType.ChannelPost => UpdateFlags.HasFlag(UpdateFlag.ChannelPost),
+                    UpdateType.EditedChannelPost => UpdateFlags.HasFlag(UpdateFlag.EditedChannelPost),
+                    UpdateType.ShippingQuery => UpdateFlags.HasFlag(UpdateFlag.ShippingQuery),
+                    UpdateType.PreCheckoutQuery => UpdateFlags.HasFlag(UpdateFlag.PreCheckoutQuery),
+                    UpdateType.Poll => UpdateFlags.HasFlag(UpdateFlag.Poll),
+                    UpdateType.PollAnswer => UpdateFlags.HasFlag(UpdateFlag.PollAnswer),
+                    _ => false*/
                 };
 
             return typeMatch;

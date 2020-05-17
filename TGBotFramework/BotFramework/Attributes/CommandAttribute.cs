@@ -3,7 +3,7 @@ using BotFramework.Setup;
 
 namespace BotFramework.Attributes
 {
-    public class Command:Message
+    public class CommandAttribute:MessageAttribute
     {
         private readonly CommandParseMode _mode;
 
@@ -12,7 +12,7 @@ namespace BotFramework.Attributes
         /// </summary>
         /// <param name="inChat">Which chat type for handle <see cref="InChat" /></param>
         /// <param name="text">Command name</param>
-        public Command(InChat inChat, string text)
+        public CommandAttribute(InChat inChat, string text)
         {
             InChat = inChat;
             Text = text;
@@ -23,7 +23,7 @@ namespace BotFramework.Attributes
         ///     Marks method as handler for command without parameters
         /// </summary>
         /// <param name="text">Command name</param>
-        public Command(string text)
+        public CommandAttribute(string text)
         {
             Text = text;
             InChat = InChat.All;
@@ -35,7 +35,7 @@ namespace BotFramework.Attributes
         /// </summary>
         /// <param name="text">Command name</param>
         /// <param name="parseMode">Command parse mode <see cref="CommandParseMode" /></param>
-        public Command(string text, CommandParseMode parseMode)
+        public CommandAttribute(string text, CommandParseMode parseMode)
         {
             Text = text;
             InChat = InChat.All;
@@ -48,7 +48,7 @@ namespace BotFramework.Attributes
         /// <param name="inChat">>Which chat type for handle <see cref="InChat" /></param>
         /// <param name="text">Command name</param>
         /// <param name="parseMode">Command parse mode <see cref="CommandParseMode" /></param>
-        public Command(InChat inChat, string text, CommandParseMode parseMode)
+        public CommandAttribute(InChat inChat, string text, CommandParseMode parseMode)
         {
             InChat = inChat;
             Text = text;

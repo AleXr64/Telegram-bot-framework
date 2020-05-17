@@ -108,11 +108,13 @@ namespace BotFramework
 
         private void Client_OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e)
         {
-           // throw new NotImplementedException();
+            Console.WriteLine(e.ToString());
+            // throw new NotImplementedException();
         }
 
         private void Client_OnReceiveError(object sender, ReceiveErrorEventArgs e)
         {
+            Console.WriteLine(e.ToString());
            // throw new NotImplementedException();
         }
     }

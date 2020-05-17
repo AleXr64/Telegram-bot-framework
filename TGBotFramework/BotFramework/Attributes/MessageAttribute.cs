@@ -4,7 +4,7 @@ using BotFramework.Setup;
 
 namespace BotFramework.Attributes
 {
-    public class Message:UpdateAttribute
+    public class MessageAttribute:UpdateAttribute
     {
         [Flags]
         public enum MessageFlag
@@ -29,14 +29,14 @@ namespace BotFramework.Attributes
             HasPoll,
             HasDice,
             HasKeyboard,
-            All
+            All = HasForward | IsReply | HasText| HasEntity | HasAudio | HasDocument | HasAnimation | HasGame | HasPhoto | HasSticker | HasVideo | HasVoice | HasVideoNote | HasCaption | HasContact | HasLocation | HasVenue | HasPoll | HasDice | HasKeyboard
         }
 
         internal MessageFlag MessageFlags;
         internal string Text;
         private bool isRegex = false;
 
-        public Message(InChat inChat, string text, MessageFlag messageFlags, bool regex)
+        public MessageAttribute(InChat inChat, string text, MessageFlag messageFlags, bool regex)
         {
             isRegex = regex;
             InChat = inChat;
@@ -45,7 +45,7 @@ namespace BotFramework.Attributes
             MessageFlags = messageFlags;
         }
 
-        public Message(InChat inChat, string text, MessageFlag messageFlags)
+        public MessageAttribute(InChat inChat, string text, MessageFlag messageFlags)
         {
             InChat = inChat;
             UpdateFlags = UpdateFlag.Message;
@@ -54,7 +54,7 @@ namespace BotFramework.Attributes
         }
 
 
-        public Message(string text, MessageFlag messageFlags, bool regex)
+        public MessageAttribute(string text, MessageFlag messageFlags, bool regex)
         {
             isRegex = regex;
             InChat = InChat.All;
@@ -63,7 +63,7 @@ namespace BotFramework.Attributes
             MessageFlags = messageFlags;
         }
 
-        public Message(string text, MessageFlag messageFlags)
+        public MessageAttribute(string text, MessageFlag messageFlags)
         {
             InChat = InChat.All;
             UpdateFlags = UpdateFlag.Message;
@@ -72,7 +72,7 @@ namespace BotFramework.Attributes
         }
 
 
-        public Message(string text, bool regex)
+        public MessageAttribute(string text, bool regex)
         {
             isRegex = regex;
             InChat = InChat.All;
@@ -81,7 +81,7 @@ namespace BotFramework.Attributes
             MessageFlags = MessageFlag.HasText;
         }
 
-        public Message(string text)
+        public MessageAttribute(string text)
         {
             InChat = InChat.All;
             UpdateFlags = UpdateFlag.Message;
@@ -89,21 +89,21 @@ namespace BotFramework.Attributes
             MessageFlags = MessageFlag.HasText;
         }
 
-        public Message(InChat inChat, MessageFlag messageFlags)
+        public MessageAttribute(InChat inChat, MessageFlag messageFlags)
         {
             InChat = inChat;
             UpdateFlags = UpdateFlag.Message;
             MessageFlags = messageFlags;
         }
 
-        public Message(MessageFlag messageFlags)
+        public MessageAttribute(MessageFlag messageFlags)
         {
             InChat = InChat.All;
             UpdateFlags = UpdateFlag.Message;
             MessageFlags = messageFlags;
         }
 
-        public Message()
+        public MessageAttribute()
         {
             InChat = InChat.All;
             UpdateFlags = UpdateFlag.Message;
