@@ -40,7 +40,6 @@ namespace BotFramework
             if(startupType != null)
             {
                 _wares = ((BotStartup)Activator.CreateInstance(startupType, true)).__SetupInternal();
-                
             }
         }
 
@@ -81,6 +80,8 @@ namespace BotFramework
             {
                 Console.WriteLine(e);
             }
+
+            await client.DeleteWebhookAsync();
 
             if(_config.EnableWebHook)
             {
@@ -160,12 +161,16 @@ namespace BotFramework
 
         private void Client_OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e)
         {
-           // throw new NotImplementedException();
+           client.StopReceiving();
+           Thread.Sleep(100);
+           StartListen().RunSynchronously();
         }
 
         private void Client_OnReceiveError(object sender, ReceiveErrorEventArgs e)
         {
-           // throw new NotImplementedException();
+            client.StopReceiving();
+            Thread.Sleep(100);
+            StartListen().RunSynchronously();
         }
     }
 }

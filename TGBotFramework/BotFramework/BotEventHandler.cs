@@ -123,7 +123,7 @@ namespace BotFramework
                     paramObjects = null;
                 }
 
-                if(method.ReturnParameter?.ParameterType == typeof(Task))
+                if(method.ReturnParameter.ParameterType == typeof(Task))
                 {
                     var task = method.Invoke(instance, paramObjects);
                     await (Task)task;
