@@ -15,7 +15,8 @@ jobs:
         dotnet-version: 3.1.100
     - name: Build with dotnet
       env:
-        NugetAPIKey: ${{ secrets.NugetAPIKey }} 
+        NugetAPIKey: ${{ secrets.NugetAPIKey }}
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
         cd build 
         bash build.sh
