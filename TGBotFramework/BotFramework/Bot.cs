@@ -163,14 +163,14 @@ namespace BotFramework
         {
            client.StopReceiving();
            Thread.Sleep(100);
-           StartListen().RunSynchronously();
+           Task.Run(async () => await StartListen());
         }
 
         private void Client_OnReceiveError(object sender, ReceiveErrorEventArgs e)
         {
             client.StopReceiving();
             Thread.Sleep(100);
-            StartListen().RunSynchronously();
+            Task.Run(async () => await StartListen());
         }
     }
 }
