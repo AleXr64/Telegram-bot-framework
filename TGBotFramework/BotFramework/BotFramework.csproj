@@ -23,7 +23,7 @@
     <PackageReference Include="HttpToSocks5Proxy" Version="1.4.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.2.31">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
