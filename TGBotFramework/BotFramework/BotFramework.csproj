@@ -28,7 +28,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Telegram.Bot" Version="16.0.1" />
+    <PackageReference Include="Telegram.Bot" Version="16.0.2" />
   </ItemGroup>
 
   <ItemGroup>
