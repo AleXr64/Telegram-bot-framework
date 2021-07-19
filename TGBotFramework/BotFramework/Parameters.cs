@@ -41,8 +41,7 @@ namespace BotFramework
 
         public static string GetCommandName(this string str, string me = "")
         {
-            if(!str.IsCommand(me)) return string.Empty;
-            var text = str.Substring(1);
+            var text = str[1..];
             if(!string.IsNullOrEmpty(me))
             {
                return text.Split(" ")[0].ToLowerInvariant().Replace('@' + me.ToLowerInvariant(), "");
@@ -52,7 +51,7 @@ namespace BotFramework
 
         public static string[] GetCommandArgs(this string text)
         {
-            return text.IsCommand() ? text.Split(" ").Skip(1).ToArray() : new string[0];
+            return text.Split(" ").Skip(1).ToArray();
         }
     }
 }

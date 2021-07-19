@@ -88,11 +88,11 @@ namespace BotFramework
         }
 
         public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
-        public string[] CommandArgs { get; private set; } = new string[0];
+        public string[] CommandArgs { get; private set; } = Array.Empty<string>();
 
         public string CommandName { get; private set; } = string.Empty;
         public bool IsCommand { get; private set; }
-        public bool IsFullFormCommand { get; private set; }
+        public bool IsFullFormCommand { get; private set; } = false;
         public Chat Chat { get; }
         public User From { get; }
         public Update Update { get; }
@@ -112,9 +112,12 @@ namespace BotFramework
                 return;
 
             IsCommand = Update.Message.Text.IsCommand();
-            IsFullFormCommand = Update.Message.Text.IsCommand(UserName);
-            CommandName = Update.Message.Text.GetCommandName(IsFullFormCommand ? UserName : "");
-            CommandArgs = Update.Message.Text.GetCommandArgs();
+            if(IsCommand)
+            {
+                IsFullFormCommand = Update.Message.Text.IsCommand(UserName);
+                CommandName = Update.Message.Text.GetCommandName(IsFullFormCommand ? UserName : "");
+                CommandArgs = Update.Message.Text.GetCommandArgs();
+            }
         }
 
         internal bool TryParseParams(ParameterInfo[] parameters)
@@ -148,8 +151,7 @@ namespace BotFramework
                     var result = parser.GetType().GetMethod("TryGetValue")?.Invoke(parser, parserParams);
                     if(result != null && (bool)result)
                     {
-                        var commandParameter =
-                            new CommandParameter(position, parserParams[1]);
+                        var commandParameter = new CommandParameter(position, parserParams[1]);
                         CommandParameters.Add(commandParameter);
                         return;
                     }
