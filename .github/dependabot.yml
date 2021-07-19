@@ -7,9 +7,22 @@ version: 2
 updates:
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "/TGBotFramework/BotFramework/" # Location of package manifests
+    target-branch: "release/0.5"
     schedule:
       interval: "daily"
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "/TGBotFramework/BotFramework.Tests/" # Location of package manifests
+    target-branch: "release/0.5"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/TGBotFramework/BotFramework/" # Location of package manifests
+    target-branch: "master"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/TGBotFramework/BotFramework.Tests/" # Location of package manifests
+    target-branch: "master"
     schedule:
       interval: "daily"
