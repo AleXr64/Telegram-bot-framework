@@ -1,4 +1,5 @@
 ﻿using System;
+using BotFramework.Enums;
 using BotFramework.Setup;
 using BotFramework.Utils;
 using Telegram.Bot.Types.Enums;
@@ -7,23 +8,6 @@ namespace BotFramework.Attributes
 {
     public class UpdateAttribute:HandlerAttribute
     {
-        [Flags]
-        public enum UpdateFlag
-        {
-            Message,
-            InlineQuery,
-            ChosenInlineResult,
-            CallbackQuery,
-            EditedMessage,
-            ChannelPost,
-            EditedChannelPost,
-            ShippingQuery,
-            PreCheckoutQuery,
-            Poll,
-            PollAnswer,
-            All = Message | InlineQuery | ChosenInlineResult | CallbackQuery | EditedMessage | ChannelPost | EditedChannelPost | ShippingQuery | PreCheckoutQuery | Poll | PollAnswer
-        }
-
         internal UpdateFlag UpdateFlags;
         internal InChat InChat;
 

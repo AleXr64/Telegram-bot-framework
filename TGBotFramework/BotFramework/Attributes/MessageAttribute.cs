@@ -1,37 +1,11 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BotFramework.Setup;
+using BotFramework.Enums;
 
 namespace BotFramework.Attributes
 {
     public class MessageAttribute:UpdateAttribute
     {
-        [Flags]
-        public enum MessageFlag
-        {
-            HasForward,
-            IsReply,
-            HasText,
-            HasEntity,
-            HasAudio,
-            HasDocument,
-            HasAnimation,
-            HasGame,
-            HasPhoto,
-            HasSticker,
-            HasVideo,
-            HasVoice,
-            HasVideoNote,
-            HasCaption,
-            HasContact,
-            HasLocation,
-            HasVenue,
-            HasPoll,
-            HasDice,
-            HasKeyboard,
-            All = HasForward | IsReply | HasText| HasEntity | HasAudio | HasDocument | HasAnimation | HasGame | HasPhoto | HasSticker | HasVideo | HasVoice | HasVideoNote | HasCaption | HasContact | HasLocation | HasVenue | HasPoll | HasDice | HasKeyboard
-        }
-
         internal MessageFlag MessageFlags;
         internal string Text;
         private bool isRegex = false;
