@@ -9,20 +9,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Restore dependencies
+    - name: Build with dotnet
+      env:
+        NugetAPIKey: ${{ secrets.NugetAPIKey }}
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       run: |
-        cd TGBotFramework
-        dotnet restore
-    - name: Build
-      run: |
-        cd TGBotFramework
-        dotnet build --no-restore
-    - name: Test
-      run: |
-        cd TGBotFramework 
-        dotnet test --no-build --verbosity normal
+        cd build 
+        bash build.sh
