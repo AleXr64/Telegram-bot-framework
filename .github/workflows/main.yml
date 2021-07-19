@@ -1,6 +1,7 @@
-name: .NET Core
+name: .NET
 
-on: [push]
+on:
+  [push]
 
 jobs:
   build:
@@ -8,15 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
+    - uses: actions/checkout@v2
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.100
-    - name: Build with dotnet
-      env:
-        NugetAPIKey: ${{ secrets.NugetAPIKey }}
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      run: |
-        cd build 
-        bash build.sh
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
