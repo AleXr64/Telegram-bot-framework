@@ -1,38 +1,198 @@
-﻿using BotFramework.Setup;
-using Telegram.Bot.Types.Enums;
+﻿using System.Text.RegularExpressions;
+using BotFramework.Setup;
+using BotFramework.Enums;
 
 namespace BotFramework.Attributes
 {
-    public class MessageAttribute: HandlerAttribute
+    public class MessageAttribute:UpdateAttribute
     {
-        public InChat Chat;
+        internal MessageFlag MessageFlags;
+        internal string Text;
+        private bool isRegex = false;
 
-        public MessageType MessageType;
-
-        public MessageAttribute(MessageType messageType, InChat chat)
+        public MessageAttribute(InChat inChat, string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
         {
-            MessageType = messageType;
-            Chat = chat;
+            isRegex = regex;
+            InChat = inChat;
+            UpdateFlags = UpdateFlag.Message;
+            Text = text;
+            MessageFlags = messageFlags;
+        }
+
+
+        public MessageAttribute(string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
+        {
+            isRegex = regex;
+            InChat = InChat.All;
+            UpdateFlags = UpdateFlag.Message;
+            Text = text;
+            MessageFlags = messageFlags;
+        }
+
+        public MessageAttribute(InChat inChat, MessageFlag messageFlags)
+        {
+            InChat = inChat;
+            UpdateFlags = UpdateFlag.Message;
+            MessageFlags = messageFlags;
+        }
+
+        public MessageAttribute(MessageFlag messageFlags)
+        {
+            InChat = InChat.All;
+            UpdateFlags = UpdateFlag.Message;
+            MessageFlags = messageFlags;
+        }
+
+        public MessageAttribute()
+        {
+            InChat = InChat.All;
+            UpdateFlags = UpdateFlag.Message;
+            MessageFlags = MessageFlag.All;
         }
 
         protected override bool CanHandle(HandlerParams param)
         {
-            if(param.Type != UpdateType.Message)
+            if(!base.CanHandle(param))
             {
                 return false;
             }
 
-            if(param.Update.Message.Type != MessageType)
-            {
-                return false;
-            }
+            var message = param.Update.Message;
 
-            if(Chat == InChat.All)
+            if(IsMessageMatch(message))
+            {
+                if(MessageFlags.HasFlag(MessageFlag.HasText))
+                    return param.IsCommand || IsTextMatch(message.Text);
+
+                return true;
+            }
+            return false;
+        }
+
+        private bool IsMessageMatch(Telegram.Bot.Types.Message message)
+        {
+            if(MessageFlags.HasFlag(MessageFlag.All))
             {
                 return true;
             }
 
-            return param.InChat == Chat;
+            var messageMatch = false;
+            if(MessageFlags.HasFlag(MessageFlag.HasForward))
+            {
+                messageMatch = (message.ForwardFrom != null || message.ForwardFromChat != null);
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.IsReply))
+            {
+                messageMatch = message.ReplyToMessage != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasText))
+            {
+                messageMatch = !string.IsNullOrEmpty(message.Text);
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasEntity))
+            {
+                messageMatch = message.Entities != null || message.CaptionEntities != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasAudio))
+            {
+                messageMatch = message.Audio != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasDocument))
+            {
+                messageMatch = message.Document != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasAnimation))
+            {
+                messageMatch = message.Animation != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasGame))
+            {
+                messageMatch = message.Game != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasPhoto))
+            {
+                messageMatch = message.Photo != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasSticker))
+            {
+                messageMatch = message.Sticker != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasVideo))
+            {
+                messageMatch = message.Video != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasVoice))
+            {
+                messageMatch = message.Voice != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasVideoNote))
+            {
+                messageMatch = message.VideoNote != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasCaption))
+            {
+                messageMatch = !string.IsNullOrEmpty(message.Caption);
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasContact))
+            {
+                messageMatch = message.Contact != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasLocation))
+            {
+                messageMatch = message.Location != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasVenue))
+            {
+                messageMatch = message.Venue != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasPoll))
+            {
+                messageMatch = message.Poll != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasDice))
+            {
+                messageMatch = message.Dice != null;
+            }
+
+            if(MessageFlags.HasFlag(MessageFlag.HasKeyboard))
+            {
+                messageMatch = message.ReplyMarkup != null;
+            }
+
+            return messageMatch;
+        }
+
+        private bool IsTextMatch(string text)
+        {
+            if(string.IsNullOrEmpty(Text))
+            {
+                return true;
+            }
+
+            if(string.IsNullOrEmpty(text))
+            {
+                return false;
+            }
+
+            return isRegex ? Regex.IsMatch(text, Text) : Text.Equals(text);
         }
     }
 }

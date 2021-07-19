@@ -2,20 +2,18 @@
 
 namespace BotFramework.Attributes
 {
-    public class ParametrizedCommand: Command
+    public class ParametrizedCommand: CommandAttribute
     {
-        public ParametrizedCommand(string Text)
-            : base(Text) { }
+        public ParametrizedCommand(string text)
+            : base(text) { }
 
-        public ParametrizedCommand(InChat type, string Text)
-            : base(type, Text) { }
+        public ParametrizedCommand(InChat type, string text)
+            : base(type, text) { }
 
-        public ParametrizedCommand(string Text, CommandParseMode parseMode)
-            : base(Text, parseMode) { }
+        public ParametrizedCommand(string text, CommandParseMode parseMode)
+            : base(text, parseMode) { }
 
-        public ParametrizedCommand(InChat type, string Text, CommandParseMode parseMode):base(type,Text, parseMode)
-        {
-            
-        }
+        public ParametrizedCommand(InChat type, string text, CommandParseMode parseMode)
+            : base(type, text, parseMode) { }
     }
 }

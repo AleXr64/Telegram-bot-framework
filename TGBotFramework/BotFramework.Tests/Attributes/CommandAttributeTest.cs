@@ -3,6 +3,7 @@ using BotFramework.Setup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Xunit;
+using Message = Telegram.Bot.Types.Message;
 
 namespace BotFramework.Tests.Attributes
 {
