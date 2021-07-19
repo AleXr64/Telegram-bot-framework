@@ -15,7 +15,9 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: |
+        cd TGBotFramework
+        dotnet restore
     - name: Build
       run: |
         cd TGBotFramework
