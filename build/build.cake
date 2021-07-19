@@ -17,7 +17,7 @@ var buildDir = Directory(buildDirPath);
 
 var buildSettings = new DotNetCoreBuildSettings
      {
-         Framework = "netcoreapp3.1",
+         Framework = "net5.0",
          Configuration = "Deploy",
          OutputDirectory = buildDirPath
        
