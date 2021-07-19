@@ -9,11 +9,11 @@ namespace BotFramework.Tests.Attributes
 {
     public class MessageAttributeTests
     {
-        /*[Fact]
-        public void CanHandleAllTextMessages()
+        [Fact]
+        public void CanHandleVoiceMessages()
         {
-            var paramses = new HandlerParams(null, new Update(){Message = new Message(){Text = "Blah"}}, null, "testbot" );
-            var attribute = new TextMessage();
+            var paramses = new HandlerParams(null, new Update { Message = new Message { Voice = new Voice { } } }, null, "testbot" );
+            var attribute = new MessageAttribute(Enums.MessageFlag.HasVoice);
 
             Assert.True(attribute.CanHandleInternal(paramses));
             
@@ -21,69 +21,22 @@ namespace BotFramework.Tests.Attributes
 
             Assert.False(attribute.CanHandleInternal(paramses));
 
-            attribute = new TextMessage(InChat.Public);
-            paramses = new HandlerParams(null, new Update() { Message = new Message() { Chat = new Chat(){Type = ChatType.Channel}, Text = "asd"} }, null, "testbot");
-
-            Assert.False(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage(InChat.Channel);
-            Assert.True(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage(InChat.Private);
-            Assert.False(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage(InChat.Public);
-            Assert.False(attribute.CanHandleInternal(paramses));
         }
 
         [Fact]
-        public void CanHandleSomeEqualTextInMessage()
+        public void CanHandleCaptionMessages()
         {
-            var paramses = new HandlerParams(null, new Update() { Message = new Message() { Text = "Blah" } }, null, "testbot");
-            var attribute = new TextMessage("Blah");
+            var paramses = new HandlerParams(null, new Update() { Message = new Message() { Caption = "Blah", Voice = new Voice { } } }, null, "testbot");
+            var attribute = new MessageAttribute(Enums.MessageFlag.HasCaption);
 
             Assert.True(attribute.CanHandleInternal(paramses));
 
-            attribute = new TextMessage("Foo");
+            attribute = new MessageAttribute("Foo");
             Assert.False(attribute.CanHandleInternal(paramses));
 
-            attribute = new TextMessage("/test");
+            attribute = new MessageAttribute("/test");
             Assert.False(attribute.CanHandleInternal(paramses));
         }
 
-        [Fact]
-        public void CanHandleSomeEqualTextInMessageByChat()
-        {
-            var paramses = new HandlerParams(null, new Update() { Message = new Message() { Text = "Blah", Chat = new Chat() {Type = ChatType.Private}} }, null, "testbot");
-            var attribute = new TextMessage(InChat.All,"Blah");
-
-            Assert.True(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage(InChat.All, "Foo");
-            Assert.False(attribute.CanHandleInternal(paramses));
-
-            paramses = new HandlerParams(null, new Update(){Message = new Message(){Chat = new Chat(){Type = ChatType.Channel}, Text = "Blah"}}, null, "bot" );
-            attribute = new TextMessage(InChat.Channel, "Blah");
-
-            Assert.True(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage(InChat.Public, "Blah");
-            Assert.False(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage(InChat.Channel, "asd");
-            Assert.False(attribute.CanHandleInternal(paramses));
-
-        }
-
-        [Fact]
-        public void CanHandleSomeEqualTextInMessageRegex()
-        {
-            var paramses = new HandlerParams(null, new Update() { Message = new Message() { Text = "Blah", Chat = new Chat() { Type = ChatType.Private } } }, null, "testbot");
-            var attribute = new TextMessage("foo|bar|Blah", true);
-            Assert.True(attribute.CanHandleInternal(paramses));
-
-            attribute = new TextMessage("foo", true);
-            Assert.False(attribute.CanHandleInternal(paramses));
-        }*/
     }
 }
