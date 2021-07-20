@@ -20,6 +20,6 @@ Example project can be found [here](https://github.com/AleXr64/Telegram-bot-fram
 
 Requires:
 
- - .net core 3.1
+ - .net 5.0
  - [microsoft dependency injection](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection)  (via asp.net core or hosted service template)
 
