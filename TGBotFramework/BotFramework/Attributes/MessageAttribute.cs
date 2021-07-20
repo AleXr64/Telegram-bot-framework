@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using BotFramework.Setup;
 using BotFramework.Enums;
+using System;
 
 namespace BotFramework.Attributes
 {
@@ -76,109 +77,41 @@ namespace BotFramework.Attributes
                 return true;
             }
 
-            var messageMatch = false;
-            if(MessageFlags.HasFlag(MessageFlag.HasForward))
+            foreach(var f in Enum.GetValues<MessageFlag>())
             {
-                messageMatch = (message.ForwardFrom != null || message.ForwardFromChat != null);
-            }
+                if(!MessageFlags.HasFlag(f))
+                    continue;
 
-            if(MessageFlags.HasFlag(MessageFlag.IsReply))
-            {
-                messageMatch = message.ReplyToMessage != null;
+                var ret = f switch
+                {
+                    MessageFlag.HasForward      => message.ForwardFrom != null || message.ForwardFromChat != null,
+                    MessageFlag.IsReply         => message.ReplyToMessage != null,
+                    MessageFlag.HasText         => !string.IsNullOrEmpty(message.Text),
+                    MessageFlag.HasEntity       => message.Entities != null || message.CaptionEntities != null,
+                    MessageFlag.HasVoice        => message.Voice != null,
+                    MessageFlag.HasAudio        => message.Audio != null,
+                    MessageFlag.HasVideo        => message.Video != null,
+                    MessageFlag.HasDocument     => message.Document != null,
+                    MessageFlag.HasAnimation    => message.Animation != null,
+                    MessageFlag.HasGame         => message.Game != null,
+                    MessageFlag.HasCaption      => !string.IsNullOrEmpty(message.Caption),
+                    MessageFlag.HasPhoto        => message.Photo != null,
+                    MessageFlag.HasSticker      => message.Sticker != null,
+                    MessageFlag.HasVideoNote    => message.VideoNote != null,
+                    MessageFlag.HasContact      => message.Contact != null,
+                    MessageFlag.HasLocation     => message.Location != null,
+                    MessageFlag.HasVenue        => message.Venue != null,
+                    MessageFlag.HasPoll         => message.Poll != null,
+                    MessageFlag.HasDice         => message.Dice != null,
+                    MessageFlag.HasKeyboard     => message.ReplyMarkup != null,
+                    _ => false
+                };
+                if(ret)
+                    return true;
             }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasText))
-            {
-                messageMatch = !string.IsNullOrEmpty(message.Text);
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasEntity))
-            {
-                messageMatch = message.Entities != null || message.CaptionEntities != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasAudio))
-            {
-                messageMatch = message.Audio != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasDocument))
-            {
-                messageMatch = message.Document != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasAnimation))
-            {
-                messageMatch = message.Animation != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasGame))
-            {
-                messageMatch = message.Game != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasPhoto))
-            {
-                messageMatch = message.Photo != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasSticker))
-            {
-                messageMatch = message.Sticker != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasVideo))
-            {
-                messageMatch = message.Video != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasVoice))
-            {
-                messageMatch = message.Voice != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasVideoNote))
-            {
-                messageMatch = message.VideoNote != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasCaption))
-            {
-                messageMatch = !string.IsNullOrEmpty(message.Caption);
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasContact))
-            {
-                messageMatch = message.Contact != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasLocation))
-            {
-                messageMatch = message.Location != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasVenue))
-            {
-                messageMatch = message.Venue != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasPoll))
-            {
-                messageMatch = message.Poll != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasDice))
-            {
-                messageMatch = message.Dice != null;
-            }
-
-            if(MessageFlags.HasFlag(MessageFlag.HasKeyboard))
-            {
-                messageMatch = message.ReplyMarkup != null;
-            }
-
-            return messageMatch;
+            return false;
         }
+
 
         private bool IsTextMatch(string text)
         {
@@ -194,5 +127,7 @@ namespace BotFramework.Attributes
 
             return isRegex ? Regex.IsMatch(text, Text) : Text.Equals(text);
         }
+
+
     }
 }

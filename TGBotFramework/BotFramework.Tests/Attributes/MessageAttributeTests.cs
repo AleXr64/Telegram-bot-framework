@@ -24,6 +24,20 @@ namespace BotFramework.Tests.Attributes
         }
 
         [Fact]
+        public void CanHandleMultiContent()
+        {
+            var paramses = new HandlerParams(null, new Update { Message = new Message { Voice = new Voice { }, Game = new Game { } } }, null, "testbot");
+            var attribute = new MessageAttribute(Enums.MessageFlag.HasVoice);
+
+            Assert.True(attribute.CanHandleInternal(paramses));
+
+            paramses = new HandlerParams(null, new Update() {  Poll  = new Poll { } }, null, "testbot");
+
+            Assert.False(attribute.CanHandleInternal(paramses));
+
+        }
+
+        [Fact]
         public void CanHandleCaptionMessages()
         {
             var paramses = new HandlerParams(null, new Update() { Message = new Message() { Caption = "Blah", Voice = new Voice { } } }, null, "testbot");
