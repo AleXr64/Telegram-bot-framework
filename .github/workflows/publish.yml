@@ -48,4 +48,4 @@ jobs:
           # TAG_FORMAT: v*
 
           # API key to authenticate with NuGet server
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          NUGET_KEY: ${{secrets.NugetAPIKey}}
