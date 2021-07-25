@@ -1,22 +1,37 @@
-name: .NET Core
+name: Build & test
 
-on: [push]
-
+on:
+  push:
+    paths:
+      - 'TGBotFramework/BotFramework/**'
+      - 'TGBotFramework/BotFramework.Tests/**'
+      
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.x'
-    - name: Build with dotnet
-      env:
-        NugetAPIKey: ${{ secrets.NugetAPIKey }}
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+        dotnet-version: 5.0.x
+        
+    - name: Restore dependencies
       run: |
-        cd build 
-        bash build.sh
+        cd TGBotFramework/BotFramework
+        dotnet restore
+      
+    - name: Build
+      run: |
+        cd TGBotFramework/BotFramework
+        dotnet build --no-restore
+      
+    - name: Test
+      run: |
+        cd TGBotFramework/BotFramework.Tests
+        dotnet test --no-build --verbosity normal

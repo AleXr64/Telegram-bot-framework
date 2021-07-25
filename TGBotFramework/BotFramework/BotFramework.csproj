@@ -20,6 +20,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Attributes\Temp\**" />
+    <EmbeddedResource Remove="Attributes\Temp\**" />
+    <None Remove="Attributes\Temp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="HttpToSocks5Proxy" Version="1.4.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
@@ -29,9 +35,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Telegram.Bot" Version="16.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Utils\" />
+    <PackageReference Include="Telegram.Bot.Extensions.Polling" Version="0.2.0" />
   </ItemGroup>
 </Project>

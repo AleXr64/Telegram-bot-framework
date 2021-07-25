@@ -10,8 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MihaZupan;
-using Telegram.Bot;
+using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Args;
+using Telegram.Bot;
+using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types;
 
 namespace BotFramework
 {
@@ -46,11 +49,15 @@ namespace BotFramework
         public string UserName => _userName;
         public ITelegramBotClient BotClient => client;
 
-        async Task IHostedService.StartAsync(CancellationToken cancellationToken) { await StartListen(); }
+        async Task IHostedService.StartAsync(CancellationToken cancellationToken) { await StartListen(cancellationToken); }
 
-        async Task IHostedService.StopAsync(CancellationToken cancellationToken) { await Task.Run(client.StopReceiving, cancellationToken); }
+        async Task IHostedService.StopAsync(CancellationToken cancellationToken) 
+        {
+            await client.DeleteWebhookAsync(cancellationToken:cancellationToken);
+            await client.CloseAsync(cancellationToken);
+        }
 
-        private async Task StartListen()
+        private async Task StartListen(CancellationToken cancellationToken)
         {
             var configProvider = services.GetService<IConfiguration>();
             var section = configProvider.GetSection("BotConfig");
@@ -66,111 +73,116 @@ namespace BotFramework
                 else
                 {
                     client = new TelegramBotClient(_config.Token);
-                    await client.DeleteWebhookAsync();
                 }
 
                 factory = new EventHandlerFactory();
                 factory.Find();
-                client.OnUpdate += Client_OnUpdate;
-                client.OnReceiveError += Client_OnReceiveError;
-                client.OnReceiveGeneralError += Client_OnReceiveGeneralError;
-                var me = await client.GetMeAsync();
+
+                var me = await GetMeSafeAsync(cancellationToken);
                 _userName = me.Username;
-            } catch(ArgumentException e)
+            }
+            catch(Exception e) when (e is ArgumentException || e is ArgumentNullException)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            catch(Exception e)
             {
                 Console.WriteLine(e);
             }
-
-            await client.DeleteWebhookAsync();
+            
 
             if(_config.EnableWebHook)
             {
-                if(_config.UseSertificate)
+                if(_config.UseCertificate)
                 {
                     //TODO серт
-                    // await client.SetWebhookAsync(_config.WebHookURL, new InputFileStream(new FileStream(_config.WebHookSertPath)))
+                    // await client.SetWebhookAsync(_config.WebHookURL, new InputFileStream(new FileStream(_config.WebHookCertPath)))
                 }
                 else
                 {
                     //TODO подготовить и заспавнить контроллер
-                    await client.SetWebhookAsync(_config.WebHookURL);
+                    await client.SetWebhookAsync(_config.WebHookURL, cancellationToken: cancellationToken);
                 }
             }
             else
             {
-                client.StartReceiving();
+                client.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), cancellationToken);
+                
             }
         }
 
-        private async void Client_OnUpdate(object sender, UpdateEventArgs e)
+        async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             try
             {
                 await Task.Run(async () =>
                 {
-                    using(var scope = _scopeFactory.CreateScope())
+
+                    using var scope = _scopeFactory.CreateScope();
+                    var wares = new Stack<IMiddleware>();
+
+                    var wareInstances = scope.ServiceProvider.GetServices<IMiddleware>().ToDictionary(x => x.GetType());
+
+                    var param = new HandlerParams(botClient, update, scope.ServiceProvider, _userName);
+
+                    var router = new Router(factory);
+                    router.__Setup(null, param);
+
+                    wares.Push(router);
+
+                    if(wareInstances.Count > 0 && _wares.Count > 0)
                     {
-                        var wares = new Stack<IMiddleware>();
+                        var firstWareType = _wares.First;
 
-                        var wareInstances = scope.ServiceProvider.GetServices<IMiddleware>().ToDictionary(x=>x.GetType());
-
-                        var param = new HandlerParams(BotClient, e.Update, scope.ServiceProvider, _userName);
-
-                        var router = new Router(factory);
-                        router.__Setup(null, param);
-
-                        wares.Push(router);
-
-                        if(wareInstances.Count > 0 && _wares.Count > 0)
+                        if(firstWareType?.Value != null && wareInstances.ContainsKey(firstWareType.Value))
                         {
-                            var firstWareType = _wares.First;
+                            var currentWare = wareInstances[firstWareType.Value];
+                            ((BaseMiddleware)currentWare).__Setup(router, param);
+                            wares.Push(currentWare);
 
-                            if(firstWareType?.Value != null && wareInstances.ContainsKey(firstWareType.Value))
+                            var nextWareType = firstWareType.Next;
+
+                            while(nextWareType?.Next != null)
                             {
-                                var currentWare = wareInstances[firstWareType.Value];
-                                ((BaseMiddleware)currentWare).__Setup(router, param);
+                                var prevWare = wares.Pop();
+                                currentWare = wareInstances[nextWareType.Value];
+                                ((BaseMiddleware)currentWare).__Setup(prevWare, param);
                                 wares.Push(currentWare);
-
-                                var nextWareType = firstWareType.Next;
-
-                                while(nextWareType?.Next != null)
-                                {
-                                    var prevWare = wares.Pop();
-                                    currentWare = wareInstances[nextWareType.Value];
-                                    ((BaseMiddleware)currentWare).__Setup(prevWare, param);
-                                    wares.Push(currentWare);
-                                }
                             }
-
-                           
-
                         }
-
-                        var runWare = wares.Pop();
-                        await ((BaseMiddleware)runWare).__ProcessInternal();
                     }
 
-                });
+                    var runWare = wares.Pop();
+                    await ((BaseMiddleware)runWare).__ProcessInternal();
+
+                }, cancellationToken);
             } catch(Exception exception)
             {
                 Console.WriteLine(exception);
-               // throw;
+                // throw;
             }
-
         }
 
-        private void Client_OnReceiveGeneralError(object sender, ReceiveGeneralErrorEventArgs e)
+        async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
-           client.StopReceiving();
-           Thread.Sleep(100);
-           Task.Run(async () => await StartListen());
+            Console.WriteLine(exception);
+            await Task.Delay(5000, cancellationToken);//иначе будет долбиться и грузить проц на 100%
         }
 
-        private void Client_OnReceiveError(object sender, ReceiveErrorEventArgs e)
+        async Task<User> GetMeSafeAsync(CancellationToken cancellationToken)
         {
-            client.StopReceiving();
-            Thread.Sleep(100);
-            Task.Run(async () => await StartListen());
+            try
+            {
+                var user = await BotClient.GetMeAsync(cancellationToken);
+                return user;
+            } catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            await Task.Delay(5000, cancellationToken);
+            return await GetMeSafeAsync(cancellationToken);
         }
+
     }
 }

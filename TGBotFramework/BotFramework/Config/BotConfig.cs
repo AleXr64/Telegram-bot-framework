@@ -5,8 +5,8 @@
         public string Token { get; set; }
         public string UserName { get; set; }
         public string WebHookURL { get; set; }
-        public bool UseSertificate { get; set; }
-        public string WebHookSertPath { get; set; }
+        public bool UseCertificate { get; set; }
+        public string WebHookCertPath { get; set; }
         public bool EnableWebHook { get; set; }
         public string SOCKS5Address { get; set; }
         public int SOCKS5Port { get; set; }
