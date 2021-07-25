@@ -1,6 +1,5 @@
 ﻿{
   "token": null,
-  "userName": null,
   "webHookURL": null,
   "useSertificate": false,
   "webHookSertPath": null,

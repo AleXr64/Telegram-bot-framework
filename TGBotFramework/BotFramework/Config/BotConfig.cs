@@ -3,7 +3,6 @@
     public class BotConfig
     {
         public string Token { get; set; }
-        public string UserName { get; set; }
         public string WebHookURL { get; set; }
         public bool UseCertificate { get; set; }
         public string WebHookCertPath { get; set; }
