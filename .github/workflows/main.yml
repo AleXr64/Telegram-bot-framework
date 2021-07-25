@@ -19,10 +19,16 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: |
+        cd TGBotFramework/BotFramework
+        dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore
+      run: |
+        cd TGBotFramework/BotFramework
+        dotnet build --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: |
+        cd TGBotFramework/BotFramework.Tests
+        dotnet test --no-build --verbosity normal
