@@ -80,14 +80,14 @@ namespace BotFramework
             foreach(var eventHandler in parametrized)
             {
                 executed = await Exec(eventHandler, param);
-                //if(executed) return;
+                if(executed) return;
             }
 
             foreach(var eventHandler in handlers.Where(x => !x.Parametrized)
                                                 .Where(x => x.Attribute.CanHandleInternal(param)))
             {
                 executed = await Exec(eventHandler, param);
-                //if(executed) return;
+                if(executed) return;
             }
         }
 

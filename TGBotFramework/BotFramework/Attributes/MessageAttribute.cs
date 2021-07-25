@@ -2,6 +2,7 @@
 using BotFramework.Setup;
 using BotFramework.Enums;
 using System;
+using Telegram.Bot.Types;
 
 namespace BotFramework.Attributes
 {
@@ -60,7 +61,7 @@ namespace BotFramework.Attributes
 
             var message = param.Update.Message;
 
-            if(IsMessageMatch(message))
+            if(CanHandleMessage(message))
             {
                 if(MessageFlags.HasFlag(MessageFlag.HasText))
                     return param.IsCommand || IsTextMatch(message.Text);
@@ -70,7 +71,7 @@ namespace BotFramework.Attributes
             return false;
         }
 
-        private bool IsMessageMatch(Telegram.Bot.Types.Message message)
+        private bool CanHandleMessage(Message message)
         {
             if(MessageFlags.HasFlag(MessageFlag.All))
             {

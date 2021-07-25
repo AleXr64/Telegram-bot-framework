@@ -53,8 +53,7 @@ namespace BotFramework
 
         async Task IHostedService.StopAsync(CancellationToken cancellationToken) 
         {
-            if(_config.EnableWebHook)
-                await client.DeleteWebhookAsync(cancellationToken:cancellationToken);
+            await client.DeleteWebhookAsync(cancellationToken:cancellationToken);
             await client.CloseAsync(cancellationToken);
         }
 
@@ -79,12 +78,19 @@ namespace BotFramework
                 factory = new EventHandlerFactory();
                 factory.Find();
 
-                var me = await client.GetMeAsync();
+                var me = await GetMeSafeAsync(cancellationToken);
                 _userName = me.Username;
-            } catch(ArgumentException e)
+            }
+            catch(Exception e) when (e is ArgumentException || e is ArgumentNullException)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            catch(Exception e)
             {
                 Console.WriteLine(e);
             }
+            
 
             if(_config.EnableWebHook)
             {
@@ -112,6 +118,7 @@ namespace BotFramework
             {
                 await Task.Run(async () =>
                 {
+
                     using var scope = _scopeFactory.CreateScope();
                     var wares = new Stack<IMiddleware>();
 
@@ -160,6 +167,21 @@ namespace BotFramework
         async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             Console.WriteLine(exception);
+            await Task.Delay(5000, cancellationToken);//иначе будет долбиться и грузить проц на 100%
+        }
+
+        async Task<User> GetMeSafeAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var user = await BotClient.GetMeAsync(cancellationToken);
+                return user;
+            } catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            await Task.Delay(5000, cancellationToken);
+            return await GetMeSafeAsync(cancellationToken);
         }
 
     }
