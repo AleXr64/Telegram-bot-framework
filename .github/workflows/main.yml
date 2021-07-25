@@ -2,7 +2,7 @@ name: Build & test
 
 on:
   push:
-    paths: |
+    paths:
       - 'TGBotFramework/BotFramework/**'
       - 'TGBotFramework/BotFramework.Tests/**'
       
