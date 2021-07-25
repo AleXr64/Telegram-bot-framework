@@ -25,10 +25,7 @@ namespace BotAsWorkerService
 
         //Answer on any update
         [Update(InChat.All, UpdateFlag.All)]
-        public async Task Update()
-        {
-            await Bot.SendTextMessageAsync(Chat, "Hello");
-        }
+        public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
 
         //Answer on message that contains photo or video
         [Message(InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]
@@ -45,8 +42,6 @@ namespace BotAsWorkerService
             }
             await Bot.SendTextMessageAsync(Chat, $"<code>{user} says: {me.Text}</code>", ParseMode.Html);
         }
-
-
     }
 
     public class MeParam
