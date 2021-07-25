@@ -42,7 +42,7 @@ jobs:
           VERSION_STATIC: ${{env.NBGV_SemVer2}}
 
           # Flag to toggle git tagging, enabled by default
-          # TAG_COMMIT: true
+          TAG_COMMIT: false
 
           # Format of the git tag, [*] gets replaced with actual version
           # TAG_FORMAT: v*
