@@ -6,15 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AleXr64.BotFramework" Version="0.5.11-gef7975d04b" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="Telegram.Bot" Version="16.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="BotFramework">
-      <HintPath>..\..\BotFramework\bin\Debug\net5.0\BotFramework.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
