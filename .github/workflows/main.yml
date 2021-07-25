@@ -1,7 +1,7 @@
 name: .NET
 
 on:
-  [push]
+  - push
 
 jobs:
   build:
@@ -10,14 +10,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+      with:
+        fetch-depth: 0
+        
+    - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '5.0.x'
-    - name: Build with dotnet
-      env:
-        NugetAPIKey: ${{ secrets.NugetAPIKey }}
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
-      run: |
-        cd build 
-        bash build.sh
+        dotnet-version: 5.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore
+      
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
