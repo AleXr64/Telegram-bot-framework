@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using BotFramework.Enums;
 using BotFramework.Setup;
-using BotFramework.Enums;
 using System;
+using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
 
 namespace BotFramework.Attributes

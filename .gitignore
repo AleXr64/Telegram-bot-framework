@@ -329,7 +329,5 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 
-# cake
-/build/tools/
-/build/bin/
-/Examples/
+# config files
+TGBotFramework/Examples/**/appsettings.json
