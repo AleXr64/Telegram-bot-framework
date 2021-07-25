@@ -1,7 +1,9 @@
 name: Build & test
 
 on:
-  - push
+  push:
+    paths: |
+      '/TGBotFramework/BotFramework**'
 
 jobs:
   build:
