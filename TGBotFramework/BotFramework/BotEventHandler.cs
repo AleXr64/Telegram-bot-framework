@@ -79,8 +79,6 @@ namespace BotFramework
 
         public async Task ExecuteHandler(HandlerParams param)
         {
-            //bool executed;
-
             HandlerExec executed;
 
             var availableHandlers = handlers
