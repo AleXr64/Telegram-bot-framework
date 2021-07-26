@@ -43,6 +43,8 @@ namespace BotFramework.Attributes
                     UpdateType.PreCheckoutQuery => UpdateFlags.HasFlag(UpdateFlag.PreCheckoutQuery),
                     UpdateType.Poll => UpdateFlags.HasFlag(UpdateFlag.Poll),
                     UpdateType.PollAnswer => UpdateFlags.HasFlag(UpdateFlag.PollAnswer),
+                    UpdateType.MyChatMember => UpdateFlags.HasFlag(UpdateFlag.MyChatMember),
+                    UpdateType.ChatMember => UpdateFlags.HasFlag(UpdateFlag.ChatMember),
                     _ => false
                 };
         }

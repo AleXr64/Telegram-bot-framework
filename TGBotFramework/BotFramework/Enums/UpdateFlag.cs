@@ -16,6 +16,8 @@ namespace BotFramework.Enums
         PreCheckoutQuery = 1 << 8,
         Poll = 1 << 9,
         PollAnswer = 1 << 10,
+        MyChatMember = 1 << 11,
+        ChatMember = 1 << 12,
 
         All = Message |
               InlineQuery |
@@ -27,6 +29,8 @@ namespace BotFramework.Enums
               ShippingQuery |
               PreCheckoutQuery |
               Poll |
-              PollAnswer
+              PollAnswer |
+              MyChatMember |
+              ChatMember
     }
 }
