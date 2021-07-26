@@ -24,8 +24,8 @@ namespace BotAsWorkerService
         public async Task Task() => await Bot.SendTextMessageAsync(Chat, "I hate snakes");
 
         //Answer on any update
-        /*[Update(InChat.All, UpdateFlag.All)]
-        public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");*/
+        [Update(InChat.All, UpdateFlag.All)]
+        public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
 
         //Answer on message that contains photo or video
         [Message(InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]
