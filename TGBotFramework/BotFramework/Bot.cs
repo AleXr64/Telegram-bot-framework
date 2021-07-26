@@ -80,6 +80,8 @@ namespace BotFramework
 
                 var me = await GetMeSafeAsync(cancellationToken);
                 _userName = me.Username;
+
+                Console.WriteLine($"{Environment.NewLine}    {_userName} started!{Environment.NewLine}");
             }
             catch(Exception e) when (e is ArgumentException || e is ArgumentNullException)
             {

@@ -16,7 +16,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotFramework.Tests", "BotFr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{E59A7AC5-350D-424E-85D8-E83EE12DCD36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotAsWorkerService", "Examples\BotAsWorkerService\BotAsWorkerService.csproj", "{952B094B-E292-4253-9AA9-ECB18C4A5270}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotAsWorkerService", "Examples\BotAsWorkerService\BotAsWorkerService.csproj", "{952B094B-E292-4253-9AA9-ECB18C4A5270}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C35DA4BB-802F-457D-84F5-CDE25C16CC36} = {C35DA4BB-802F-457D-84F5-CDE25C16CC36}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsgDumpBot", "Examples\MsgDumpBot\MsgDumpBot.csproj", "{61B6E441-97DA-479A-82C7-BE3905139C0C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C35DA4BB-802F-457D-84F5-CDE25C16CC36} = {C35DA4BB-802F-457D-84F5-CDE25C16CC36}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +51,12 @@ Global
 		{952B094B-E292-4253-9AA9-ECB18C4A5270}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{952B094B-E292-4253-9AA9-ECB18C4A5270}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{952B094B-E292-4253-9AA9-ECB18C4A5270}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61B6E441-97DA-479A-82C7-BE3905139C0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B6E441-97DA-479A-82C7-BE3905139C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61B6E441-97DA-479A-82C7-BE3905139C0C}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B6E441-97DA-479A-82C7-BE3905139C0C}.Deploy|Any CPU.Build.0 = Debug|Any CPU
+		{61B6E441-97DA-479A-82C7-BE3905139C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61B6E441-97DA-479A-82C7-BE3905139C0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +64,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0374D7A0-B492-4497-A3EE-E85A131B71C8} = {E8A2CE81-FE3A-49D1-87C4-9E0E0AA10F07}
 		{952B094B-E292-4253-9AA9-ECB18C4A5270} = {E59A7AC5-350D-424E-85D8-E83EE12DCD36}
+		{61B6E441-97DA-479A-82C7-BE3905139C0C} = {E59A7AC5-350D-424E-85D8-E83EE12DCD36}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2C8255F6-EA14-464E-A7CB-947B231E0433}

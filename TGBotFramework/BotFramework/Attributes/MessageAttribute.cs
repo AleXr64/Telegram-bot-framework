@@ -10,46 +10,47 @@ namespace BotFramework.Attributes
     {
         internal MessageFlag MessageFlags;
         internal string Text;
+        internal bool IsCommand = false;
         private bool isRegex = false;
+        
 
+        public MessageAttribute()
+        {
+            UpdateFlags = UpdateFlag.Message;
+            InChat = InChat.All;
+            MessageFlags = MessageFlag.All;
+        }
         public MessageAttribute(InChat inChat, string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
+            : this()
         {
             isRegex = regex;
             InChat = inChat;
-            UpdateFlags = UpdateFlag.Message;
             Text = text;
             MessageFlags = messageFlags;
         }
 
 
         public MessageAttribute(string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
+            : this()
         {
             isRegex = regex;
             InChat = InChat.All;
-            UpdateFlags = UpdateFlag.Message;
             Text = text;
             MessageFlags = messageFlags;
         }
 
         public MessageAttribute(InChat inChat, MessageFlag messageFlags)
+            : this()
         {
             InChat = inChat;
-            UpdateFlags = UpdateFlag.Message;
             MessageFlags = messageFlags;
         }
 
         public MessageAttribute(MessageFlag messageFlags)
+            : this()
         {
             InChat = InChat.All;
-            UpdateFlags = UpdateFlag.Message;
             MessageFlags = messageFlags;
-        }
-
-        public MessageAttribute()
-        {
-            InChat = InChat.All;
-            UpdateFlags = UpdateFlag.Message;
-            MessageFlags = MessageFlag.All;
         }
 
         protected override bool CanHandle(HandlerParams param)
@@ -64,8 +65,11 @@ namespace BotFramework.Attributes
             if(CanHandleMessage(message))
             {
                 if(MessageFlags.HasFlag(MessageFlag.HasText))
-                    return param.IsCommand || IsTextMatch(message.Text);
-
+                {
+                    if(param.IsCommand && IsCommand)
+                        return true;
+                    return IsTextMatch(message.Text);
+                }
                 return true;
             }
             return false;
