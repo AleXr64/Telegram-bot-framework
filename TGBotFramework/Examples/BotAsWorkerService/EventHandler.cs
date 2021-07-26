@@ -12,8 +12,12 @@ namespace BotAsWorkerService
     public class EventHandler:BotEventHandler
     {
         // Answer on "/start" command from private messages
-        [Command(InChat.Private, "start")]
-        public async Task Start() => await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
+        [Command(InChat.Private, "start", CommandParseMode.Both), Priority(1)]
+        public async Task Start()
+        {
+            await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
+            return ;
+        }
 
         //Answer on message with "ban" text
         [Message("ban")]
