@@ -11,9 +11,18 @@ namespace BotAsWorkerService
 {
     public class EventHandler:BotEventHandler
     {
-        // Answer on "/start" command from private messages
-        [Command(InChat.Private, "start")]
-        public async Task Start() => await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
+        /* Answer on "/start" command from private messages
+         * Priority:
+         * You can change order of execution for handlers with Priority attribute.
+         * Higher value means higher priority. Default is 0.
+         * Return false to prevent execution handlers with less priority, or return true to continue
+         */
+        [Command(InChat.Private, "start", CommandParseMode.Both), Priority(10)]
+        public async Task<bool> Start()
+        {
+            await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
+            return false;
+        }
 
         //Answer on message with "ban" text
         [Message("ban")]

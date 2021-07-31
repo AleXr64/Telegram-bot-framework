@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using BotFramework.Attributes;
+using BotFramework.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -29,6 +30,7 @@ namespace BotFramework
     internal class EventHandler
     {
         public HandlerAttribute Attribute;
+        public short Priority;
         public MethodInfo Method;
         public Type MethodOwner;
         public ParameterInfo[] Parameters;
@@ -57,11 +59,16 @@ namespace BotFramework
 
                 foreach(var methodInfo in methods)
                 {
+                    var priority = methodInfo.GetCustomAttribute<PriorityAttribute>();
+                    if(priority != null && methodInfo.ReturnType != typeof(Task<bool>))
+                        throw new Exception($"Method {methodInfo.Name} should return Task<bool> when priority attribute used");
+
                     var eHandler = new EventHandler
                         {
                             Attribute = methodInfo.GetCustomAttribute<HandlerAttribute>(),
+                            Priority = (priority == null) ?  (short)0 : priority.Value,
                             Method = methodInfo,
-                            MethodOwner = handler
+                            MethodOwner = handler,
                         };
                     eHandler.Parametrized = eHandler.Attribute is ParametrizedCommand;
                     eHandler.Parameters = methodInfo.GetParameters();
@@ -72,26 +79,27 @@ namespace BotFramework
 
         public async Task ExecuteHandler(HandlerParams param)
         {
-            bool executed;
+            HandlerExec executed;
 
-            var parametrized = handlers.Where(x => x.Parametrized)
-                                       .Where(x => x.Attribute.CanHandleInternal(param))
-                                       .ToList();
-            foreach(var eventHandler in parametrized)
+            var availableHandlers = handlers
+                .Where(x => x.Attribute.CanHandleInternal(param))
+                .OrderByDescending(x => x.Priority)
+                .ToList();
+
+            foreach(var eventHandler in availableHandlers)
             {
                 executed = await Exec(eventHandler, param);
-                if(executed) return;
+                if(executed == HandlerExec.Break) 
+                    return;
+                else if(executed == HandlerExec.Error)
+                {
+                    //TODO: ?
+                }
             }
 
-            foreach(var eventHandler in handlers.Where(x => !x.Parametrized)
-                                                .Where(x => x.Attribute.CanHandleInternal(param)))
-            {
-                executed = await Exec(eventHandler, param);
-                if(executed) return;
-            }
         }
 
-        private async Task<bool> Exec(EventHandler handler, HandlerParams param)
+        private async Task<HandlerExec> Exec(EventHandler handler, HandlerParams param)
         {
             var provider = param.ServiceProvider;
             var method = handler.Method;
@@ -116,7 +124,7 @@ namespace BotFramework
                                          })
                                     .ToArray();
                     else
-                        return false;
+                        return HandlerExec.Error;
                 }
                 else
                 {
@@ -127,17 +135,23 @@ namespace BotFramework
                 {
                     var task = method.Invoke(instance, paramObjects);
                     await (Task)task;
-                    return true;
+                    return HandlerExec.Continue;
+                }
+                else if(method.ReturnParameter.ParameterType == typeof(Task<bool>))
+                {
+                    var task = method.Invoke(instance, paramObjects);
+                    return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
                 }
 
+
                 method.Invoke(instance, paramObjects);
-                return true;
-            } catch(ArgumentException)
+                return HandlerExec.Continue;
+            } catch(ArgumentException e)
             {
-                //debug
+                Console.WriteLine(e);
             }
 
-            return false;
+            return HandlerExec.Error;
         }
     }
 }
