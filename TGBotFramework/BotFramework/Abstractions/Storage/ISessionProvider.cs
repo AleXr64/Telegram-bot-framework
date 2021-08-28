@@ -6,7 +6,7 @@ namespace BotFramework.Abstractions
     {
         IUserSession GetOrCreateSession(IBotUser user);
 
-        void UpdateSession(IUserSession session);
+        void SaveSession(IUserSession session);
 
         void DestroySession(IUserSession session);
     }

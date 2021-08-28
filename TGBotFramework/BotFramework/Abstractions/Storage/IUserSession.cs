@@ -7,6 +7,12 @@ namespace BotFramework.Abstractions.Storage
         IBotUser User { get; }
 
         IReadOnlyDictionary<string, ISessionData> SessionData {  get; }
+
+        void AddOrUpdateData(ISessionData data);
+
+        void RemoveData(ISessionData data);
+
+        void RemoveData(string type);
     }
 
     public interface ISessionData

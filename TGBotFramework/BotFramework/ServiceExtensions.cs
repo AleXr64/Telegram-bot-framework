@@ -2,6 +2,7 @@
 using BotFramework.Abstractions;
 using BotFramework.Middleware;
 using BotFramework.ParameterResolvers;
+using BotFramework.Session;
 using BotFramework.Setup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,32 +13,15 @@ namespace BotFramework
     {
         public static void AddTelegramBot(this IServiceCollection collection)
         {
-            collection.AddTelegramBotParameterParser<long, LongParameter>()
-                      .AddTelegramBotParameterParser<int, IntParameter>()
-                      .AddTelegramBotParameterParser<string, StringParametr>()
-                      .AddTelegramBotParameterParser<bool, BoolParameter>()
-                      .AddTelegramBotParameterParser<float, FloatParameter>()
-                      .AddTelegramBotParameterParser<double, DoubleParameter>()
-                      .AddTelegramBotParameterParser<decimal, DecimalParameter>()
-                      .AddTelegramBotParameterParser<DateTime, DateTimeParameter>()
-                      .AddTelegramBotParameterParser<DateTimeOffset, DateTimeOffsetParameter>()
-                      .AddTelegramBotParameterParser<TimeSpan, TimeSpanParameter>();
+            collection.AddDefaultParameterParsers();
+
             collection.AddSingleton<IBotInstance, Bot>();
             collection.AddTransient<IHostedService>(x => (Bot)x.GetService<IBotInstance>());
         }
 
         public static void AddTelegramBot<T>(this IServiceCollection collection) where T: BotStartup, new()
         {
-            collection.AddTelegramBotParameterParser<long, LongParameter>()
-                      .AddTelegramBotParameterParser<int, IntParameter>()
-                      .AddTelegramBotParameterParser<string, StringParametr>()
-                      .AddTelegramBotParameterParser<bool, BoolParameter>()
-                      .AddTelegramBotParameterParser<float, FloatParameter>()
-                      .AddTelegramBotParameterParser<double, DoubleParameter>()
-                      .AddTelegramBotParameterParser<decimal, DecimalParameter>()
-                      .AddTelegramBotParameterParser<DateTime, DateTimeParameter>()
-                      .AddTelegramBotParameterParser<DateTimeOffset, DateTimeOffsetParameter>()
-                      .AddTelegramBotParameterParser<TimeSpan, TimeSpanParameter>();
+            collection.AddDefaultParameterParsers();
 
             var startup = new T();
 
@@ -65,6 +49,25 @@ namespace BotFramework
         {
             collection.AddScoped<IRawParameterParser<TParam>, TParser>();
             return collection;
+        }
+
+        private static void AddDefaultParameterParsers(this IServiceCollection collection)
+        {
+            collection.AddTelegramBotParameterParser<long, LongParameter>()
+                      .AddTelegramBotParameterParser<int, IntParameter>()
+                      .AddTelegramBotParameterParser<string, StringParametr>()
+                      .AddTelegramBotParameterParser<bool, BoolParameter>()
+                      .AddTelegramBotParameterParser<float, FloatParameter>()
+                      .AddTelegramBotParameterParser<double, DoubleParameter>()
+                      .AddTelegramBotParameterParser<decimal, DecimalParameter>()
+                      .AddTelegramBotParameterParser<DateTime, DateTimeParameter>()
+                      .AddTelegramBotParameterParser<DateTimeOffset, DateTimeOffsetParameter>()
+                      .AddTelegramBotParameterParser<TimeSpan, TimeSpanParameter>();
+        }
+
+        public static void AddTelegramBotInMemorySessions(this IServiceCollection collection)
+        {
+            collection.AddTransient<ISessionProvider, InMemorySessionProvider>();
         }
     }
 }
