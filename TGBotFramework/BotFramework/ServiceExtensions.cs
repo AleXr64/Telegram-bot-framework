@@ -1,4 +1,5 @@
 ﻿using System;
+using BotFramework.Abstractions;
 using BotFramework.Middleware;
 using BotFramework.ParameterResolvers;
 using BotFramework.Setup;
@@ -21,8 +22,8 @@ namespace BotFramework
                       .AddTelegramBotParameterParser<DateTime, DateTimeParameter>()
                       .AddTelegramBotParameterParser<DateTimeOffset, DateTimeOffsetParameter>()
                       .AddTelegramBotParameterParser<TimeSpan, TimeSpanParameter>();
-            collection.AddSingleton<ITelegramBot, Bot>();
-            collection.AddTransient<IHostedService>(x => (Bot)x.GetService<ITelegramBot>());
+            collection.AddSingleton<IBotInstance, Bot>();
+            collection.AddTransient<IHostedService>(x => (Bot)x.GetService<IBotInstance>());
         }
 
         public static void AddTelegramBot<T>(this IServiceCollection collection) where T: BotStartup, new()
@@ -47,8 +48,8 @@ namespace BotFramework
                 collection.AddScoped(typeof(IMiddleware),ware);
             }
 
-            collection.AddSingleton<ITelegramBot, Bot>(x=>new Bot(x, x.GetRequiredService<IServiceScopeFactory>(), typeof(T)));
-            collection.AddTransient<IHostedService>(x => (Bot)x.GetService<ITelegramBot>());
+            collection.AddSingleton<IBotInstance, Bot>(x=>new Bot(x, x.GetRequiredService<IServiceScopeFactory>(), typeof(T)));
+            collection.AddTransient<IHostedService>(x => (Bot)x.GetService<IBotInstance>());
         }
 
         public static IServiceCollection AddTelegramBotParameterParser<TParam, TParser>(
