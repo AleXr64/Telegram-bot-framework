@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions;
+using BotFramework.Abstractions.Storage;
 using BotFramework.Config;
 using BotFramework.Middleware;
 using BotFramework.Setup;
@@ -80,7 +81,7 @@ namespace BotFramework
                 UserName = me.Username;
 
                 Console.WriteLine($"{Environment.NewLine}    {UserName} started!{Environment.NewLine}");
-            } catch(Exception e) when(e is ArgumentException || e is ArgumentNullException)
+            } catch(Exception e) when(e is ArgumentException)
             {
                 Console.WriteLine(e);
 
@@ -120,7 +121,9 @@ namespace BotFramework
 
                                        var wareInstances = scope.ServiceProvider.GetServices<IMiddleware>().ToDictionary(x => x.GetType());
 
-                                       var param = new HandlerParams(botClient, update, scope.ServiceProvider, UserName);
+                                       var userProvider = scope.ServiceProvider.GetService<IUserProvider>() ?? new DefaultUserProvider();
+
+                                       var param = new HandlerParams(this, update, scope.ServiceProvider, UserName, userProvider);
 
                                        var router = new Router(factory);
                                        router.__Setup(null, param);

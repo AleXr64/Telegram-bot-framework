@@ -13,5 +13,7 @@ namespace BotFramework.Abstractions
         IReadOnlyList<IBotRequestHandler> PossibleHandlers { get; }
 
         IBotUser BotUser { get; }
+
+        ISessionProvider SessionProvider { get; }
     }
 }

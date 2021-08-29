@@ -2,89 +2,108 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BotFramework.Abstractions;
+using BotFramework.Abstractions.Storage;
+using BotFramework.Session;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace BotFramework
 {
-    public sealed class HandlerParams
+    public sealed class HandlerParams : IBotRequestContext
     {
         internal readonly IServiceProvider ServiceProvider;
         private readonly string UserName;
 
-        internal HandlerParams(ITelegramBotClient bot, Update update, IServiceProvider serviceProvider, string userName)
+        internal HandlerParams(IBotInstance bot, Update update, IServiceProvider serviceProvider, string userName, IUserProvider userProvider)
         {
             ServiceProvider = serviceProvider;
-            Bot = bot;
+            Instance = bot;
             Update = update;
             UserName = userName;
-            switch(update.Type)
+
+            PrepareChat();
+
+            CheckForCommand();
+
+            BotUser = userProvider.GetUser(From.Id, Chat?.Id ?? From.Id);
+
+            SessionProvider = serviceProvider.GetService<ISessionProvider>() ?? new InMemorySessionProvider();
+        }
+
+        private void PrepareChat()
+        {
+            
+            switch(Update.Type)
             {
                 case UpdateType.Unknown:
                     break;
                 case UpdateType.Message:
-                    From = update.Message.From;
-                    Chat = update.Message.Chat;
+                    From = Update.Message.From;
+                    Chat = Update.Message.Chat;
+
                     break;
                 case UpdateType.InlineQuery:
-                    From = update.InlineQuery.From;
+                    From = Update.InlineQuery.From;
+
                     break;
                 case UpdateType.ChosenInlineResult:
-                    From = update.ChosenInlineResult.From;
+                    From = Update.ChosenInlineResult.From;
+
                     break;
                 case UpdateType.CallbackQuery:
-                    From = update.CallbackQuery.From;
+                    From = Update.CallbackQuery.From;
                     //     var __chat = Bot.GetChatAsync(update.CallbackQuery.ChatInstance);
                     //   __chat.Wait();
                     //     Chat = __chat.Result;
-                    CallbackQuery = update.CallbackQuery;
+                    CallbackQuery = Update.CallbackQuery;
+
                     break;
                 case UpdateType.EditedMessage:
-                    From = update.EditedMessage.From;
-                    Chat = update.EditedMessage.Chat;
+                    From = Update.EditedMessage.From;
+                    Chat = Update.EditedMessage.Chat;
+
                     break;
                 case UpdateType.ChannelPost:
-                    From = update.ChannelPost.From;
-                    Chat = update.ChannelPost.Chat;
+                    From = Update.ChannelPost.From;
+                    Chat = Update.ChannelPost.Chat;
+
                     break;
                 case UpdateType.EditedChannelPost:
-                    From = update.EditedChannelPost.From;
-                    Chat = update.EditedChannelPost.Chat;
+                    From = Update.EditedChannelPost.From;
+                    Chat = Update.EditedChannelPost.Chat;
+
                     break;
                 case UpdateType.ShippingQuery:
-                    From = update.ShippingQuery.From;
+                    From = Update.ShippingQuery.From;
+
                     break;
                 case UpdateType.PreCheckoutQuery:
-                    From = update.PreCheckoutQuery.From;
+                    From = Update.PreCheckoutQuery.From;
+
                     break;
                 case UpdateType.Poll:
-                    break;
+                case UpdateType.PollAnswer:
+                case UpdateType.MyChatMember:
+                case UpdateType.ChatMember:
+                    throw new NotImplementedException($"Not implemented update type! {Update.Type}");
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             if(HasChat)
-                switch(Chat.Type)
-                {
-                    case ChatType.Private:
-                        InChat = InChat.Private;
-                        break;
-                    case ChatType.Group:
-                        InChat = InChat.Public;
-                        break;
-                    case ChatType.Channel:
-                        InChat = InChat.Channel;
-                        break;
-                    case ChatType.Supergroup:
-                        InChat = InChat.Public;
-                        break;
-                    default:
-                        InChat = InChat.All;
-                        break;
-                }
-
-            CheckForCommand();
+            {
+                InChat = Chat.Type switch
+                             {
+                                 ChatType.Private => InChat.Private,
+                                 ChatType.Group => InChat.Public,
+                                 ChatType.Channel => InChat.Channel,
+                                 ChatType.Supergroup => InChat.Public,
+                                 _ => InChat.All
+                             };
+            }
         }
 
         public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
@@ -93,15 +112,28 @@ namespace BotFramework
         public string CommandName { get; private set; } = string.Empty;
         public bool IsCommand { get; private set; }
         public bool IsFullFormCommand { get; private set; } = false;
-        public Chat Chat { get; }
-        public User From { get; }
+        public Chat Chat { get; set; }
+
+        public User From { get; set; }
+
+        public IBotInstance Instance { get; }
+
         public Update Update { get; }
-        public ITelegramBotClient Bot { get; }
+
+        public IReadOnlyList<IBotRequestHandler> PossibleHandlers { get; }
+
+        public IBotUser BotUser { get; private set; }
+
+        public ISessionProvider SessionProvider { get; }
+
+        public ITelegramBotClient Bot => Instance.BotClient;
+
         public bool HasChat => Chat != null;
         public bool HasFrom => From != null;
         public UpdateType Type => Update.Type;
-        public InChat InChat { get; }
-        public CallbackQuery CallbackQuery { get; }
+        public InChat InChat { get; set; }
+
+        public CallbackQuery CallbackQuery { get; set; }
 
         private void CheckForCommand()
         {
@@ -133,6 +165,11 @@ namespace BotFramework
             }
 
             return parameters.Length == CommandParameters.Count;
+        }
+
+        private void MakeUser()
+        {
+
         }
 
         private void GetParam(MethodInfo getServiceMethod, int position, Type parameterType)

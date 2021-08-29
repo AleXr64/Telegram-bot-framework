@@ -1,5 +1,6 @@
 ﻿using System;
 using BotFramework.Abstractions;
+using BotFramework.Abstractions.Storage;
 using BotFramework.Middleware;
 using BotFramework.ParameterResolvers;
 using BotFramework.Session;
@@ -17,6 +18,9 @@ namespace BotFramework
 
             collection.AddSingleton<IBotInstance, Bot>();
             collection.AddTransient<IHostedService>(x => (Bot)x.GetService<IBotInstance>());
+            
+            //won't break existent 0.5 users
+            collection.AddTelegramBotInMemoryStorage();
         }
 
         public static void AddTelegramBot<T>(this IServiceCollection collection) where T: BotStartup, new()
@@ -32,8 +36,11 @@ namespace BotFramework
                 collection.AddScoped(typeof(IMiddleware),ware);
             }
 
-            collection.AddSingleton<IBotInstance, Bot>(x=>new Bot(x, x.GetRequiredService<IServiceScopeFactory>(), typeof(T)));
+            collection.AddSingleton<IBotInstance, Bot>(x => new Bot(x, x.GetRequiredService<IServiceScopeFactory>(), typeof(T)));
             collection.AddTransient<IHostedService>(x => (Bot)x.GetService<IBotInstance>());
+
+            //won't break existent 0.5 users
+            collection.AddTelegramBotInMemoryStorage();
         }
 
         public static IServiceCollection AddTelegramBotParameterParser<TParam, TParser>(
@@ -65,9 +72,10 @@ namespace BotFramework
                       .AddTelegramBotParameterParser<TimeSpan, TimeSpanParameter>();
         }
 
-        public static void AddTelegramBotInMemorySessions(this IServiceCollection collection)
+        public static void AddTelegramBotInMemoryStorage(this IServiceCollection collection)
         {
-            collection.AddTransient<ISessionProvider, InMemorySessionProvider>();
+            collection.AddSingleton<ISessionProvider, InMemorySessionProvider>();
+            collection.AddSingleton<IUserProvider, DefaultUserProvider>();
         }
     }
 }

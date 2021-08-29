@@ -1,4 +1,7 @@
-﻿using BotFramework.Attributes;
+﻿using BotFramework.Abstractions;
+using BotFramework.Abstractions.Storage;
+using BotFramework.Attributes;
+using BotFramework.Session;
 using BotFramework.Setup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -9,6 +12,9 @@ namespace BotFramework.Tests.Attributes
 {
     public class CommandAttributeTest
     {
+        private static IUserProvider _userProvider = new DefaultUserProvider();
+
+        private static ISessionProvider _sessionProvider = new InMemorySessionProvider();
         [Fact]
         public void CanFilterUserName()
         {
@@ -16,7 +22,7 @@ namespace BotFramework.Tests.Attributes
             var command = new ParametrizedCommand("test", CommandParseMode.Both);
             
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
-                                             null, "testbot");
+                                             null, "testbot", _userProvider);
 
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
@@ -34,7 +40,7 @@ namespace BotFramework.Tests.Attributes
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } },
-                                         null, "testbot");
+                                         null, "testbot", _userProvider);
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
         }
@@ -44,7 +50,7 @@ namespace BotFramework.Tests.Attributes
         {
             var command = new ParametrizedCommand("test");
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } }, null,
-                                             string.Empty);
+                                             string.Empty, _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
         }
 
@@ -53,7 +59,7 @@ namespace BotFramework.Tests.Attributes
         {
             var command = new ParametrizedCommand("test");
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
-                                             null, "testbot");
+                                             null, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
         }
 
@@ -70,7 +76,7 @@ namespace BotFramework.Tests.Attributes
                                           Text = "/test@testbot",
                                           Chat = new Chat { Type = ChatType.Channel }
                                       }
-                                  }, null, "testbot");
+                                  }, null, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
             paramses =
@@ -82,7 +88,7 @@ namespace BotFramework.Tests.Attributes
                                           Text = "/test@testbot",
                                           Chat = new Chat { Type = ChatType.Group }
                                       }
-                                  }, null, "testbot");
+                                  }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses =
@@ -94,7 +100,7 @@ namespace BotFramework.Tests.Attributes
                                           Text = "/test@testbot",
                                           Chat = new Chat { Type = ChatType.Supergroup }
                                       }
-                                  }, null, "testbot");
+                                  }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses =
@@ -106,7 +112,7 @@ namespace BotFramework.Tests.Attributes
                                           Text = "/test@testbot",
                                           Chat = new Chat { Type = ChatType.Private }
                                       }
-                                  }, null, "testbot");
+                                  }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
         }
 
@@ -123,7 +129,7 @@ namespace BotFramework.Tests.Attributes
                                           Text = "/test@testbot",
                                           Chat = new Chat { Type = ChatType.Private }
                                       }
-                                  }, null, "testbot");
+                                  }, null, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null,
@@ -134,7 +140,7 @@ namespace BotFramework.Tests.Attributes
                                                  Text = "/test@testbot",
                                                  Chat = new Chat { Type = ChatType.Group }
                                              }
-                                         }, null, "testbot");
+                                         }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null,
@@ -145,7 +151,7 @@ namespace BotFramework.Tests.Attributes
                                                  Text = "/test@testbot",
                                                  Chat = new Chat { Type = ChatType.Supergroup }
                                              }
-                                         }, null, "testbot");
+                                         }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null,
@@ -156,7 +162,7 @@ namespace BotFramework.Tests.Attributes
                                                  Text = "/test@testbot",
                                                  Chat = new Chat { Type = ChatType.Channel }
                                              }
-                                         }, null, "testbot");
+                                         }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
         }
 
@@ -173,7 +179,7 @@ namespace BotFramework.Tests.Attributes
                                           Text = "/test@testbot",
                                           Chat = new Chat { Type = ChatType.Private }
                                       }
-                                  }, null, "testbot");
+                                  }, null, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null,
@@ -184,7 +190,7 @@ namespace BotFramework.Tests.Attributes
                                                  Text = "/test@testbot",
                                                  Chat = new Chat { Type = ChatType.Group }
                                              }
-                                         }, null, "testbot");
+                                         }, null, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null,
@@ -195,7 +201,7 @@ namespace BotFramework.Tests.Attributes
                                                  Text = "/test@testbot",
                                                  Chat = new Chat { Type = ChatType.Supergroup }
                                              }
-                                         }, null, "testbot");
+                                         }, null, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null,
@@ -206,7 +212,7 @@ namespace BotFramework.Tests.Attributes
                                                  Text = "/test@testbot",
                                                  Chat = new Chat { Type = ChatType.Channel }
                                              }
-                                         }, null, "testbot");
+                                         }, null, "testbot", _userProvider);
 
             Assert.False(command.CanHandleInternal(paramses));
         }
