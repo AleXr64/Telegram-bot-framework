@@ -25,6 +25,8 @@ namespace BotFramework.Enums
         HasPoll = 1 << 17,
         HasDice = 1 << 18,
         HasKeyboard = 1 << 19,
+        HasNewChatMembers = 1 << 20,
+        HasLeftChatMember = 1 << 21,
 
         All = HasForward |
               IsReply |
