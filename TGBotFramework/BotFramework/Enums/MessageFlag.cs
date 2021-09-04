@@ -47,6 +47,8 @@ namespace BotFramework.Enums
               HasVenue |
               HasPoll |
               HasDice |
-              HasKeyboard
+              HasKeyboard |
+              HasLeftChatMember |
+              HasNewChatMembers
     }
 }
