@@ -6,13 +6,12 @@ using Telegram.Bot.Types;
 
 namespace BotFramework.Attributes
 {
-    public class MessageAttribute:UpdateAttribute
+    public class MessageAttribute: UpdateAttribute
     {
         internal MessageFlag MessageFlags;
         internal string Text;
         internal bool IsCommand = false;
         private bool isRegex = false;
-        
 
         public MessageAttribute()
         {
@@ -28,7 +27,6 @@ namespace BotFramework.Attributes
             Text = text;
             MessageFlags = messageFlags;
         }
-
 
         public MessageAttribute(string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
             : this()
@@ -88,35 +86,36 @@ namespace BotFramework.Attributes
                     continue;
 
                 var ret = f switch
-                {
-                    MessageFlag.HasForward      => message.ForwardFrom != null || message.ForwardFromChat != null,
-                    MessageFlag.IsReply         => message.ReplyToMessage != null,
-                    MessageFlag.HasText         => !string.IsNullOrEmpty(message.Text),
-                    MessageFlag.HasEntity       => message.Entities != null || message.CaptionEntities != null,
-                    MessageFlag.HasVoice        => message.Voice != null,
-                    MessageFlag.HasAudio        => message.Audio != null,
-                    MessageFlag.HasVideo        => message.Video != null,
-                    MessageFlag.HasDocument     => message.Document != null,
-                    MessageFlag.HasAnimation    => message.Animation != null,
-                    MessageFlag.HasGame         => message.Game != null,
-                    MessageFlag.HasCaption      => !string.IsNullOrEmpty(message.Caption),
-                    MessageFlag.HasPhoto        => message.Photo != null,
-                    MessageFlag.HasSticker      => message.Sticker != null,
-                    MessageFlag.HasVideoNote    => message.VideoNote != null,
-                    MessageFlag.HasContact      => message.Contact != null,
-                    MessageFlag.HasLocation     => message.Location != null,
-                    MessageFlag.HasVenue        => message.Venue != null,
-                    MessageFlag.HasPoll         => message.Poll != null,
-                    MessageFlag.HasDice         => message.Dice != null,
-                    MessageFlag.HasKeyboard     => message.ReplyMarkup != null,
-                    _ => false
-                };
+                    {
+                        MessageFlag.HasForward => message.ForwardFrom != null || message.ForwardFromChat != null,
+                        MessageFlag.IsReply => message.ReplyToMessage != null,
+                        MessageFlag.HasText => !string.IsNullOrEmpty(message.Text),
+                        MessageFlag.HasEntity => message.Entities != null || message.CaptionEntities != null,
+                        MessageFlag.HasVoice => message.Voice != null,
+                        MessageFlag.HasAudio => message.Audio != null,
+                        MessageFlag.HasVideo => message.Video != null,
+                        MessageFlag.HasDocument => message.Document != null,
+                        MessageFlag.HasAnimation => message.Animation != null,
+                        MessageFlag.HasGame => message.Game != null,
+                        MessageFlag.HasCaption => !string.IsNullOrEmpty(message.Caption),
+                        MessageFlag.HasPhoto => message.Photo != null,
+                        MessageFlag.HasSticker => message.Sticker != null,
+                        MessageFlag.HasVideoNote => message.VideoNote != null,
+                        MessageFlag.HasContact => message.Contact != null,
+                        MessageFlag.HasLocation => message.Location != null,
+                        MessageFlag.HasVenue => message.Venue != null,
+                        MessageFlag.HasPoll => message.Poll != null,
+                        MessageFlag.HasDice => message.Dice != null,
+                        MessageFlag.HasKeyboard => message.ReplyMarkup != null,
+                        MessageFlag.HasNewChatMembers => message.NewChatMembers != null,
+                        MessageFlag.HasLeftChatMember => message.LeftChatMember != null,
+                        _ => false
+                    };
                 if(ret)
                     return true;
             }
             return false;
         }
-
 
         private bool IsTextMatch(string text)
         {
@@ -132,7 +131,6 @@ namespace BotFramework.Attributes
 
             return isRegex ? Regex.IsMatch(text, Text) : Text.Equals(text);
         }
-
 
     }
 }
