@@ -107,7 +107,7 @@ namespace BotFramework.Attributes
                         MessageFlag.HasPoll => message.Poll != null,
                         MessageFlag.HasDice => message.Dice != null,
                         MessageFlag.HasKeyboard => message.ReplyMarkup != null,
-                        MessageFlag.HasNewChatMembers => message.NewChatMembers != null,
+                        MessageFlag.HasNewChatMembers => message.NewChatMembers != null && message.NewChatMembers?.Length != 0,
                         MessageFlag.HasLeftChatMember => message.LeftChatMember != null,
                         _ => false
                     };
