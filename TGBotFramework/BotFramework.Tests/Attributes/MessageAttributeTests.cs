@@ -1,8 +1,10 @@
-﻿using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.Storage;
 using BotFramework.Attributes;
 using BotFramework.Enums;
+using BotFramework.Setup;
 using Telegram.Bot.Types;
 using Xunit;
+using Message=Telegram.Bot.Types.Message;
 
 namespace BotFramework.Tests.Attributes
 {
@@ -58,5 +60,55 @@ namespace BotFramework.Tests.Attributes
             attribute = new MessageAttribute("/test");
             Assert.False(attribute.CanHandleInternal(paramses));
         }
+
+        [Fact]
+        public void CanHandleNewChatMembers()
+        {
+            var handles = new HandlerParams(null, new Update()
+                {
+                    Message = new Message()
+                        {
+                            NewChatMembers = new User[]
+                                {
+                                    new User()
+                                        {
+                                            Id = 12345,
+                                            FirstName = "Fulan",
+                                            Username = "fulan",
+                                            LastName = "Bin Fulan"
+                                        }
+                                }
+                        }
+                }, null, "testbot", _userProvider);
+
+            var attribute = new MessageAttribute(MessageFlag.HasNewChatMembers);
+            Assert.True(attribute.CanHandleInternal(handles));
+
+        }
+
+        [Fact]
+        public void CanHandleLeftChatMember()
+        {
+            var handles = new HandlerParams(null, new Update()
+                {
+                    Message = new Message()
+                        {
+                            LeftChatMember =
+                                new User()
+                                    {
+                                        Id = 12345,
+                                        FirstName = "Fulan",
+                                        Username = "fulan",
+                                        LastName = "Bin Fulan"
+                                    }
+
+                        }
+                }, null, "testbot", _userProvider);
+
+            var attribute = new MessageAttribute(MessageFlag.HasLeftChatMember);
+            Assert.True(attribute.CanHandleInternal(handles));
+
+        }
+
     }
 }
