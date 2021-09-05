@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using BotFramework.Abstractions;
 using BotFramework.Attributes;
 using BotFramework.Enums;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +25,9 @@ namespace BotFramework
         protected bool IsCallbackQuery => CallbackQuery != null;
         protected CallbackQuery CallbackQuery => _params.CallbackQuery;
 
-        internal void __Instantiate(HandlerParams param) { _params = param; }
+        protected IBotRequestContext Context => _params;
+
+        internal void __Instantiate(IBotRequestContext requestContext) { _params = requestContext as HandlerParams; }
     }
 
     internal class EventHandler
