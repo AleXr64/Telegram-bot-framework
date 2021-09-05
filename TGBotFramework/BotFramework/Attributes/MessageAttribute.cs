@@ -1,6 +1,7 @@
 ﻿using BotFramework.Enums;
 using BotFramework.Setup;
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
 
@@ -107,7 +108,7 @@ namespace BotFramework.Attributes
                         MessageFlag.HasPoll => message.Poll != null,
                         MessageFlag.HasDice => message.Dice != null,
                         MessageFlag.HasKeyboard => message.ReplyMarkup != null,
-                        MessageFlag.HasNewChatMembers => message.NewChatMembers != null && message.NewChatMembers?.Length != 0,
+                        MessageFlag.HasNewChatMembers => message.NewChatMembers?.Any() == true,
                         MessageFlag.HasLeftChatMember => message.LeftChatMember != null,
                         _ => false
                     };
