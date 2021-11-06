@@ -6,6 +6,7 @@ using BotFramework.Setup;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.Storage;
+using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
 namespace MsgDumpBot
