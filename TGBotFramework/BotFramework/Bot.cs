@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions;
@@ -67,7 +68,10 @@ namespace BotFramework
                 {
                     var proxy = new HttpToSocks5Proxy(_config.SOCKS5Address, _config.SOCKS5Port, _config.SOCKS5User,
                                                       _config.SOCKS5Password);
-                    client = new TelegramBotClient(_config.Token, proxy);
+                    var handler = new HttpClientHandler { Proxy = proxy };
+                    var httpClient = new HttpClient(handler, true);
+
+                    client = new TelegramBotClient(_config.Token, httpClient);
                 }
                 else
                 {
@@ -106,7 +110,14 @@ namespace BotFramework
             }
             else
             {
-                client.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), cancellationToken);
+                // v16.x
+                // client.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), cancellationToken);
+
+                // v17.x
+                await client.DeleteWebhookAsync(false, cancellationToken);
+
+                var receiverOptions = new ReceiverOptions { AllowedUpdates = { }, ThrowPendingUpdates = false };
+                client.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, cancellationToken);
             }
         }
 

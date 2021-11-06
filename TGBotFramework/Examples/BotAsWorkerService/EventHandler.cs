@@ -6,6 +6,7 @@ using BotFramework.Setup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using BotFramework.Enums;
+using Telegram.Bot;
 
 namespace BotAsWorkerService
 {
