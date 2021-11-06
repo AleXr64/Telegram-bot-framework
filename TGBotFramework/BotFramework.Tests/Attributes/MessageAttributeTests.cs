@@ -4,7 +4,7 @@ using BotFramework.Enums;
 using BotFramework.Setup;
 using Telegram.Bot.Types;
 using Xunit;
-using Message=Telegram.Bot.Types.Message;
+using Message = Telegram.Bot.Types.Message;
 
 namespace BotFramework.Tests.Attributes
 {
@@ -107,8 +107,33 @@ namespace BotFramework.Tests.Attributes
 
             var attribute = new MessageAttribute(MessageFlag.HasLeftChatMember);
             Assert.True(attribute.CanHandleInternal(handles));
-
         }
 
+        [Fact]
+        public void CanHandleVoiceChatTest()
+        {
+            var handles = new HandlerParams(
+                null,
+                new Update()
+                    {
+                        Message = new Message()
+                            {
+                                VoiceChatScheduled = new VoiceChatScheduled() { },
+                                VoiceChatStarted = new VoiceChatStarted() { },
+                                VoiceChatEnded = new VoiceChatEnded() { },
+                                VoiceChatParticipantsInvited = new VoiceChatParticipantsInvited() { }
+                            }
+                    }, null, "testbot", _userProvider);
+
+            var voiceScheduledAttribute = new MessageAttribute(MessageFlag.HasVoiceChatScheduled);
+            var voiceStartedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatStarted);
+            var voiceEndedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatEnded);
+            var voiceInvitedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatParticipantsInvited);
+
+            Assert.True(voiceScheduledAttribute.CanHandleInternal(handles));
+            Assert.True(voiceStartedAttribute.CanHandleInternal(handles));
+            Assert.True(voiceEndedAttribute.CanHandleInternal(handles));
+            Assert.True(voiceInvitedAttribute.CanHandleInternal(handles));
+        }
     }
 }

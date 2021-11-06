@@ -27,6 +27,10 @@ namespace BotFramework.Enums
         HasKeyboard = 1 << 19,
         HasNewChatMembers = 1 << 20,
         HasLeftChatMember = 1 << 21,
+        HasVoiceChatScheduled = 1 << 22,
+        HasVoiceChatStarted = 1 << 23,
+        HasVoiceChatEnded = 1 << 24,
+        HasVoiceChatParticipantsInvited = 1 << 25,
 
         All = HasForward |
               IsReply |
@@ -49,6 +53,10 @@ namespace BotFramework.Enums
               HasDice |
               HasKeyboard |
               HasLeftChatMember |
-              HasNewChatMembers
+              HasNewChatMembers |
+              HasVoiceChatScheduled |
+              HasVoiceChatStarted |
+              HasVoiceChatEnded |
+              HasVoiceChatParticipantsInvited,
     }
 }
