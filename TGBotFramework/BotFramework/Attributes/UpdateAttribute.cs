@@ -1,7 +1,4 @@
-﻿using System;
-using BotFramework.Enums;
-using BotFramework.Setup;
-using BotFramework.Utils;
+﻿using BotFramework.Enums;
 using Telegram.Bot.Types.Enums;
 
 namespace BotFramework.Attributes
@@ -9,22 +6,23 @@ namespace BotFramework.Attributes
     public class UpdateAttribute:HandlerAttribute
     {
         internal UpdateFlag UpdateFlags;
-        internal InChat InChat;
+        internal InChat InChatFlags;
 
         public UpdateAttribute()
         {
-            InChat = InChat.All;
+            InChatFlags = InChat.All;
             UpdateFlags = UpdateFlag.All;
         }
-        public UpdateAttribute(InChat inChat, UpdateFlag updateFlags)
+        public UpdateAttribute(InChat inChatFlags, UpdateFlag updateFlags)
         {
-            InChat = inChat;
+            InChatFlags = inChatFlags;
             UpdateFlags = updateFlags;
         }
 
         protected override bool CanHandle(HandlerParams param)
         {
-            if(InChat != InChat.All && param.InChat != InChat)
+
+            if(!CanHandleChat(param.InChat))
                 return false;
 
             if(UpdateFlags.HasFlag(UpdateFlag.All))
@@ -48,5 +46,20 @@ namespace BotFramework.Attributes
                     _ => false
                 };
         }
+
+        private bool CanHandleChat(InChat flags)
+        {
+            if(InChatFlags == InChat.All)
+                return true;
+
+            return flags switch
+                {
+                    InChat.Public => InChatFlags.HasFlag(InChat.Public),
+                    InChat.Private => InChatFlags.HasFlag(InChat.Private),
+                    InChat.Channel => InChatFlags.HasFlag(InChat.Channel),
+                    _ => false
+                };
+        }
+
     }
 }

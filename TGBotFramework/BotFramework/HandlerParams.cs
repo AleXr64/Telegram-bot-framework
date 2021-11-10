@@ -1,9 +1,9 @@
-﻿using BotFramework.Setup;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Enums;
 using BotFramework.Session;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -28,7 +28,8 @@ namespace BotFramework
 
             CheckForCommand();
 
-            BotUser = userProvider.GetUser(From.Id, Chat?.Id ?? From.Id);
+            if(HasFrom)
+                BotUser = userProvider.GetUser(From.Id, Chat?.Id ?? From.Id);
 
             SessionProvider = serviceProvider.GetService<ISessionProvider>() ?? new InMemorySessionProvider();
         }
@@ -88,7 +89,7 @@ namespace BotFramework
                 case UpdateType.PollAnswer:
                 case UpdateType.MyChatMember:
                 case UpdateType.ChatMember:
-                    throw new NotImplementedException($"Not implemented update type! {Update.Type}");
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -140,7 +141,7 @@ namespace BotFramework
             if(Update.Type != UpdateType.Message)
                 return;
 
-            if(Update.Message.Type != MessageType.Text)
+            if(Update.Message?.Type != MessageType.Text)
                 return;
 
             IsCommand = Update.Message.Text.IsCommand();

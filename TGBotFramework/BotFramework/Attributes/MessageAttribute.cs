@@ -17,14 +17,14 @@ namespace BotFramework.Attributes
         public MessageAttribute()
         {
             UpdateFlags = UpdateFlag.Message;
-            InChat = InChat.All;
+            InChatFlags = InChat.All;
             MessageFlags = MessageFlag.All;
         }
-        public MessageAttribute(InChat inChat, string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
+        public MessageAttribute(InChat inChatFlags, string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
             : this()
         {
             isRegex = regex;
-            InChat = inChat;
+            InChatFlags = inChatFlags;
             Text = text;
             MessageFlags = messageFlags;
         }
@@ -33,22 +33,22 @@ namespace BotFramework.Attributes
             : this()
         {
             isRegex = regex;
-            InChat = InChat.All;
+            InChatFlags = InChat.All;
             Text = text;
             MessageFlags = messageFlags;
         }
 
-        public MessageAttribute(InChat inChat, MessageFlag messageFlags)
+        public MessageAttribute(InChat inChatFlags, MessageFlag messageFlags)
             : this()
         {
-            InChat = inChat;
+            InChatFlags = inChatFlags;
             MessageFlags = messageFlags;
         }
 
         public MessageAttribute(MessageFlag messageFlags)
             : this()
         {
-            InChat = InChat.All;
+            InChatFlags = InChat.All;
             MessageFlags = messageFlags;
         }
 

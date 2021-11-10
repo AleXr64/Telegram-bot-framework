@@ -189,6 +189,7 @@ namespace BotFramework
             } catch(Exception e)
             {
                 Console.WriteLine(e);
+
             }
 
             await Task.Delay(5000, cancellationToken);

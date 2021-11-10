@@ -1,7 +1,9 @@
+using System;
 using BotFramework.Abstractions.Storage;
 using BotFramework.Attributes;
 using BotFramework.Enums;
 using BotFramework.Setup;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot.Types;
 using Xunit;
 using Message=Telegram.Bot.Types.Message;
@@ -11,19 +13,20 @@ namespace BotFramework.Tests.Attributes
     public class MessageAttributeTests
     {
         private static readonly IUserProvider _userProvider = new DefaultUserProvider();
+        private static IServiceProvider _serviceProvider = new ServiceCollection().BuildServiceProvider();
 
         [Fact]
         public void CanHandleVoiceMessages()
         {
             var paramses = new HandlerParams(null, new Update { Message = new Message { Voice = new Voice() } },
-                                             null, "testbot", _userProvider);
+                                             _serviceProvider, "testbot", _userProvider);
 
             var attribute = new MessageAttribute(MessageFlag.HasVoice);
 
             Assert.True(attribute.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null, new Update { Message = new Message { Animation = new Animation() } },
-                                         null, "testbot", _userProvider);
+                                         _serviceProvider, "testbot", _userProvider);
 
             Assert.False(attribute.CanHandleInternal(paramses));
         }
@@ -32,14 +35,14 @@ namespace BotFramework.Tests.Attributes
         public void CanHandleMultiContent()
         {
             var paramses = new HandlerParams(null, new Update { Message = new Message { Voice = new Voice(), Game = new Game() } },
-                                             null, "testbot", _userProvider);
+                                             _serviceProvider, "testbot", _userProvider);
 
             var attribute = new MessageAttribute(MessageFlag.HasVoice);
 
             Assert.True(attribute.CanHandleInternal(paramses));
 
             paramses = new HandlerParams(null, new Update { Poll = new Poll() },
-                                         null, "testbot", _userProvider);
+                                         _serviceProvider, "testbot", _userProvider);
 
             Assert.False(attribute.CanHandleInternal(paramses));
         }
@@ -48,7 +51,7 @@ namespace BotFramework.Tests.Attributes
         public void CanHandleCaptionMessages()
         {
             var paramses = new HandlerParams(null, new Update { Message = new Message { Caption = "Blah", Voice = new Voice() } },
-                                             null, "testbot", _userProvider);
+                                             _serviceProvider, "testbot", _userProvider);
 
             var attribute = new MessageAttribute(MessageFlag.HasCaption);
 
@@ -79,7 +82,7 @@ namespace BotFramework.Tests.Attributes
                                         }
                                 }
                         }
-                }, null, "testbot", _userProvider);
+                }, _serviceProvider, "testbot", _userProvider);
 
             var attribute = new MessageAttribute(MessageFlag.HasNewChatMembers);
             Assert.True(attribute.CanHandleInternal(handles));
@@ -103,7 +106,7 @@ namespace BotFramework.Tests.Attributes
                                     }
 
                         }
-                }, null, "testbot", _userProvider);
+                }, _serviceProvider, "testbot", _userProvider);
 
             var attribute = new MessageAttribute(MessageFlag.HasLeftChatMember);
             Assert.True(attribute.CanHandleInternal(handles));

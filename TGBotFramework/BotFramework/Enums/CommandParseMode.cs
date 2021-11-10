@@ -1,4 +1,4 @@
-﻿namespace BotFramework.Setup
+﻿namespace BotFramework.Enums
 {
     /// <summary>
     ///     Consider the user name in the command or not

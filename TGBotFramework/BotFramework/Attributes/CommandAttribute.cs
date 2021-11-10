@@ -16,11 +16,11 @@ namespace BotFramework.Attributes
         /// <summary>
         ///     Marks method as handler for command without parameters
         /// </summary>
-        /// <param name="inChat">Which chat type for handle <see cref="InChat" /></param>
+        /// <param name="inChatFlags">Which chat type for handle <see cref="InChat" /></param>
         /// <param name="text">Command name</param>
-        public CommandAttribute(InChat inChat, string text) : this()
+        public CommandAttribute(InChat inChatFlags, string text) : this()
         {
-            InChat = inChat;
+            InChatFlags = inChatFlags;
             Text = text;
             _mode = CommandParseMode.WithUsername;
         }
@@ -32,7 +32,7 @@ namespace BotFramework.Attributes
         public CommandAttribute(string text) : this()
         {
             Text = text;
-            InChat = InChat.All;
+            InChatFlags = InChat.All;
             _mode = CommandParseMode.WithUsername;
         }
 
@@ -44,19 +44,19 @@ namespace BotFramework.Attributes
         public CommandAttribute(string text, CommandParseMode parseMode) : this()
         {
             Text = text;
-            InChat = InChat.All;
+            InChatFlags = InChat.All;
             _mode = parseMode;
         }
 
         /// <summary>
         ///     Marks method as handler for command without parameters
         /// </summary>
-        /// <param name="inChat">>Which chat type for handle <see cref="InChat" /></param>
+        /// <param name="inChatFlags">>Which chat type for handle <see cref="InChat" /></param>
         /// <param name="text">Command name</param>
         /// <param name="parseMode">Command parse mode <see cref="CommandParseMode" /></param>
-        public CommandAttribute(InChat inChat, string text, CommandParseMode parseMode) : this()
+        public CommandAttribute(InChat inChatFlags, string text, CommandParseMode parseMode) : this()
         {
-            InChat = inChat;
+            InChatFlags = inChatFlags;
             Text = text;
             _mode = parseMode;
         }

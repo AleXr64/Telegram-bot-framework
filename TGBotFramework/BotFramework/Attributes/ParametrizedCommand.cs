@@ -1,4 +1,4 @@
-﻿using BotFramework.Setup;
+﻿using BotFramework.Enums;
 
 namespace BotFramework.Attributes
 {

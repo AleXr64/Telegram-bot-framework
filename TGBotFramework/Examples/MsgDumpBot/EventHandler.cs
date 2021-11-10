@@ -2,10 +2,10 @@
 using System.Linq;
 using BotFramework;
 using BotFramework.Attributes;
-using BotFramework.Setup;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Enums;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
