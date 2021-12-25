@@ -110,6 +110,16 @@ namespace BotFramework.Attributes
                         MessageFlag.HasKeyboard => message.ReplyMarkup != null,
                         MessageFlag.HasNewChatMembers => message.NewChatMembers?.Any() == true,
                         MessageFlag.HasLeftChatMember => message.LeftChatMember != null,
+                        MessageFlag.HasNewChatTitle => !string.IsNullOrEmpty(message.NewChatTitle),
+                        MessageFlag.HasNewChatPhoto => message.NewChatPhoto != null,
+                        MessageFlag.HasDeleteChatPhoto => message.DeleteChatPhoto,
+                        MessageFlag.HasGroupChatCreated => message.GroupChatCreated,
+                        MessageFlag.HasSupergroupChatCreated => message.SupergroupChatCreated,
+                        MessageFlag.HasPinnedMessage => message.PinnedMessage != null,
+                        MessageFlag.HasVoiceChatScheduled => message.VoiceChatScheduled != null,
+                        MessageFlag.HasVoiceChatStarted => message.VoiceChatStarted != null,
+                        MessageFlag.HasVoiceChatEnded => message.VoiceChatEnded != null,
+                        MessageFlag.HasVoiceChatParticipantsInvited => message.VoiceChatParticipantsInvited != null,
                         _ => false
                     };
                 if(ret)
