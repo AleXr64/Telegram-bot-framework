@@ -86,7 +86,7 @@ namespace BotFramework.Attributes
                 if(!MessageFlags.HasFlag(f))
                     continue;
 
-                var ret = f switch
+                bool ret = f switch
                     {
                         MessageFlag.HasForward => message.ForwardFrom != null || message.ForwardFromChat != null,
                         MessageFlag.IsReply => message.ReplyToMessage != null,
@@ -112,9 +112,9 @@ namespace BotFramework.Attributes
                         MessageFlag.HasLeftChatMember => message.LeftChatMember != null,
                         MessageFlag.HasNewChatTitle => !string.IsNullOrEmpty(message.NewChatTitle),
                         MessageFlag.HasNewChatPhoto => message.NewChatPhoto != null,
-                        MessageFlag.HasDeleteChatPhoto => message.DeleteChatPhoto,
-                        MessageFlag.HasGroupChatCreated => message.GroupChatCreated,
-                        MessageFlag.HasSupergroupChatCreated => message.SupergroupChatCreated,
+                        MessageFlag.HasDeleteChatPhoto => message.DeleteChatPhoto != null,
+                        MessageFlag.HasGroupChatCreated => message.GroupChatCreated != null,
+                        MessageFlag.HasSupergroupChatCreated => message.SupergroupChatCreated != null,
                         MessageFlag.HasPinnedMessage => message.PinnedMessage != null,
                         MessageFlag.HasVoiceChatScheduled => message.VoiceChatScheduled != null,
                         MessageFlag.HasVoiceChatStarted => message.VoiceChatStarted != null,
