@@ -52,6 +52,13 @@ namespace BotAsWorkerService
             }
             await Bot.SendTextMessageAsync(Chat, $"<code>{user} says: {me.Text}</code>", ParseMode.Html);
         }
+
+        [ParametrizedCommand("status", CommandParseMode.Both)]
+        public async Task Status(int status)
+        {
+            await Bot.SendTextMessageAsync(Chat, "status " + status);
+        }
+        
     }
 
     public class MeParam
