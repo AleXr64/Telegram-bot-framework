@@ -48,12 +48,22 @@ namespace BotFramework
         {
             var knowHandlers = new List<Type>();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            
+            
+            var loadedAssemblies = new List<Assembly>();
             foreach(var assembly in assemblies)
                 try
                 {
+                    //workaround for duplicated assemblies
+                    if(loadedAssemblies.Any(x=> 
+                                                x.FullName == null 
+                                                || x.FullName.Equals(assembly.FullName)))
+                        continue;
+                    
                     var types = assembly.GetTypes()
                                         .Where(x => !x.IsAbstract && x.IsSubclassOf(typeof(BotEventHandler)));
                     knowHandlers.AddRange(types);
+                    loadedAssemblies.Add(assembly);
                 } catch(ReflectionTypeLoadException) { }
 
             foreach(var handler in knowHandlers)

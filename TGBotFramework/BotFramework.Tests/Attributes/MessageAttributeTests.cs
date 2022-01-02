@@ -126,7 +126,7 @@ namespace BotFramework.Tests.Attributes
                                 VoiceChatEnded = new VoiceChatEnded() { },
                                 VoiceChatParticipantsInvited = new VoiceChatParticipantsInvited() { }
                             }
-                    }, null, "testbot", _userProvider);
+                    }, _serviceProvider, "testbot", _userProvider);
 
             var voiceScheduledAttribute = new MessageAttribute(MessageFlag.HasVoiceChatScheduled);
             var voiceStartedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatStarted);
