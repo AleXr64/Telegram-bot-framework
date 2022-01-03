@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BotFramework.Abstractions;
 using BotFramework.Attributes;
 using BotFramework.Enums;
+using BotFramework.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -47,23 +48,18 @@ namespace BotFramework
         public void Find()
         {
             var knowHandlers = new List<Type>();
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            
-            
-            var loadedAssemblies = new List<Assembly>();
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                                      .Where(x => x.FullName != null)
+                                      .DistinctBy(x => x.FullName); //workaround for duplicated assemblies
+
+
             foreach(var assembly in assemblies)
                 try
                 {
-                    //workaround for duplicated assemblies
-                    if(loadedAssemblies.Any(x=> 
-                                                x.FullName == null 
-                                                || x.FullName.Equals(assembly.FullName)))
-                        continue;
-                    
                     var types = assembly.GetTypes()
                                         .Where(x => !x.IsAbstract && x.IsSubclassOf(typeof(BotEventHandler)));
                     knowHandlers.AddRange(types);
-                    loadedAssemblies.Add(assembly);
+
                 } catch(ReflectionTypeLoadException) { }
 
             foreach(var handler in knowHandlers)
@@ -102,11 +98,13 @@ namespace BotFramework
             foreach(var eventHandler in availableHandlers)
             {
                 executed = await Exec(eventHandler, param);
-                if(executed == HandlerExec.Break) 
-                    return;
-                else if(executed == HandlerExec.Error)
+                switch(executed)
                 {
-                    //TODO: ?
+                    case HandlerExec.Break:
+                        return;
+                    case HandlerExec.Error:
+                        //TODO: ?
+                        break;
                 }
             }
 
@@ -150,11 +148,12 @@ namespace BotFramework
                     await (Task)task;
                     return HandlerExec.Continue;
                 }
-                else if(method.ReturnParameter.ParameterType == typeof(Task<bool>))
-                {
-                    var task = method.Invoke(instance, paramObjects);
-                    return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
-                }
+                else
+                    if(method.ReturnParameter.ParameterType == typeof(Task<bool>))
+                    {
+                        var task = method.Invoke(instance, paramObjects);
+                        return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
+                    }
 
 
                 method.Invoke(instance, paramObjects);
