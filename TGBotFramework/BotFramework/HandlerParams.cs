@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
 using BotFramework.Enums;
 using BotFramework.Session;
+using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -107,12 +110,12 @@ namespace BotFramework
             }
         }
 
-        public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
-        public string[] CommandArgs { get; private set; } = { string.Empty };
+        public List<CommandParameter> CommandParameters { get; } = new();
 
-        public string CommandName { get; private set; } = string.Empty;
-        public bool IsCommand { get; private set; }
-        public bool IsFullFormCommand { get; private set; } = false;
+        public List<Command> Commands { get; private set; } = new();
+        public ParametrizedCommand ParametrizedCmd { get; private set; }
+        public bool IsParametrizedCommand { get; private set; }
+        public bool HasCommands { get; private set; }
         public Chat Chat { get; set; }
 
         public User From { get; set; }
@@ -138,23 +141,64 @@ namespace BotFramework
 
         private void CheckForCommand()
         {
-            if(Update.Type != UpdateType.Message)
+            var message = Update.Message;
+            if(message == null || Update.Type != UpdateType.Message || message.Caption == null && message.Type != MessageType.Text)
                 return;
 
-            if(Update.Message?.Type != MessageType.Text)
+            MessageEntity[] ents;
+
+            if(message.Caption == null)
+                ents = message.Entities?.Where((x, i) => 
+                                                   x.Type == MessageEntityType.BotCommand
+                                                   && CommandHelper.IsMyCommand(message.EntityValues?.ElementAtOrDefault(i), UserName))
+                              .ToArray();
+            else
+                ents = message.CaptionEntities?.Where((x, i) => 
+                                                          x.Type == MessageEntityType.BotCommand
+                                                          &&
+                                                          CommandHelper.IsMyCommand(message.CaptionEntityValues?.ElementAtOrDefault(i), UserName))
+                              .ToArray();
+
+            if(ents == null || ents.Length == 0)
                 return;
 
-            IsCommand = Update.Message.Text.IsCommand();
-            if(IsCommand)
+            IsParametrizedCommand = ents.Length == 1 && ents.First()?.Offset == 0;
+            if(IsParametrizedCommand)
             {
-                IsFullFormCommand = Update.Message.Text.IsCommand(UserName);
-                CommandName = Update.Message.Text.GetCommandName(IsFullFormCommand ? UserName : "");
-                CommandArgs = Update.Message.Text.GetCommandArgs();
+                var fulltext = message.EntityValues?.FirstOrDefault() ??
+                               message.CaptionEntityValues?.FirstOrDefault();
+
+                var ent = message.Entities?.FirstOrDefault() ?? message.CaptionEntities?.FirstOrDefault();
+                ParametrizedCmd = new ParametrizedCommand
+                    {
+                        FullText = fulltext,
+                        IsFullCommand = fulltext.Contains('@'),
+                        Length = ent.Length,
+                        Offset = ent.Offset,
+                        Name = CommandHelper.GetShortName(fulltext),
+                        Args = CommandHelper.GetCommandArgs(message.Text ?? message.Caption)
+                    };
+            }
+
+            HasCommands = true;
+            foreach(var ent in ents)
+            {
+                var fulltext = CommandHelper.GetCommand(message.Text ?? message.Caption, ent.Offset, ent.Length);
+                Commands.Add(new Command()
+                    {
+                        FullText = fulltext,
+                        IsFullCommand = fulltext.Contains('@'),
+                        Length = ent.Length,
+                        Name = CommandHelper.GetShortName(fulltext),
+                        Offset = ent.Offset
+                    });
             }
         }
 
         internal bool TryParseParams(ParameterInfo[] parameters)
         {
+            if(!IsParametrizedCommand)
+                return true;
             foreach(var parameterInfo in parameters)
             {
                 var position = parameterInfo.Position;
@@ -187,7 +231,7 @@ namespace BotFramework
                     var defaultInstance =
                         parser.GetType().GetMethod("DefaultInstance")?.Invoke(parser, null);
 
-                    var parserParams = new[] { CommandArgs[position], defaultInstance };
+                    var parserParams = new[] { ParametrizedCmd.Args[position], defaultInstance };
                     var result = parser.GetType().GetMethod("TryGetValue")?.Invoke(parser, parserParams);
                     if(result != null && (bool)result)
                     {
@@ -222,5 +266,57 @@ namespace BotFramework
                     throw new ArgumentException("Wrong parser! WTF??");
                 }
         }
+
+
+        internal static class CommandHelper
+        {
+            public static string GetCommand(string text, int offset, int length) => text.Substring(offset, length);
+
+
+            public static bool IsMyCommand(string command, string username)
+            {
+                var name = command.Split('@').ElementAtOrDefault(1);
+                return name?.Equals(username, StringComparison.InvariantCultureIgnoreCase) ?? true;
+            }
+
+            public static string[] GetCommandArgs(string text)
+            {
+                var args = text.Split(" ").Skip(1).ToArray();
+                return args.Length > 0 ? args : new[] { string.Empty };
+            }
+
+            public static string GetShortName(string text)
+            {
+                return (text.Split('@').FirstOrDefault() ?? text)[1..];
+            }
+        }
+
+        public class Command
+        {
+            /// <summary>
+            /// Short name without leading slash
+            /// </summary>
+            public string Name { get; set; }
+            public int Offset { get; set; }
+            public int Length { get; set; }
+            /// <summary>
+            /// Full command with slash and username if exists
+            /// </summary>
+            public string FullText { get; set; }
+            public bool IsFullCommand { get; set; }
+
+
+        }
+
+        public class ParametrizedCommand: Command
+        {
+            public ParametrizedCommand()
+            {
+                Offset = 0;
+            }
+            public string[] Args { get; set; }
+        }
     }
+
+
 }

@@ -21,8 +21,8 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanFilterUserName()
         {
-            var commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.Both);
-            var command = new ParametrizedCommand("test", CommandParseMode.Both);
+            var commandInChat = new ParametrizedCommandAttribute(InChat.All,"test", CommandParseMode.Both);
+            var command = new ParametrizedCommandAttribute("test", CommandParseMode.Both);
             
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
                                              _serviceProvider, "testbot", _userProvider);
@@ -30,14 +30,14 @@ namespace BotFramework.Tests.Attributes
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.WithUsername);
-            command = new ParametrizedCommand("test", CommandParseMode.WithUsername);
+            commandInChat = new ParametrizedCommandAttribute(InChat.All,"test", CommandParseMode.WithUsername);
+            command = new ParametrizedCommandAttribute("test", CommandParseMode.WithUsername);
             
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.WithoutUsername);
-            command = new ParametrizedCommand("test", CommandParseMode.WithoutUsername);
+            commandInChat = new ParametrizedCommandAttribute(InChat.All,"test", CommandParseMode.WithoutUsername);
+            command = new ParametrizedCommandAttribute("test", CommandParseMode.WithoutUsername);
 
             Assert.False(commandInChat.CanHandleInternal(paramses));
             Assert.False(command.CanHandleInternal(paramses));
@@ -51,7 +51,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleByText()
         {
-            var command = new ParametrizedCommand("test");
+            var command = new ParametrizedCommandAttribute("test");
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } }, _serviceProvider,
                                              string.Empty, _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
@@ -60,7 +60,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleByTextWithUsername()
         {
-            var command = new ParametrizedCommand("test");
+            var command = new ParametrizedCommandAttribute("test");
             var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
                                              _serviceProvider, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
@@ -69,7 +69,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInChannel()
         {
-            var command = new ParametrizedCommand(InChat.Channel, "test");
+            var command = new ParametrizedCommandAttribute(InChat.Channel, "test");
             var paramses =
                 new HandlerParams(null,
                                   new Update
@@ -122,7 +122,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPrivateChat()
         {
-            var command = new ParametrizedCommand(InChat.Private, "test");
+            var command = new ParametrizedCommandAttribute(InChat.Private, "test");
             var paramses =
                 new HandlerParams(null,
                                   new Update
@@ -172,7 +172,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPublicChat()
         {
-            var command = new ParametrizedCommand(InChat.Public, "test");
+            var command = new ParametrizedCommandAttribute(InChat.Public, "test");
             var paramses =
                 new HandlerParams(null,
                                   new Update

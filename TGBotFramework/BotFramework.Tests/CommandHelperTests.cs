@@ -1,4 +1,5 @@
 ﻿using System;
+using Telegram.Bot.Types;
 using Xunit;
 
 namespace BotFramework.Tests
@@ -8,6 +9,8 @@ namespace BotFramework.Tests
         [Fact]
         public void IsCommand()
         {
+            var entities = new MessageEntity[]{new MessageEntity(){}}
+            var msg = new Message(){}
             var text = "/test@testbot";
             Assert.True(text.IsCommand());
             Assert.True(text.IsCommand("testbot"));

@@ -52,11 +52,11 @@ namespace BotFramework.Attributes
             if(InChatFlags == InChat.All)
                 return true;
 
-            return flags switch
+            return InChatFlags switch
                 {
-                    InChat.Public => InChatFlags.HasFlag(InChat.Public),
-                    InChat.Private => InChatFlags.HasFlag(InChat.Private),
-                    InChat.Channel => InChatFlags.HasFlag(InChat.Channel),
+                    InChat.Public => flags.HasFlag(InChat.Public),
+                    InChat.Private => flags.HasFlag(InChat.Private),
+                    InChat.Channel => flags.HasFlag(InChat.Channel),
                     _ => false
                 };
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace BotFramework
 {
@@ -26,37 +27,5 @@ namespace BotFramework
 
         public int Position { get; }
         public object TypedValue { get; }
-    }
-
-    internal static class CommandHelper
-    {
-        public static bool IsCommand(this string text, string me = "")
-        {
-            if(!string.IsNullOrEmpty(me) && text.StartsWith('/'))
-            {
-                var str = text.Substring(1).Split(" ")[0];
-                return text.StartsWith("/") && str.EndsWith('@' + me);
-            }
-            return text.StartsWith("/");
-        }
-
-        public static string GetCommandName(this string str, string me = "")
-        {
-            if(!str.IsCommand(me))
-                return string.Empty;
-
-            var text = str[1..];
-            if(!string.IsNullOrEmpty(me))
-            {
-               return text.Split(" ")[0].ToLowerInvariant().Replace('@' + me.ToLowerInvariant(), "");
-            }
-            return text.Split(" ")[0].ToLowerInvariant();
-        }
-
-        public static string[] GetCommandArgs(this string text)
-        {
-            var args = text.Split(" ").Skip(1).ToArray();
-            return args.Length > 0  ? args : new []{ string.Empty };
-        }
     }
 }
