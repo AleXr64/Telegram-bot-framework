@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using BotFramework;
 using BotFramework.Attributes;
@@ -7,6 +8,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using BotFramework.Enums;
 using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BotAsWorkerService
 {
@@ -36,6 +38,26 @@ namespace BotAsWorkerService
         //Answer on any update
         [Update(InChat.All, UpdateFlag.All)]
         public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
+
+        [Update(InChat.Public, UpdateFlag.CallbackQuery)]
+        public async Task CBQuery()
+        {
+            await Bot.SendTextMessageAsync(Chat, "callback");
+        }
+
+        [Command(InChat.Public, "query", CommandParseMode.Both)]
+        public async Task HandleQuery()
+        {
+            var buttons = new List<InlineKeyboardButton>()
+                {
+                    new("Test")
+                        {
+                            CallbackData = "test_callback"
+                        }
+                };
+
+            await Bot.SendTextMessageAsync(Chat.Id, "123", replyMarkup: new InlineKeyboardMarkup(buttons));
+        }
 
         //Answer on message that contains photo or video
         [Message(InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]

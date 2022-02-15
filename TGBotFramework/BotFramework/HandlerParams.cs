@@ -56,6 +56,7 @@ namespace BotFramework
                     break;
                 case UpdateType.CallbackQuery:
                     From = Update.CallbackQuery.From;
+                    Chat = Update.CallbackQuery.Message.Chat;
                     //     var __chat = Bot.GetChatAsync(update.CallbackQuery.ChatInstance);
                     //   __chat.Wait();
                     //     Chat = __chat.Result;
