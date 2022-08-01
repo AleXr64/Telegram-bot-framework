@@ -1,15 +1,18 @@
 ﻿using System;
+using System.Linq;
 using BotFramework.Enums;
 using BotFramework.Setup;
+using Telegram.Bot.Types.Enums;
+
 namespace BotFramework.Attributes
 {
     public class CommandAttribute:MessageAttribute
     {
-        private readonly CommandParseMode _mode;
-
+        internal readonly CommandParseMode Mode;
+        internal bool IsParametrized = false;
         public CommandAttribute()
         {
-            MessageFlags = MessageFlag.HasText;
+            MessageFlags = MessageFlag.HasText | MessageFlag.HasCaption;
             IsCommand = true;
         }
 
@@ -22,7 +25,7 @@ namespace BotFramework.Attributes
         {
             InChatFlags = inChatFlags;
             Text = text;
-            _mode = CommandParseMode.WithUsername;
+            Mode = CommandParseMode.Both;
         }
 
         /// <summary>
@@ -33,7 +36,7 @@ namespace BotFramework.Attributes
         {
             Text = text;
             InChatFlags = InChat.All;
-            _mode = CommandParseMode.WithUsername;
+            Mode = CommandParseMode.Both;
         }
 
         /// <summary>
@@ -45,7 +48,7 @@ namespace BotFramework.Attributes
         {
             Text = text;
             InChatFlags = InChat.All;
-            _mode = parseMode;
+            Mode = parseMode;
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace BotFramework.Attributes
         {
             InChatFlags = inChatFlags;
             Text = text;
-            _mode = parseMode;
+            Mode = parseMode;
         }
 
         protected override bool CanHandle(HandlerParams param)
@@ -68,21 +71,21 @@ namespace BotFramework.Attributes
 
         private bool IsCommandEqual(HandlerParams hParams)
         {
-            switch(_mode)
+            if(IsParametrized)
+                return true;
+
+            if(hParams.Chat.Type == ChatType.Private ||
+               Mode == CommandParseMode.Both)
+
             {
-                case CommandParseMode.WithUsername:
-                    return string.Equals(Text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase) &&
-                           hParams.IsFullFormCommand;
 
-                case CommandParseMode.WithoutUsername:
-                    return string.Equals(Text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase) &&
-                           !hParams.IsFullFormCommand;
-
-                case CommandParseMode.Both:
-                    return string.Equals(Text, hParams.CommandName, StringComparison.InvariantCultureIgnoreCase);
-                default:
-                    throw new ArgumentOutOfRangeException();
+                return hParams.Commands.Any(x => x.Name.Equals(Text));
             }
+
+            return hParams.Commands.Any(x => x.Name.Equals(Text) &&
+                                             (Mode == CommandParseMode.WithUsername
+                                                 ? x.IsFullCommand
+                                                 : !x.IsFullCommand));
         }
     }
 }
