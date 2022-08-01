@@ -36,20 +36,16 @@ namespace BotFramework.Attributes
             IsParametrized = true;
         }
 
-        //protected override bool CanHandle(HandlerParams param) => base.CanHandle(param) && IsEqual(param);
-        protected override bool CanHandle(HandlerParams param)
-        {
-            return base.CanHandle(param) && IsEqual(param);
-        }
+        protected override bool CanHandle(HandlerParams param) => base.CanHandle(param) && IsEqual(param);
+
         private bool IsEqual(HandlerParams hParams)
         {
             if(!hParams.IsParametrizedCommand)
                 return false;
 
-            if(Mode == CommandParseMode.WithUsername && !hParams.ParametrizedCmd.IsFullCommand 
-               || Mode == CommandParseMode.WithoutUsername && hParams.ParametrizedCmd.IsFullCommand 
-               || Mode != CommandParseMode.Both && hParams.Chat.Type != ChatType.Private)
-                return false;
+            if(Mode == CommandParseMode.WithUsername && (!hParams.ParametrizedCmd.IsFullCommand || hParams.Chat.Type == ChatType.Private)
+               || Mode == CommandParseMode.WithoutUsername && hParams.ParametrizedCmd.IsFullCommand)
+            return false;
 
 
             return Text.Equals(hParams.ParametrizedCmd.Name);

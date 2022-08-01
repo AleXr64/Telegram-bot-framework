@@ -64,8 +64,10 @@ namespace BotFramework.Attributes
             if(message != null && CanHandleMessage(message))
             {
                 var text = message.Text ?? message.Caption;
+                if(string.IsNullOrEmpty(text) && string.IsNullOrEmpty(Text))
+                    return true;
 
-                if(!string.IsNullOrWhiteSpace(text))
+                if(!string.IsNullOrEmpty(text))
                 {
                     if((param.HasCommands || param.IsParametrizedCommand) && IsCommand)//pass to command handler
                         return true;

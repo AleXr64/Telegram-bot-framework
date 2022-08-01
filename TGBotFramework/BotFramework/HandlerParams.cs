@@ -303,6 +303,9 @@ namespace BotFramework
             /// Full command with slash and username if exists
             /// </summary>
             public string FullText { get; set; }
+            /// <summary>
+            /// Command contains username
+            /// </summary>
             public bool IsFullCommand { get; set; }
 
 
