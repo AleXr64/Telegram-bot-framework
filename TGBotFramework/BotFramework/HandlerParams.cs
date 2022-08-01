@@ -7,7 +7,6 @@ using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
 using BotFramework.Enums;
 using BotFramework.Session;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
