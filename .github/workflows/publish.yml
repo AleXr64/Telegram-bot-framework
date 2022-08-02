@@ -29,7 +29,7 @@ jobs:
       # Publish
       - name: publish on version change
         id: publish_nuget
-        uses: brandedoutcast/publish-nuget@v2
+        uses: brandedoutcast/publish-nuget@v2.x
         with:
           # Filepath of the project to be packaged, relative to root of repository
           PROJECT_FILE_PATH: ./TGBotFramework/BotFramework/BotFramework.csproj
