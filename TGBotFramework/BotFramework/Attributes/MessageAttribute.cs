@@ -119,10 +119,10 @@ namespace BotFramework.Attributes
                         MessageFlag.HasGroupChatCreated => message.GroupChatCreated != null,
                         MessageFlag.HasSupergroupChatCreated => message.SupergroupChatCreated != null,
                         MessageFlag.HasPinnedMessage => message.PinnedMessage != null,
-                        MessageFlag.HasVoiceChatScheduled => message.VoiceChatScheduled != null,
-                        MessageFlag.HasVoiceChatStarted => message.VoiceChatStarted != null,
-                        MessageFlag.HasVoiceChatEnded => message.VoiceChatEnded != null,
-                        MessageFlag.HasVoiceChatParticipantsInvited => message.VoiceChatParticipantsInvited != null,
+                        MessageFlag.HasVoiceChatScheduled => message.VideoChatScheduled != null,
+                        MessageFlag.HasVoiceChatStarted => message.VideoChatStarted != null,
+                        MessageFlag.HasVoiceChatEnded => message.VideoChatEnded != null,
+                        MessageFlag.HasVoiceChatParticipantsInvited => message.VideoChatParticipantsInvited != null,
                         _ => false
                     };
                 if(ret)
