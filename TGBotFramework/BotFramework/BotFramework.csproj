@@ -10,6 +10,8 @@
     <PackageProjectUrl>https://github.com/AleXr64/Telegram-bot-framework</PackageProjectUrl>
     <RepositoryType>https://github.com/AleXr64/Telegram-bot-framework</RepositoryType>
     <PackageTags>Telegram Bots</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|AnyCPU'">
