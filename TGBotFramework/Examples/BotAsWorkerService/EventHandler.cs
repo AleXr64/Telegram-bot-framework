@@ -32,7 +32,7 @@ namespace BotAsWorkerService
         public async Task Ban() => await Bot.SendTextMessageAsync(Chat, "I will ban you right now! Just kidding");
 
         //Answer on message that satisfy provided regex expression
-        [Message("^.*?(?i)python$", regex: true)]
+        [Message("^.*?(?i)python$", regex: true, messageFlags:MessageFlag.HasCaption | MessageFlag.HasText)]
         public async Task Task() => await Bot.SendTextMessageAsync(Chat, "I hate snakes");
 
         //Answer on any update
@@ -75,10 +75,23 @@ namespace BotAsWorkerService
             await Bot.SendTextMessageAsync(Chat, $"<code>{user} says: {me.Text}</code>", ParseMode.Html);
         }
 
+        //Parametrized command with int parameter: "/status 2"
         [ParametrizedCommand("status", CommandParseMode.Both)]
         public async Task Status(int status)
         {
             await Bot.SendTextMessageAsync(Chat, "status " + status);
+        }
+
+        [Command("command1", CommandParseMode.WithUsername)]
+        public async Task Command1()
+        {
+            await Bot.SendTextMessageAsync(Chat, "Command1");
+        }
+
+        [Command("command2")]
+        public async Task Command2()
+        {
+            await Bot.SendTextMessageAsync(Chat, "Command2");
         }
         
     }
@@ -88,7 +101,7 @@ namespace BotAsWorkerService
         public string Text;
     }
 
-    //Custom parser for command parameters (for ParametrizedCommand)
+    //Custom parser for command parameters (for ParametrizedCommandAttribute)
     public class MeParser:IRawParameterParser<MeParam>
     {
         public MeParam DefaultInstance() { return new MeParam();}

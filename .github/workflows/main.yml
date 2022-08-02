@@ -5,7 +5,9 @@ on:
     paths:
       - 'TGBotFramework/BotFramework/**'
       - 'TGBotFramework/BotFramework.Tests/**'
-      
+  pull_request:
+    types:
+      – ready_for_review
 jobs:
   build:
 

@@ -9,6 +9,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Xunit;
 using Message = Telegram.Bot.Types.Message;
+using BotFramework.Utils;
 
 namespace BotFramework.Tests.Attributes
 {
@@ -18,41 +19,104 @@ namespace BotFramework.Tests.Attributes
 
         private static ISessionProvider _sessionProvider = new InMemorySessionProvider();
         private static IServiceProvider _serviceProvider = new ServiceCollection().BuildServiceProvider();
+
         [Fact]
         public void CanFilterUserName()
         {
-            var commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.Both);
-            var command = new ParametrizedCommand("test", CommandParseMode.Both);
-            
-            var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
+            var commandInChat = new ParametrizedCommandAttribute(InChat.All,"test", CommandParseMode.Both);
+            var command = new ParametrizedCommandAttribute("test", CommandParseMode.Both);
+
+            var message = new Message
+                {
+                    Chat = new Chat() { Type = ChatType.Group },
+                    Text = "/test@testbot",
+                    Entities = new MessageEntity[]
+                        {
+                            new MessageEntity() { Length = 13, Offset = 0, Type = MessageEntityType.BotCommand }
+                        }
+                };
+            var paramses = new HandlerParams(null, new Update 
+                                                 { 
+                                                     Message = message
+                                                 },
                                              _serviceProvider, "testbot", _userProvider);
 
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.WithUsername);
-            command = new ParametrizedCommand("test", CommandParseMode.WithUsername);
+            commandInChat = new ParametrizedCommandAttribute(InChat.All,"test", CommandParseMode.WithUsername);
+            command = new ParametrizedCommandAttribute("test", CommandParseMode.WithUsername);
             
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            commandInChat = new ParametrizedCommand(InChat.All,"test", CommandParseMode.WithoutUsername);
-            command = new ParametrizedCommand("test", CommandParseMode.WithoutUsername);
+            commandInChat = new ParametrizedCommandAttribute(InChat.All,"test", CommandParseMode.WithoutUsername);
+            command = new ParametrizedCommandAttribute("test", CommandParseMode.WithoutUsername);
 
             Assert.False(commandInChat.CanHandleInternal(paramses));
             Assert.False(command.CanHandleInternal(paramses));
 
-            paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } },
-                                         _serviceProvider, "testbot", _userProvider);
+            message.Text = "/test";
+            message.Entities = new MessageEntity[]
+                {
+                    new MessageEntity() { Length = 5, Offset = 0, Type = MessageEntityType.BotCommand }
+                };
+            paramses = new HandlerParams(null, new Update
+                                                 {
+                                                     Message = message
+                                                 },
+                                             _serviceProvider, "testbot", _userProvider);
             Assert.True(commandInChat.CanHandleInternal(paramses));
+            Assert.True(command.CanHandleInternal(paramses));
+        }
+
+        [Fact]
+        public void CanHandleInCaption()
+        {
+            var command = new ParametrizedCommandAttribute("test");
+            var paramses = new HandlerParams(null, new Update
+                                                 {
+                                                     Message = new Message
+                                                         {
+                                                             Chat = new Chat() { Type = ChatType.Group },
+                                                             Caption = "/test"
+                                                            ,
+                                                             CaptionEntities = new MessageEntity[]
+                                                                 {
+                                                                     new MessageEntity()
+                                                                         {
+                                                                             Length = 5,
+                                                                             Offset = 0,
+                                                                             Type = MessageEntityType.BotCommand
+                                                                         }
+                                                                 }
+
+                                                         }
+                                                 }, _serviceProvider,
+                                             string.Empty, _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
         }
 
         [Fact]
         public void CanHandleByText()
         {
-            var command = new ParametrizedCommand("test");
-            var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test" } }, _serviceProvider,
+            var command = new ParametrizedCommandAttribute("test");
+            var paramses = new HandlerParams(null, new Update { Message = new Message
+                                                 {
+                                                     Chat = new Chat() { Type = ChatType.Group },
+                                                     Text = "/test"
+                                                    ,
+                                                     Entities = new MessageEntity[]
+                                                         {
+                                                             new MessageEntity()
+                                                                 {
+                                                                     Length = 5,
+                                                                     Offset = 0,
+                                                                     Type = MessageEntityType.BotCommand
+                                                                 }
+                                                         }
+                                                 
+                                                 } }, _serviceProvider,
                                              string.Empty, _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
         }
@@ -60,8 +124,19 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleByTextWithUsername()
         {
-            var command = new ParametrizedCommand("test");
-            var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot" } },
+            var command = new ParametrizedCommandAttribute("test");
+            var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot",
+                                                         Entities = new MessageEntity[]
+                                                             {
+                                                                 new MessageEntity()
+                                                                     {
+                                                                         Length = 13,
+                                                                         Offset = 0,
+                                                                         Type = MessageEntityType.BotCommand
+                                                                     }
+                                                             }
+                                                     }
+                                                 },
                                              _serviceProvider, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
         }
@@ -69,154 +144,108 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInChannel()
         {
-            var command = new ParametrizedCommand(InChat.Channel, "test");
-            var paramses =
-                new HandlerParams(null,
-                                  new Update
-                                  {
-                                      Message = new Message
-                                      {
-                                          Text = "/test@testbot",
-                                          Chat = new Chat { Type = ChatType.Channel }
-                                      }
-                                  }, _serviceProvider, "testbot", _userProvider);
+            var command = new ParametrizedCommandAttribute(InChat.Channel, "test");
+            var update = new Update
+                {
+                    Message = new Message
+                        {
+                            Text = "/test@testbot",
+                            Chat = new Chat { Type = ChatType.Channel },
+                            Entities = new MessageEntity[]
+                                {
+                                    new MessageEntity()
+                                        {
+                                            Length = 5, Offset = 0, Type = MessageEntityType.BotCommand
+                                        }
+                                }
+                        }
+                };
+
+            var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
-            paramses =
-                new HandlerParams(null,
-                                  new Update
-                                  {
-                                      Message = new Message
-                                      {
-                                          Text = "/test@testbot",
-                                          Chat = new Chat { Type = ChatType.Group }
-                                      }
-                                  }, _serviceProvider, "testbot", _userProvider);
+            update.Message.Chat.Type = ChatType.Group;
+            paramses = new HandlerParams(null,  update, _serviceProvider, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
-            paramses =
-                new HandlerParams(null,
-                                  new Update
-                                  {
-                                      Message = new Message
-                                      {
-                                          Text = "/test@testbot",
-                                          Chat = new Chat { Type = ChatType.Supergroup }
-                                      }
-                                  }, _serviceProvider, "testbot", _userProvider);
+            update.Message.Chat.Type = ChatType.Supergroup;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
-            paramses =
-                new HandlerParams(null,
-                                  new Update
-                                  {
-                                      Message = new Message
-                                      {
-                                          Text = "/test@testbot",
-                                          Chat = new Chat { Type = ChatType.Private }
-                                      }
-                                  }, _serviceProvider, "testbot", _userProvider);
+            update.Message.Chat.Type = ChatType.Private;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
         }
 
         [Fact]
         public void CanHandleInPrivateChat()
         {
-            var command = new ParametrizedCommand(InChat.Private, "test");
-            var paramses =
-                new HandlerParams(null,
-                                  new Update
-                                  {
-                                      Message = new Message
-                                      {
-                                          Text = "/test@testbot",
-                                          Chat = new Chat { Type = ChatType.Private }
-                                      }
-                                  }, _serviceProvider, "testbot", _userProvider);
+            var command = new ParametrizedCommandAttribute(InChat.Private, "test");
+            var update = new Update
+                {
+                    Message = new Message
+                        {
+                            Text = "/test@testbot",
+                            Chat = new Chat { Type = ChatType.Channel },
+                            Entities = new MessageEntity[]
+                                {
+                                    new MessageEntity()
+                                        {
+                                            Length = 5, Offset = 0, Type = MessageEntityType.BotCommand
+                                        }
+                                }
+                        }
+                };
+
+            var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
+            Assert.False(command.CanHandleInternal(paramses));
+
+            update.Message.Chat.Type = ChatType.Group;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
+            Assert.False(command.CanHandleInternal(paramses));
+
+            update.Message.Chat.Type = ChatType.Supergroup;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
+            Assert.False(command.CanHandleInternal(paramses));
+
+            update.Message.Chat.Type = ChatType.Private;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
-
-            paramses = new HandlerParams(null,
-                                         new Update
-                                         {
-                                             Message = new Message
-                                             {
-                                                 Text = "/test@testbot",
-                                                 Chat = new Chat { Type = ChatType.Group }
-                                             }
-                                         }, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            paramses = new HandlerParams(null,
-                                         new Update
-                                         {
-                                             Message = new Message
-                                             {
-                                                 Text = "/test@testbot",
-                                                 Chat = new Chat { Type = ChatType.Supergroup }
-                                             }
-                                         }, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            paramses = new HandlerParams(null,
-                                         new Update
-                                         {
-                                             Message = new Message
-                                             {
-                                                 Text = "/test@testbot",
-                                                 Chat = new Chat { Type = ChatType.Channel }
-                                             }
-                                         }, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
         }
 
         [Fact]
         public void CanHandleInPublicChat()
         {
-            var command = new ParametrizedCommand(InChat.Public, "test");
-            var paramses =
-                new HandlerParams(null,
-                                  new Update
-                                  {
-                                      Message = new Message
-                                      {
-                                          Text = "/test@testbot",
-                                          Chat = new Chat { Type = ChatType.Private }
-                                      }
-                                  }, _serviceProvider, "testbot", _userProvider);
+            var command = new ParametrizedCommandAttribute(InChat.Public, "test");
+            var update = new Update
+                {
+                    Message = new Message
+                        {
+                            Text = "/test@testbot",
+                            Chat = new Chat { Type = ChatType.Channel },
+                            Entities = new MessageEntity[]
+                                {
+                                    new MessageEntity()
+                                        {
+                                            Length = 5, Offset = 0, Type = MessageEntityType.BotCommand
+                                        }
+                                }
+                        }
+                };
+
+            var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
 
-            paramses = new HandlerParams(null,
-                                         new Update
-                                         {
-                                             Message = new Message
-                                             {
-                                                 Text = "/test@testbot",
-                                                 Chat = new Chat { Type = ChatType.Group }
-                                             }
-                                         }, _serviceProvider, "testbot", _userProvider);
+            update.Message.Chat.Type = ChatType.Group;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
-            paramses = new HandlerParams(null,
-                                         new Update
-                                         {
-                                             Message = new Message
-                                             {
-                                                 Text = "/test@testbot",
-                                                 Chat = new Chat { Type = ChatType.Supergroup }
-                                             }
-                                         }, _serviceProvider, "testbot", _userProvider);
+            update.Message.Chat.Type = ChatType.Supergroup;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(command.CanHandleInternal(paramses));
 
-            paramses = new HandlerParams(null,
-                                         new Update
-                                         {
-                                             Message = new Message
-                                             {
-                                                 Text = "/test@testbot",
-                                                 Chat = new Chat { Type = ChatType.Channel }
-                                             }
-                                         }, _serviceProvider, "testbot", _userProvider);
-
+            update.Message.Chat.Type = ChatType.Private;
+            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(command.CanHandleInternal(paramses));
         }
     }

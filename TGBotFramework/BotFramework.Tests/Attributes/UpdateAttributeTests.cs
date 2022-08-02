@@ -121,7 +121,7 @@ namespace BotFramework.Tests.Attributes
         }
 
         [Fact]
-        public void CanHandleInPublicAndPublic()
+        public void CanHandleInPublicAndPrivate()
         {
             var updateAttr = new UpdateAttribute { InChatFlags = InChat.Public | InChat.Private };
 

@@ -61,15 +61,18 @@ namespace BotFramework.Attributes
 
             var message = param.Update.Message;
 
-            if(CanHandleMessage(message))
+            if(message != null && CanHandleMessage(message))
             {
-                if(MessageFlags.HasFlag(MessageFlag.HasText))
+                var text = message.Text ?? message.Caption;
+                if(string.IsNullOrEmpty(text) && string.IsNullOrEmpty(Text))
+                    return true;
+
+                if(!string.IsNullOrEmpty(text))
                 {
-                    if(param.IsCommand && IsCommand)
+                    if((param.HasCommands || param.IsParametrizedCommand) && IsCommand)//pass to command handler
                         return true;
-                    return IsTextMatch(message.Text);
+                    return IsTextMatch(text);
                 }
-                return true;
             }
             return false;
         }

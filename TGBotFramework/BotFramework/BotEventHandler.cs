@@ -50,7 +50,7 @@ namespace BotFramework
             var knowHandlers = new List<Type>();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                                       .Where(x => x.FullName != null)
-                                      .DistinctBy(x => x.FullName); //workaround for duplicated assemblies
+                                      .DistinctBy(x => x.FullName).ToArray(); //workaround for duplicated assemblies
 
 
             foreach(var assembly in assemblies)
@@ -75,11 +75,11 @@ namespace BotFramework
                     var eHandler = new EventHandler
                         {
                             Attribute = methodInfo.GetCustomAttribute<HandlerAttribute>(),
-                            Priority = (priority == null) ?  (short)0 : priority.Value,
+                            Priority = priority?.Value ?? 0,
                             Method = methodInfo,
                             MethodOwner = handler,
                         };
-                    eHandler.Parametrized = eHandler.Attribute is ParametrizedCommand;
+                    eHandler.Parametrized = eHandler.Attribute is ParametrizedCommandAttribute;
                     eHandler.Parameters = methodInfo.GetParameters();
                     handlers.Add(eHandler);
                 }
@@ -120,7 +120,7 @@ namespace BotFramework
                 var instance = (BotEventHandler)ActivatorUtilities.CreateInstance(provider, method.DeclaringType);
                 instance.__Instantiate(param);
                 object[] paramObjects;
-                if(handler.Parameters.Length > 0 && handler.Parametrized)
+                if(handler.Parameters.Length > 0 && handler.Parametrized && param.IsParametrizedCommand)
                 {
                     var parseOk = param.TryParseParams(handler.Parameters);
 
@@ -148,12 +148,12 @@ namespace BotFramework
                     await (Task)task;
                     return HandlerExec.Continue;
                 }
-                else
-                    if(method.ReturnParameter.ParameterType == typeof(Task<bool>))
-                    {
-                        var task = method.Invoke(instance, paramObjects);
-                        return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
-                    }
+
+                if(method.ReturnParameter.ParameterType == typeof(Task<bool>))
+                {
+                    var task = method.Invoke(instance, paramObjects);
+                    return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
+                }
 
 
                 method.Invoke(instance, paramObjects);
