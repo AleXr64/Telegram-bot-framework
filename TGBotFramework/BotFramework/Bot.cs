@@ -121,51 +121,54 @@ namespace BotFramework
             }
         }
 
-        private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        private async Task HandleUpdateAsync(
+            ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             try
             {
                 await Task.Run(async () =>
-                                   {
-                                       using var scope = _scopeFactory.CreateScope();
-                                       var wares = new Stack<IMiddleware>();
+                    {
+                        using var scope = _scopeFactory.CreateScope();
+                        var wares = new Stack<IMiddleware>();
 
-                                       var wareInstances = scope.ServiceProvider.GetServices<IMiddleware>().ToDictionary(x => x.GetType());
+                        var wareInstances = scope.ServiceProvider.GetServices<IMiddleware>()
+                                                 .ToDictionary(x => x.GetType());
 
-                                       var userProvider = scope.ServiceProvider.GetService<IUserProvider>() ?? new DefaultUserProvider();
+                        var userProvider = scope.ServiceProvider.GetService<IUserProvider>() ??
+                                           new DefaultUserProvider();
 
-                                       var param = new HandlerParams(this, update, scope.ServiceProvider, UserName, userProvider);
+                        var param = new HandlerParams(this, update, scope.ServiceProvider, UserName, userProvider);
 
-                                       var router = new Router(factory);
-                                       router.__Setup(null, param);
+                        var router = new Router(factory);
+                        router.__Setup(null, param);
 
-                                       wares.Push(router);
+                        wares.Push(router);
 
-                                       if(wareInstances.Count > 0 && _wares.Count > 0)
-                                       {
-                                           var firstWareType = _wares.First;
+                        if(wareInstances.Count > 0 && _wares.Count > 0)
+                        {
+                            var firstWareType = _wares.First;
 
-                                           if(firstWareType?.Value != null && wareInstances.ContainsKey(firstWareType.Value))
-                                           {
-                                               var currentWare = wareInstances[firstWareType.Value];
-                                               ((BaseMiddleware)currentWare).__Setup(router, param);
-                                               wares.Push(currentWare);
+                            if(firstWareType?.Value != null && wareInstances.ContainsKey(firstWareType.Value))
+                            {
+                                var currentWare = wareInstances[firstWareType.Value];
+                                ((BaseMiddleware)currentWare).__Setup(router, param);
+                                wares.Push(currentWare);
 
-                                               var nextWareType = firstWareType.Next;
+                                var nextWareType = firstWareType.Next;
 
-                                               while(nextWareType?.Next != null)
-                                               {
-                                                   var prevWare = wares.Pop();
-                                                   currentWare = wareInstances[nextWareType.Value];
-                                                   ((BaseMiddleware)currentWare).__Setup(prevWare, param);
-                                                   wares.Push(currentWare);
-                                               }
-                                           }
-                                       }
+                                while(nextWareType?.Next != null)
+                                {
+                                    var prevWare = wares.Pop();
+                                    currentWare = wareInstances[nextWareType.Value];
+                                    ((BaseMiddleware)currentWare).__Setup(prevWare, param);
+                                    wares.Push(currentWare);
+                                }
+                            }
+                        }
 
-                                       var runWare = wares.Pop();
-                                       await ((BaseMiddleware)runWare).__ProcessInternal();
-                                   }, cancellationToken);
+                        var runWare = wares.Pop();
+                        await ((BaseMiddleware)runWare).__ProcessInternal();
+                    }, cancellationToken);
             } catch(Exception exception)
             {
                 Console.WriteLine(exception);

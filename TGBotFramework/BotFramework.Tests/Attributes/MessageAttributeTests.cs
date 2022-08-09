@@ -121,10 +121,10 @@ namespace BotFramework.Tests.Attributes
                     {
                         Message = new Message()
                             {
-                                VoiceChatScheduled = new VoiceChatScheduled() { },
-                                VoiceChatStarted = new VoiceChatStarted() { },
-                                VoiceChatEnded = new VoiceChatEnded() { },
-                                VoiceChatParticipantsInvited = new VoiceChatParticipantsInvited() { }
+                                VideoChatScheduled = new VideoChatScheduled() { },
+                                VideoChatStarted = new VideoChatStarted() { },
+                                VideoChatEnded = new VideoChatEnded() { },
+                                VideoChatParticipantsInvited = new VideoChatParticipantsInvited() { }
                             }
                     }, _serviceProvider, "testbot", _userProvider);
 
