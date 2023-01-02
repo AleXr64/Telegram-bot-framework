@@ -21,7 +21,7 @@ namespace BotFramework
 {
     public class Bot: IHostedService, IBotInstance
     {
-        private readonly BotConfig _config = new();
+        private readonly BotConfig _config = new BotConfig();
 
         private readonly IServiceScopeFactory _scopeFactory;
 

@@ -50,7 +50,9 @@ namespace BotFramework
             var knowHandlers = new List<Type>();
             var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                                       .Where(x => x.FullName != null)
-                                      .DistinctBy(x => x.FullName).ToArray(); //workaround for duplicated assemblies
+                                      .GroupBy(x => x.FullName)
+                                      .Select(g => g.First())
+                                      .ToArray(); //workaround for duplicated assemblies
 
 
             foreach(var assembly in assemblies)

@@ -110,9 +110,9 @@ namespace BotFramework
             }
         }
 
-        public List<CommandParameter> CommandParameters { get; } = new();
+        public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
 
-        public List<Command> Commands { get; private set; } = new();
+        public List<Command> Commands { get; private set; } =  new List<Command>();
         public ParametrizedCommand ParametrizedCmd { get; private set; }
         public bool IsParametrizedCommand { get; private set; }
         public bool HasCommands { get; private set; }

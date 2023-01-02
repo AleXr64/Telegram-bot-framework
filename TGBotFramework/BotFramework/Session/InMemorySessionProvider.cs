@@ -7,7 +7,7 @@ namespace BotFramework.Session
 {
     public class InMemorySessionProvider: ISessionProvider
     {
-        private readonly ConcurrentDictionary<IBotUser, IUserSession> _userSessions = new();
+        private readonly ConcurrentDictionary<IBotUser, IUserSession> _userSessions = new ConcurrentDictionary<IBotUser, IUserSession>();
 
         public IUserSession GetOrCreateSession(IBotUser user)
         {

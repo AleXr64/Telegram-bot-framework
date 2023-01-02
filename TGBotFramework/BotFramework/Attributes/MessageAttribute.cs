@@ -83,10 +83,9 @@ namespace BotFramework.Attributes
             {
                 return true;
             }
-
-            foreach(var f in Enum.GetValues<MessageFlag>())
+            foreach(var f in Enum.GetValues(typeof(MessageFlag)))
             {
-                if(!MessageFlags.HasFlag(f))
+                if(!MessageFlags.HasFlag((Enum)f))
                     continue;
 
                 bool ret = f switch
