@@ -113,7 +113,7 @@ namespace BotFramework.Tests.Attributes
         }
 
         [Fact]
-        public void CanHandleVoiceChatTest()
+        public void CanHandleVideoChatTest()
         {
             var handles = new HandlerParams(
                 null,
@@ -128,15 +128,15 @@ namespace BotFramework.Tests.Attributes
                             }
                     }, _serviceProvider, "testbot", _userProvider);
 
-            var voiceScheduledAttribute = new MessageAttribute(MessageFlag.HasVoiceChatScheduled);
-            var voiceStartedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatStarted);
-            var voiceEndedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatEnded);
-            var voiceInvitedAttribute = new MessageAttribute(MessageFlag.HasVoiceChatParticipantsInvited);
+            var videoScheduledAttribute = new MessageAttribute(MessageFlag.HasVideoChatScheduled);
+            var videoStartedAttribute = new MessageAttribute(MessageFlag.HasVideoChatStarted);
+            var videoEndedAttribute = new MessageAttribute(MessageFlag.HasVideoChatEnded);
+            var videoInvitedAttribute = new MessageAttribute(MessageFlag.HasVideoChatParticipantsInvited);
 
-            Assert.True(voiceScheduledAttribute.CanHandleInternal(handles));
-            Assert.True(voiceStartedAttribute.CanHandleInternal(handles));
-            Assert.True(voiceEndedAttribute.CanHandleInternal(handles));
-            Assert.True(voiceInvitedAttribute.CanHandleInternal(handles));
+            Assert.True(videoScheduledAttribute.CanHandleInternal(handles));
+            Assert.True(videoStartedAttribute.CanHandleInternal(handles));
+            Assert.True(videoEndedAttribute.CanHandleInternal(handles));
+            Assert.True(videoInvitedAttribute.CanHandleInternal(handles));
         }
     }
 }

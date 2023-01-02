@@ -11,10 +11,10 @@ namespace BotFramework.Utils
         {
             if(replyTo == null)
             {
-                return bot.SendTextMessageAsync(chat, message.ToString(), ParseMode.Html);
+                return bot.SendTextMessageAsync(chat, message.ToString(), parseMode: ParseMode.Html);
             }
 
-            return bot.SendTextMessageAsync(chat, message.ToString(), ParseMode.Html, replyToMessageId: replyTo.Value);
+            return bot.SendTextMessageAsync(chat, message.ToString(), parseMode: ParseMode.Html, replyToMessageId: replyTo.Value);
         }
     }
 }
