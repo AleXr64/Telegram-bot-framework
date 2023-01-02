@@ -33,10 +33,10 @@ namespace BotFramework.Enums
         HasGroupChatCreated = 1 << 25,
         HasSupergroupChatCreated = 1 << 26,
         HasPinnedMessage = 1 << 27,
-        HasVoiceChatScheduled = 1 << 28,
-        HasVoiceChatStarted = 1 << 29,
-        HasVoiceChatEnded = 1 << 30,
-        HasVoiceChatParticipantsInvited = 1 << 31,
+        HasVideoChatScheduled = 1 << 28,
+        HasVideoChatStarted = 1 << 29,
+        HasVideoChatEnded = 1 << 30,
+        HasVideoChatParticipantsInvited = 1 << 31,
 
         All = HasForward |
               IsReply |
@@ -66,9 +66,9 @@ namespace BotFramework.Enums
               HasGroupChatCreated |
               HasSupergroupChatCreated |
               HasPinnedMessage |
-              HasVoiceChatScheduled |
-              HasVoiceChatStarted |
-              HasVoiceChatEnded |
-              HasVoiceChatParticipantsInvited,
+              HasVideoChatScheduled |
+              HasVideoChatStarted |
+              HasVideoChatEnded |
+              HasVideoChatParticipantsInvited,
     }
 }

@@ -72,7 +72,7 @@ namespace BotAsWorkerService
             {
                 user += $" {From.LastName}";
             }
-            await Bot.SendTextMessageAsync(Chat, $"<code>{user} says: {me.Text}</code>", ParseMode.Html);
+            await Bot.SendTextMessageAsync(Chat, $"<code>{user} says: {me.Text}</code>", parseMode: ParseMode.Html);
         }
 
         //Parametrized command with int parameter: "/status 2"

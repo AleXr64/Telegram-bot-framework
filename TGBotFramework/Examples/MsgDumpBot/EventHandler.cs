@@ -20,7 +20,7 @@ namespace MsgDumpBot
             if(msg.ReplyToMessage != null)
             {
                 string jmsg = JsonConvert.SerializeObject(msg, Formatting.Indented);
-                await Bot.SendTextMessageAsync(Chat.Id, $"<code>{jmsg}</code>", ParseMode.Html);
+                await Bot.SendTextMessageAsync(Chat.Id, $"<code>{jmsg}</code>", parseMode: ParseMode.Html);
             }
         }
 
