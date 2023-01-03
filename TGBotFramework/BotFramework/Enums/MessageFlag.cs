@@ -3,7 +3,7 @@
 namespace BotFramework.Enums
 {
     [Flags]
-    public enum MessageFlag
+    public enum MessageFlag : long
     {
         HasForward = 1 << 0,
         IsReply = 1 << 1,
@@ -37,6 +37,11 @@ namespace BotFramework.Enums
         HasVideoChatStarted = 1 << 29,
         HasVideoChatEnded = 1 << 30,
         HasVideoChatParticipantsInvited = 1 << 31,
+        HasMediaSpoiler = (long)1 << 32,
+        HasInvoice = (long)1 << 33,
+        HasPassportData = (long)1 << 34,
+        HasSuccessfulPayment = (long)1 << 35,
+
 
         All = HasForward |
               IsReply |
@@ -69,6 +74,10 @@ namespace BotFramework.Enums
               HasVideoChatScheduled |
               HasVideoChatStarted |
               HasVideoChatEnded |
-              HasVideoChatParticipantsInvited,
+              HasVideoChatParticipantsInvited |
+              HasMediaSpoiler | 
+              HasInvoice |
+              HasPassportData |
+              HasSuccessfulPayment
     }
 }

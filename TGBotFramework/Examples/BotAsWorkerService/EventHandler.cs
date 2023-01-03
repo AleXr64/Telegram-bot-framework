@@ -93,6 +93,13 @@ namespace BotAsWorkerService
         {
             await Bot.SendTextMessageAsync(Chat, "Command2");
         }
+
+        [Command("spoiler")]
+        public async Task Spoiler()
+        {
+            await Bot.SendAnimationAsync(Chat.Id, animation: new InputFileUrl(@"https://file-examples.com/storage/fecd197fb063b33dd9d79e6/2017/04/file_example_MP4_480_1_5MG.mp4"), hasSpoiler: true);
+        }
+        
         
     }
 
