@@ -281,13 +281,13 @@ namespace BotFramework
 
             public static string[] GetCommandArgs(string text)
             {
-                var args = text.Split(" ").Skip(1).ToArray();
+                var args = text.Split(' ').Skip(1).ToArray();
                 return args.Length > 0 ? args : new[] { string.Empty };
             }
 
             public static string GetShortName(string text)
             {
-                return (text.Split('@').FirstOrDefault() ?? text)[1..];
+                return (text.Split('@').FirstOrDefault() ?? text).Substring(1);
             }
         }
 
