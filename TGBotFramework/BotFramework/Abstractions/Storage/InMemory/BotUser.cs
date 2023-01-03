@@ -9,7 +9,14 @@ namespace BotFramework.Abstractions.Storage.InMemory
 
         public IBotChat Chat { get; set; }
 
-        public override int GetHashCode() => HashCode.Combine(TelegramId.GetHashCode(), Chat.TelegramId.GetHashCode());
+        public override int GetHashCode()
+        {
+#if NETSTANDARD2_0
+        return TelegramId.GetHashCode() * Chat.TelegramId.GetHashCode();
+#else
+        return HashCode.Combine(TelegramId.GetHashCode(), Chat.TelegramId.GetHashCode());
+#endif
+        }
 
         public override bool Equals(object obj)
         {
