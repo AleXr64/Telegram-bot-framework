@@ -138,5 +138,32 @@ namespace BotFramework.Tests.Attributes
             Assert.True(videoEndedAttribute.CanHandleInternal(handles));
             Assert.True(videoInvitedAttribute.CanHandleInternal(handles));
         }
+
+        [Fact]
+        public void CanHandleMediaSpoiler()
+        {
+            var handles = new HandlerParams(null, new Update()
+            {
+                Message = new Message()
+                    {
+                        Animation = new Animation()
+                    }
+            }, _serviceProvider, "testbot", _userProvider);
+
+            var attribute = new MessageAttribute(MessageFlag.HasMediaSpoiler);
+            Assert.False(attribute.CanHandleInternal(handles));
+
+            handles = new HandlerParams(null, new Update()
+                {
+                    Message = new Message()
+                        {
+                            Animation = new Animation(),
+                            HasMediaSpoiler = true
+                        }
+                }, _serviceProvider, "testbot", _userProvider);
+
+
+            Assert.True(attribute.CanHandleInternal(handles));
+        }
     }
 }
