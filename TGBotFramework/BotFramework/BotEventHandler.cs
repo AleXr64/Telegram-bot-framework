@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
-using BotFramework.Abstractions;
+﻿using BotFramework.Abstractions;
 using BotFramework.Attributes;
 using BotFramework.Enums;
-using BotFramework.Utils;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -53,7 +50,6 @@ namespace BotFramework
 
     internal class EventHandlerFactory
     {
-        //private readonly List<EventHandler> handlers = new List<EventHandler>();
         private readonly List<Method> _methods = new();
         
         public void Find()

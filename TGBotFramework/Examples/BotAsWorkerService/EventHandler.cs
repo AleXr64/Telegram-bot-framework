@@ -93,7 +93,7 @@ namespace BotAsWorkerService
             await Bot.SendTextMessageAsync(Chat, "Command2");
         }
 
-/*        [HandleCondition(ConditionType.Any)]
+        [HandleCondition(ConditionType.Any)]
         [Message(MessageFlag.HasPhoto)]
         [Message(MessageFlag.HasSticker)]
         [Update(InChat.All, UpdateFlag.Message)]
@@ -102,7 +102,7 @@ namespace BotAsWorkerService
         {
             await Bot.SendTextMessageAsync(Chat.Id, "multi attributes");
             return true;
-        }*/
+        }
 
         [HandleCondition(ConditionType.All)]
         [Message(MessageFlag.HasPhoto)]
