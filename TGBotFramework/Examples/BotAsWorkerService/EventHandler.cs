@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using BotFramework;
+﻿using BotFramework;
 using BotFramework.Attributes;
-using BotFramework.Setup;
+using BotFramework.Enums;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using BotFramework.Enums;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.Formats.Webp;
-using Telegram.Bot;
-using Telegram.Bot.Types.InputFiles;
 using Telegram.Bot.Types.ReplyMarkups;
-using File = System.IO.File;
-using System.Diagnostics;
 
 namespace BotAsWorkerService
 {
@@ -102,6 +93,7 @@ namespace BotAsWorkerService
             await Bot.SendTextMessageAsync(Chat, "Command2");
         }
 
+/*        [HandleCondition(ConditionType.Any)]
         [Message(MessageFlag.HasPhoto)]
         [Message(MessageFlag.HasSticker)]
         [Update(InChat.All, UpdateFlag.Message)]
@@ -109,7 +101,16 @@ namespace BotAsWorkerService
         public async Task<bool> MultiAttr()
         {
             await Bot.SendTextMessageAsync(Chat.Id, "multi attributes");
-            return false;
+            return true;
+        }*/
+
+        [HandleCondition(ConditionType.All)]
+        [Message(MessageFlag.HasPhoto)]
+        [Message(MessageFlag.HasCaption)]
+        public async Task<bool> MultiAttr2()
+        {
+            await Bot.SendTextMessageAsync(Chat.Id, "Message with photo AND caption");
+            return true;
         }
 
     }

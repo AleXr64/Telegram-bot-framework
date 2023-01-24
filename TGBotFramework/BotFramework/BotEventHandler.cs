@@ -131,11 +131,13 @@ namespace BotFramework
             {
                 if(method.ConditionType == ConditionType.Any)
                 {
-                    availableHandlers.AddRange(method.Handlers.Where(handler => handler.Attribute.CanHandleInternal(param)));
+                    var handlers = method.Handlers.Where(handler => handler.Attribute.CanHandleInternal(param));
+                    if(handlers.Any())
+                        availableHandlers.Add(handlers.First());
                 }
                 else if(method.Handlers.All(handler => handler.Attribute.CanHandleInternal(param)))
                 {
-                    availableHandlers.AddRange(method.Handlers);
+                    availableHandlers.Add(method.Handlers.FirstOrDefault());
                 }
             }
 
