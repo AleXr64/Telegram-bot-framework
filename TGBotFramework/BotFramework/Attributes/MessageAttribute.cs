@@ -4,9 +4,11 @@ using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace BotFramework.Attributes
 {
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class MessageAttribute: UpdateAttribute
     {
         internal MessageFlag MessageFlags;
@@ -61,6 +63,7 @@ namespace BotFramework.Attributes
 
             var message = param.Update.Message;
 
+
             if(message != null && CanHandleMessage(message))
             {
                 var text = message.Text ?? message.Caption;
@@ -79,10 +82,6 @@ namespace BotFramework.Attributes
 
         private bool CanHandleMessage(Message message)
         {
-            if(MessageFlags.HasFlag(MessageFlag.All))
-            {
-                return true;
-            }
 
             return (from object f in Enum.GetValues(typeof(MessageFlag))
                     where MessageFlags.HasFlag((Enum)f)
@@ -126,6 +125,18 @@ namespace BotFramework.Attributes
                             MessageFlag.HasSuccessfulPayment => message.SuccessfulPayment != null,
                             _ => false
                         }).Any(ret => ret);
+                    return true;
+            }
+            return false;
+                    return true;
+            }
+            return false;
+                    return true;
+            }
+            return false;
+                    return true;
+            }
+            return false;
         }
 
         private bool IsTextMatch(string text)

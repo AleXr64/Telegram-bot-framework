@@ -12,7 +12,7 @@ namespace BotFramework.Attributes
         internal bool IsParametrized = false;
         public CommandAttribute()
         {
-            MessageFlags = MessageFlag.HasText | MessageFlag.HasCaption;
+            MessageFlags = MessageFlag.HasEntity;
             IsCommand = true;
         }
 
