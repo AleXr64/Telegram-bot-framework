@@ -12,45 +12,18 @@ namespace BotFramework.Attributes
     public class MessageAttribute: UpdateAttribute
     {
         internal MessageFlag MessageFlags;
-        internal string Text;
-        internal bool IsCommand = false;
-        private bool isRegex = false;
 
-        public MessageAttribute()
+        internal virtual bool IsTextMessage { get; set; } = false;
+
+        public MessageAttribute() : base(UpdateFlag.Message)
         {
-            UpdateFlags = UpdateFlag.Message;
-            InChatFlags = InChat.All;
             MessageFlags = MessageFlag.All;
         }
-        public MessageAttribute(InChat inChatFlags, string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
-            : this()
-        {
-            isRegex = regex;
-            InChatFlags = inChatFlags;
-            Text = text;
-            MessageFlags = messageFlags;
-        }
 
-        public MessageAttribute(string text, MessageFlag messageFlags = MessageFlag.HasText, bool regex = false)
-            : this()
-        {
-            isRegex = regex;
-            InChatFlags = InChat.All;
-            Text = text;
-            MessageFlags = messageFlags;
-        }
-
-        public MessageAttribute(InChat inChatFlags, MessageFlag messageFlags)
-            : this()
-        {
-            InChatFlags = inChatFlags;
-            MessageFlags = messageFlags;
-        }
 
         public MessageAttribute(MessageFlag messageFlags)
             : this()
         {
-            InChatFlags = InChat.All;
             MessageFlags = messageFlags;
         }
 
@@ -63,19 +36,13 @@ namespace BotFramework.Attributes
 
             var message = param.Update.Message;
 
-
-            if(message != null && CanHandleMessage(message))
+            if(message != null)
             {
-                var text = message.Text ?? message.Caption;
-                if(string.IsNullOrEmpty(text) && string.IsNullOrEmpty(Text))
-                    return true;
-
-                if(!string.IsNullOrEmpty(text))
+                if(IsTextMessage)
                 {
-                    if((param.HasCommands || param.IsParametrizedCommand) && IsCommand)//pass to command handler
-                        return true;
-                    return IsTextMatch(text);
+                    return true;
                 }
+                return CanHandleMessage(message);
             }
             return false;
         }
@@ -125,20 +92,7 @@ namespace BotFramework.Attributes
                 };
         }
 
-        private bool IsTextMatch(string text)
-        {
-            if(string.IsNullOrEmpty(Text))
-            {
-                return true;
-            }
 
-            if(string.IsNullOrEmpty(text))
-            {
-                return false;
-            }
-
-            return isRegex ? Regex.IsMatch(text, Text) : Text.Equals(text);
-        }
 
     }
 }

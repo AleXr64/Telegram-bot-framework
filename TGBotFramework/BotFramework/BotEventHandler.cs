@@ -82,6 +82,7 @@ namespace BotFramework
                 foreach(var methodInfo in methods)
                 {
                     var priority = methodInfo.GetCustomAttribute<PriorityAttribute>();
+                    var inchat = methodInfo.GetCustomAttributes<InChatAttribute>();
                     if(priority != null && methodInfo.ReturnType != typeof(Task<bool>))
                     {
                         throw new Exception($"Method {methodInfo.Name} should return Task<bool> when priority attribute used");

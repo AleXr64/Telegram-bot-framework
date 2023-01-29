@@ -42,25 +42,25 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInChannel()
         {
-            var updateAttr = new UpdateAttribute { InChatFlags = InChat.Channel };
+            var updateAttr = new UpdateAttribute { InChatFlags = Enums.InChat.Channel };
 
-            var chat = new Chat { Type = ChatType.Channel };
+            var chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel };
             var update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             
             var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Group};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Group};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Private};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Private};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Supergroup};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Supergroup};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
@@ -69,25 +69,25 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPrivate()
         {
-            var updateAttr = new UpdateAttribute { InChatFlags = InChat.Private };
+            var updateAttr = new UpdateAttribute { InChatFlags = Enums.InChat.Private };
 
-            var chat = new Chat { Type = ChatType.Channel };
+            var chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel };
             var update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             
             var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Group};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Group};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Private};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Private};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Supergroup};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Supergroup};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
@@ -96,25 +96,25 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPublic()
         {
-            var updateAttr = new UpdateAttribute { InChatFlags = InChat.Public };
+            var updateAttr = new UpdateAttribute { InChatFlags = Enums.InChat.Public };
 
-            var chat = new Chat { Type = ChatType.Channel };
+            var chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel };
             var update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             
             var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Group};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Group};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Private};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Private};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Supergroup};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Supergroup};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
@@ -123,25 +123,25 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPublicAndPrivate()
         {
-            var updateAttr = new UpdateAttribute { InChatFlags = InChat.Public | InChat.Private };
+            var updateAttr = new UpdateAttribute { InChatFlags = Enums.InChat.Public | Enums.InChat.Private };
 
-            var chat = new Chat { Type = ChatType.Channel };
+            var chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel };
             var update = new Update { Message = new Message { Text = "Blah", Chat = chat } };
 
             var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.False(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Group };
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Group };
             update = new Update { Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Private };
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Private };
             update = new Update { Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Supergroup };
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Supergroup };
             update = new Update { Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
@@ -150,25 +150,25 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleAll()
         {
-            var updateAttr = new UpdateAttribute { InChatFlags = InChat.All };
+            var updateAttr = new UpdateAttribute { InChatFlags = Enums.InChat.All };
 
-            var chat = new Chat { Type = ChatType.Channel };
+            var chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel };
             var update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             
             var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Group};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Group};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Private};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Private};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));
 
-            chat = new Chat { Type = ChatType.Supergroup};
+            chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Supergroup};
             update  = new Update {Message = new Message { Text = "Blah", Chat = chat } };
             paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
             Assert.True(updateAttr.CanHandleInternal(paramses));

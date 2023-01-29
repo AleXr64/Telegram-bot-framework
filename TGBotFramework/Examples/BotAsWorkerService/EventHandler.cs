@@ -18,7 +18,7 @@ namespace BotAsWorkerService
          * Higher value means higher priority. Default is 0.
          * Return false to prevent execution handlers with less priority, or return true to continue
          */
-        [Command(InChat.Private, "start", CommandParseMode.Both), Priority(10)]
+        [Command(BotFramework.Enums.InChat.Private, "start", CommandParseMode.Both), Priority(10)]
         public async Task<bool> Start()
         {
             await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
@@ -26,24 +26,24 @@ namespace BotAsWorkerService
         }
 
         //Answer on message with "ban" text
-        [Message("ban")]
+        [TextMessage("ban")]
         public async Task Ban() => await Bot.SendTextMessageAsync(Chat, "I will ban you right now! Just kidding");
 
         //Answer on message that satisfy provided regex expression
-        [Message("^.*?(?i)python$", regex: true, messageFlags:MessageFlag.HasCaption | MessageFlag.HasText)]
+        [RegexTextMessage("^.*?(?i)python$")]
         public async Task Task() => await Bot.SendTextMessageAsync(Chat, "I hate snakes");
 
         //Answer on any update
-        [Update(InChat.All, UpdateFlag.All)]
+        [Update(BotFramework.Enums.InChat.All, UpdateFlag.All)]
         public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
 
-        [Update(InChat.Public, UpdateFlag.CallbackQuery)]
+        [Update(BotFramework.Enums.InChat.Public, UpdateFlag.CallbackQuery)]
         public async Task CBQuery()
         {
             await Bot.SendTextMessageAsync(Chat, "callback");
         }
 
-        [Command(InChat.Public, "query", CommandParseMode.Both)]
+        [Command(BotFramework.Enums.InChat.Public, "query", CommandParseMode.Both)]
         public async Task HandleQuery()
         {
             var buttons = new List<InlineKeyboardButton>()
@@ -58,7 +58,7 @@ namespace BotAsWorkerService
         }
 
         //Answer on message that contains photo or video
-        [Message(InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]
+        [Message(BotFramework.Enums.InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]
         public async Task PhotoVideo() => await Bot.SendTextMessageAsync(Chat, "Send me more!");
 
         //Answer on command with parameters: "/me hello"
