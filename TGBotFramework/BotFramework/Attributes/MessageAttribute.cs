@@ -38,11 +38,7 @@ namespace BotFramework.Attributes
 
             if(message != null)
             {
-                if(IsTextMessage)
-                {
-                    return true;
-                }
-                return CanHandleMessage(message);
+                return IsTextMessage || CanHandleMessage(message);
             }
             return false;
         }

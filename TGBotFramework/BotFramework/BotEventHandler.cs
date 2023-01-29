@@ -43,6 +43,7 @@ namespace BotFramework
     {
         public List<EventHandler> Handlers = new();
         public MethodInfo Info;
+        public InChat InChat;
         public short Priority;
         public Type Owner;
         public ConditionType ConditionType;
@@ -82,7 +83,7 @@ namespace BotFramework
                 foreach(var methodInfo in methods)
                 {
                     var priority = methodInfo.GetCustomAttribute<PriorityAttribute>();
-                    var inchat = methodInfo.GetCustomAttributes<InChatAttribute>();
+                    var inchat = methodInfo.GetCustomAttribute<InChatAttribute>();
                     if(priority != null && methodInfo.ReturnType != typeof(Task<bool>))
                     {
                         throw new Exception($"Method {methodInfo.Name} should return Task<bool> when priority attribute used");
@@ -96,8 +97,8 @@ namespace BotFramework
                             Info = methodInfo,
                             Priority = priority?.Value ?? 0,
                             ConditionType = conditionType,
-                            Owner = handler
-
+                            Owner = handler,
+                            InChat = inchat?.ChatType ?? InChat.All
                         };
 
                     var attributes = methodInfo.GetCustomAttributes<HandlerAttribute>();
@@ -121,14 +122,16 @@ namespace BotFramework
 
         public async Task ExecuteHandler(HandlerParams param)
         {
+            var methods = _methods
+                         .Where(m => m.InChat == InChat.All || m.InChat == param.InChat )
+                         .OrderByDescending(m => m.Priority);// in case handlers was added in runtime
 
-            var methods = _methods.OrderByDescending(m => m.Priority);// in case handlers was added in runtime
             var availableHandlers = new List<EventHandler>();
             foreach(var method in methods)
             {
                 if(method.ConditionType == ConditionType.Any)
                 {
-                    var handlers = method.Handlers.Where(handler => handler.Attribute.CanHandleInternal(param));
+                    var handlers = method.Handlers.Where(handler => handler.Attribute.CanHandleInternal(param)).ToList();
                     if(handlers.Any())
                         availableHandlers.Add(handlers.First());
                 }

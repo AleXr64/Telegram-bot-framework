@@ -217,10 +217,6 @@ namespace BotFramework
             return parameters.Length == CommandParameters.Count;
         }
 
-        private void MakeUser()
-        {
-
-        }
 
         private void GetParam(MethodInfo getServiceMethod, int position, Type parameterType)
         {
