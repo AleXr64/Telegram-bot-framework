@@ -1,4 +1,4 @@
-# Telegram-bot-framework [![Nuget](https://img.shields.io/nuget/v/AleXr64.BotFramework)](https://www.nuget.org/packages/AleXr64.BotFramework/)
+# Telegram-bot-framework [![Nuget](https://img.shields.io/nuget/v/AleXr64.BotFramework?logo=nuget)](https://www.nuget.org/packages/AleXr64.BotFramework/) [![Telegram chat](https://img.shields.io/badge/Telegram-TGBotFramework-blue?logo=telegram)](https://t.me/tgbotframework)
 Framework to simplify writing telegram bots.
 Register framework as service in DI conatiner:
 
