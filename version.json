@@ -3,7 +3,7 @@
     "version": "1.0",
     "pathFilters": ["/TGBotFramework/BotFramework"],
     "publicReleaseRefSpec": [
-        "^refs/heads/master$" 
+        "^refs/heads/release" 
       ],
     "cloudBuild": {
         "setVersionVariables": true,
