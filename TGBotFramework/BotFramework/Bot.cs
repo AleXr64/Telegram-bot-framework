@@ -83,8 +83,11 @@ namespace BotFramework
 
                 var me = await GetMeSafeAsync(cancellationToken);
                 UserName = me.Username;
-
-                Console.WriteLine($"{Environment.NewLine}    {UserName} started!{Environment.NewLine}");
+                Console.WriteLine();
+                Console.WriteLine($"    Telegram Bot Framework {ThisAssembly.AssemblyVersion}");
+                Console.WriteLine();
+                Console.WriteLine($"        {UserName} started!");
+                Console.WriteLine();
             } catch(Exception e) when(e is ArgumentException)
             {
                 Console.WriteLine(e);
