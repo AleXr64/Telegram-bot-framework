@@ -35,6 +35,6 @@ Example project can be found [here](TGBotFramework/Examples)
 
 Requires:
 
- - .net 6.0
+ - .netstandard 2.0
  - [Microsoft Dependency Injection](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/dependency-injection)  (via asp.net core or hosted service template)
 
