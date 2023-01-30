@@ -11,11 +11,11 @@ namespace BotFramework.Attributes
         {
             UpdateFlags = UpdateFlag.All;
         }
+
         public UpdateAttribute(UpdateFlag updateFlags)
         {
             UpdateFlags = updateFlags;
         }
-
         protected override bool CanHandle(HandlerParams param)
         {
 
@@ -37,20 +37,6 @@ namespace BotFramework.Attributes
                     UpdateType.PollAnswer => UpdateFlags.HasFlag(UpdateFlag.PollAnswer),
                     UpdateType.MyChatMember => UpdateFlags.HasFlag(UpdateFlag.MyChatMember),
                     UpdateType.ChatMember => UpdateFlags.HasFlag(UpdateFlag.ChatMember),
-                    _ => false
-                };
-        }
-
-        private bool CanHandleChat(Enums.InChat flags)
-        {
-            if(InChatFlags == Enums.InChat.All)
-                return true;
-
-            return flags switch
-                {
-                    Enums.InChat.Public => InChatFlags.HasFlag(Enums.InChat.Public),
-                    Enums.InChat.Private => InChatFlags.HasFlag(Enums.InChat.Private),
-                    Enums.InChat.Channel => InChatFlags.HasFlag(Enums.InChat.Channel),
                     _ => false
                 };
         }

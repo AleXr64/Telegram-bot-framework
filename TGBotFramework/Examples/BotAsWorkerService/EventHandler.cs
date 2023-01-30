@@ -18,7 +18,7 @@ namespace BotAsWorkerService
          * Higher value means higher priority. Default is 0.
          * Return false to prevent execution handlers with less priority, or return true to continue
          */
-        [Command(BotFramework.Enums.InChat.Private, "start", CommandParseMode.Both), Priority(10)]
+        [Command("start", CommandParseMode.Both), Priority(10)]
         public async Task<bool> Start()
         {
             await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
@@ -34,16 +34,16 @@ namespace BotAsWorkerService
         public async Task Task() => await Bot.SendTextMessageAsync(Chat, "I hate snakes");
 
         //Answer on any update
-        [Update(BotFramework.Enums.InChat.All, UpdateFlag.All)]
+        [Update(UpdateFlag.All)]
         public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
 
-        [Update(BotFramework.Enums.InChat.Public, UpdateFlag.CallbackQuery)]
+        [Update(UpdateFlag.CallbackQuery)]
         public async Task CBQuery()
         {
             await Bot.SendTextMessageAsync(Chat, "callback");
         }
 
-        [Command(BotFramework.Enums.InChat.Public, "query", CommandParseMode.Both)]
+        [Command("query", CommandParseMode.Both)]
         public async Task HandleQuery()
         {
             var buttons = new List<InlineKeyboardButton>()
@@ -58,7 +58,7 @@ namespace BotAsWorkerService
         }
 
         //Answer on message that contains photo or video
-        [Message(BotFramework.Enums.InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]
+        [Message(MessageFlag.HasPhoto | MessageFlag.HasVideo)]
         public async Task PhotoVideo() => await Bot.SendTextMessageAsync(Chat, "Send me more!");
 
         //Answer on command with parameters: "/me hello"
@@ -96,7 +96,7 @@ namespace BotAsWorkerService
         [HandleCondition(ConditionType.Any)]
         [Message(MessageFlag.HasPhoto)]
         [Message(MessageFlag.HasSticker)]
-        [Update(InChat.All, UpdateFlag.Message)]
+        [Update(UpdateFlag.Message)]
         [Message(MessageFlag.HasText)]
         public async Task<bool> MultiAttr()
         {
