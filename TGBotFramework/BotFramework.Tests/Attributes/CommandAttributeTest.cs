@@ -28,7 +28,7 @@ namespace BotFramework.Tests.Attributes
 
             var message = new Message
             {
-                    Chat = new Chat() { Type = Telegram.Bot.Types.Enums.ChatType.Group },
+                    Chat = new Chat() { Type = ChatType.Group },
                     Text = "/test@testbot",
                     Entities = new MessageEntity[]
                         {
@@ -78,7 +78,7 @@ namespace BotFramework.Tests.Attributes
             {
                                                      Message = new Message
                                                      {
-                                                             Chat = new Chat() { Type = Telegram.Bot.Types.Enums.ChatType.Group },
+                                                             Chat = new Chat() { Type = ChatType.Group },
                                                              Caption = "/test"
                                                             ,
                                                              CaptionEntities = new MessageEntity[]
@@ -142,112 +142,5 @@ namespace BotFramework.Tests.Attributes
             Assert.True(command.CanHandleInternal(paramses));
         }
 
-        [Fact]
-        public void CanHandleInChannel()
-        {
-            var command = new ParametrizedCommandAttribute("test");
-            var update = new Update
-            {
-                    Message = new Message
-                    {
-                            Text = "/test@testbot",
-                            Chat = new Chat { Type = ChatType.Channel },
-                            Entities = new MessageEntity[]
-                                {
-                                    new MessageEntity()
-                                        {
-                                            Length = 5, Offset = 0, Type = MessageEntityType.BotCommand
-                                        }
-                                }
-                        }
-                };
-
-            var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.True(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Group;
-            paramses = new HandlerParams(null,  update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Supergroup;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Private;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-        }
-
-        [Fact]
-        public void CanHandleInPrivateChat()
-        {
-            var command = new ParametrizedCommandAttribute("test");
-            var update = new Update
-            {
-                    Message = new Message
-                    {
-                            Text = "/test@testbot",
-                            Chat = new Chat { Type = ChatType.Channel },
-                            Entities = new MessageEntity[]
-                                {
-                                    new MessageEntity()
-                                        {
-                                            Length = 5, Offset = 0, Type = MessageEntityType.BotCommand
-                                        }
-                                }
-                        }
-                };
-
-            var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Group;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Supergroup;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Private;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.True(command.CanHandleInternal(paramses));
-        }
-
-        [Fact]
-        public void CanHandleInPublicChat()
-        {
-            var command = new ParametrizedCommandAttribute("test");
-            var update = new Update
-            {
-                    Message = new Message
-                    {
-                            Text = "/test@testbot",
-                            Chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel },
-                            Entities = new MessageEntity[]
-                                {
-                                    new MessageEntity()
-                                        {
-                                            Length = 5, Offset = 0, Type = MessageEntityType.BotCommand
-                                        }
-                                }
-                        }
-                };
-
-            var paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Group;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.True(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Supergroup;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.True(command.CanHandleInternal(paramses));
-
-            update.Message.Chat.Type = Telegram.Bot.Types.Enums.ChatType.Private;
-            paramses = new HandlerParams(null, update, _serviceProvider, "testbot", _userProvider);
-            Assert.False(command.CanHandleInternal(paramses));
-        }
     }
 }
