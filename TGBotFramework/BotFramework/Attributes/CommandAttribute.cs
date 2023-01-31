@@ -61,6 +61,8 @@ namespace BotFramework.Attributes
             if(IsParametrized)
                 return true;
 
+            if(!hParams.HasCommands)
+                return false;
             if(hParams.Chat.Type == ChatType.Private ||
                Mode == CommandParseMode.Both)
             {

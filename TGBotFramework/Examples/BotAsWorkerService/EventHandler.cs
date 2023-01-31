@@ -26,7 +26,7 @@ namespace BotAsWorkerService
         }
 
         //Answer on message with "ban" text
-        [TextMessage("ban")]
+        [TextMessage("ban", textContent: TextContent.Caption)]
         public async Task Ban() => await Bot.SendTextMessageAsync(Chat, "I will ban you right now! Just kidding");
 
         //Answer on message that satisfy provided regex expression

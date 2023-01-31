@@ -23,7 +23,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanFilterUserName()
         {
-            var commandInChat = new ParametrizedCommandAttribute(Enums.InChat.All,"test", CommandParseMode.Both);
+            var commandInChat = new ParametrizedCommandAttribute("test", CommandParseMode.Both);
             var command = new ParametrizedCommandAttribute("test", CommandParseMode.Both);
 
             var message = new Message
@@ -44,13 +44,13 @@ namespace BotFramework.Tests.Attributes
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            commandInChat = new ParametrizedCommandAttribute(Enums.InChat.All,"test", CommandParseMode.WithUsername);
+            commandInChat = new ParametrizedCommandAttribute("test", CommandParseMode.WithUsername);
             command = new ParametrizedCommandAttribute("test", CommandParseMode.WithUsername);
             
             Assert.True(commandInChat.CanHandleInternal(paramses));
             Assert.True(command.CanHandleInternal(paramses));
 
-            commandInChat = new ParametrizedCommandAttribute(Enums.InChat.All,"test", CommandParseMode.WithoutUsername);
+            commandInChat = new ParametrizedCommandAttribute("test", CommandParseMode.WithoutUsername);
             command = new ParametrizedCommandAttribute("test", CommandParseMode.WithoutUsername);
 
             Assert.False(commandInChat.CanHandleInternal(paramses));
@@ -104,7 +104,7 @@ namespace BotFramework.Tests.Attributes
             var paramses = new HandlerParams(null, new Update
             { Message = new Message
             {
-                                                     Chat = new Chat() { Type = Telegram.Bot.Types.Enums.ChatType.Group },
+                                                     Chat = new Chat() { Type = ChatType.Group },
                                                      Text = "/test"
                                                     ,
                                                      Entities = new MessageEntity[]
@@ -145,13 +145,13 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInChannel()
         {
-            var command = new ParametrizedCommandAttribute(Enums.InChat.Channel, "test");
+            var command = new ParametrizedCommandAttribute("test");
             var update = new Update
             {
                     Message = new Message
                     {
                             Text = "/test@testbot",
-                            Chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel },
+                            Chat = new Chat { Type = ChatType.Channel },
                             Entities = new MessageEntity[]
                                 {
                                     new MessageEntity()
@@ -181,13 +181,13 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPrivateChat()
         {
-            var command = new ParametrizedCommandAttribute(Enums.InChat.Private, "test");
+            var command = new ParametrizedCommandAttribute("test");
             var update = new Update
             {
                     Message = new Message
                     {
                             Text = "/test@testbot",
-                            Chat = new Chat { Type = Telegram.Bot.Types.Enums.ChatType.Channel },
+                            Chat = new Chat { Type = ChatType.Channel },
                             Entities = new MessageEntity[]
                                 {
                                     new MessageEntity()
@@ -217,7 +217,7 @@ namespace BotFramework.Tests.Attributes
         [Fact]
         public void CanHandleInPublicChat()
         {
-            var command = new ParametrizedCommandAttribute(Enums.InChat.Public, "test");
+            var command = new ParametrizedCommandAttribute("test");
             var update = new Update
             {
                     Message = new Message

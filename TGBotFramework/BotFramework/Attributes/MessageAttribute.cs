@@ -8,7 +8,6 @@ using Telegram.Bot.Types.Enums;
 
 namespace BotFramework.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class MessageAttribute: UpdateAttribute
     {
         internal MessageFlag MessageFlags;

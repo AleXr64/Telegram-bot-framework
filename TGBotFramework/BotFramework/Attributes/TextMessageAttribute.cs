@@ -7,18 +7,34 @@ namespace BotFramework.Attributes
 {
     public class TextMessageAttribute: MessageAttribute
     {
+        internal override bool IsTextMessage => true;
+
+        /// <summary>
+        /// Text pattern to compare with message
+        /// </summary>
         internal string Text { get; set; }
+
+        /// <summary>
+        /// What content should be compared: Caption, Text or both.
+        /// For details see: <see cref="TextContent"/>
+        /// </summary>
         internal TextContent TextContent { get; set; }
-
+        /// <summary>
+        /// String comparison type for `string.Equals()`
+        /// </summary>
         internal StringComparison StringComparison { get; set; } = StringComparison.Ordinal;
-
+        
+        /// <summary>
+        /// Text or caption of message
+        /// </summary>
         public string MessageText { get; set; }
+
 
         internal virtual bool IsCommand { get; set; } = false;
 
         internal virtual bool IsRegex { get; set; } = false;
 
-        internal override bool IsTextMessage => true;
+
 
         public TextMessageAttribute() { }
 
@@ -31,55 +47,50 @@ namespace BotFramework.Attributes
         {
             Text = text;
         }
-        public TextMessageAttribute(string text, TextContent textContent) : this(text)
+        public TextMessageAttribute(string text, TextContent textContent)
+            : this(text)
         {
             TextContent = textContent;
         }
-        public TextMessageAttribute(string text, StringComparison comparison) : this(text)
+        public TextMessageAttribute(string text, StringComparison comparison)
+            : this(text)
         {
             StringComparison = comparison;
         }
 
+        public TextMessageAttribute(string text, TextContent textContent, StringComparison comparison)
+            : this(text, textContent)
+        {
+            StringComparison = comparison;
+        }
 
         protected override bool CanHandle(HandlerParams param)
         {
-            if(!base.CanHandle(param))
-            {
-                return false;
-            }
             var message = param.Update.Message;
-            if(message == null)
+            if(!base.CanHandle(param) || message == null)
             {
                 return false;
             }
-            switch(TextContent)
-            {
-                case TextContent.Text:
-                    {
-                        MessageText = message.Text;
-                        break;
-                    }
-                case TextContent.Caption:
-                    {
-                        MessageText = message.Caption;
-                        break;
-                    }
-                case TextContent.TextAndCaption:
-                    {
-                        MessageText = message.Text ?? message.Caption;
-                        break;
-                    }
-            }
+
+            MessageText = TextContent switch
+                {
+                    TextContent.Text => message.Text,
+                    TextContent.Caption => message.Caption,
+                    TextContent.TextAndCaption => message.Text ?? message.Caption,
+                    _ => MessageText
+                };
+
             if(string.IsNullOrEmpty(MessageText))
             {
                 return false;
             }
+
             if(string.IsNullOrEmpty(Text))
             {
                 return true;
             }
 
-            if(IsRegex || (param.HasCommands || param.IsParametrizedCommand) && IsCommand)
+            if(IsRegex || IsCommand)
                 return true;
 
             return Text.Equals(MessageText, StringComparison);

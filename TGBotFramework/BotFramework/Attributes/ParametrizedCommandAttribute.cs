@@ -7,8 +7,7 @@ namespace BotFramework.Attributes
     public class ParametrizedCommandAttribute : CommandAttribute
     {
         internal override bool IsParametrized => true;
-        public ParametrizedCommandAttribute()
-            : base() { }
+        public ParametrizedCommandAttribute() { }
 
         public ParametrizedCommandAttribute(string text)
             : base(text)  { }
