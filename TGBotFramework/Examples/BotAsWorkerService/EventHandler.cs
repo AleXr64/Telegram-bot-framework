@@ -1,13 +1,11 @@
-﻿using System;
+﻿using BotFramework;
+using BotFramework.Attributes;
+using BotFramework.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BotFramework;
-using BotFramework.Attributes;
-using BotFramework.Setup;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using BotFramework.Enums;
-using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BotAsWorkerService
@@ -88,19 +86,33 @@ namespace BotAsWorkerService
             await Bot.SendTextMessageAsync(Chat, "Command1");
         }
 
+        [Message(MessageFlag.IsReply)]
         [Command("command2")]
         public async Task Command2()
         {
             await Bot.SendTextMessageAsync(Chat, "Command2");
         }
 
-        [Command("spoiler")]
-        public async Task Spoiler()
+        [HandleCondition(ConditionType.Any)]
+        [Message(MessageFlag.HasPhoto)]
+        [Message(MessageFlag.HasSticker)]
+        [Update(InChat.All, UpdateFlag.Message)]
+        [Message(MessageFlag.HasText)]
+        public async Task<bool> MultiAttr()
         {
-            await Bot.SendAnimationAsync(Chat.Id, animation: new InputFileUrl(@"https://file-examples.com/storage/fecd197fb063b33dd9d79e6/2017/04/file_example_MP4_480_1_5MG.mp4"), hasSpoiler: true);
+            await Bot.SendTextMessageAsync(Chat.Id, "multi attributes");
+            return true;
         }
-        
-        
+
+        [HandleCondition(ConditionType.All)]
+        [Message(MessageFlag.HasPhoto)]
+        [Message(MessageFlag.HasCaption)]
+        public async Task<bool> MultiAttr2()
+        {
+            await Bot.SendTextMessageAsync(Chat.Id, "Message with photo AND caption");
+            return true;
+        }
+
     }
 
     public class MeParam

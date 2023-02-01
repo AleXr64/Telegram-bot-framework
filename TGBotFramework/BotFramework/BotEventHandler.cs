@@ -1,13 +1,12 @@
-﻿using System;
+﻿using BotFramework.Abstractions;
+using BotFramework.Attributes;
+using BotFramework.Enums;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using BotFramework.Abstractions;
-using BotFramework.Attributes;
-using BotFramework.Enums;
-using BotFramework.Utils;
-using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -34,17 +33,25 @@ namespace BotFramework
     internal class EventHandler
     {
         public HandlerAttribute Attribute;
-        public short Priority;
-        public MethodInfo Method;
         public Type MethodOwner;
+        public MethodInfo Method;
         public ParameterInfo[] Parameters;
         public bool Parametrized;
     }
 
+    internal class Method
+    {
+        public List<EventHandler> Handlers = new();
+        public MethodInfo Info;
+        public short Priority;
+        public Type Owner;
+        public ConditionType ConditionType;
+    }
+
     internal class EventHandlerFactory
     {
-        private readonly List<EventHandler> handlers = new List<EventHandler>();
-
+        private readonly List<Method> _methods = new();
+        
         public void Find()
         {
             var knowHandlers = new List<Type>();
@@ -56,6 +63,7 @@ namespace BotFramework
 
 
             foreach(var assembly in assemblies)
+            {
                 try
                 {
                     var types = assembly.GetTypes()
@@ -63,43 +71,75 @@ namespace BotFramework
                     knowHandlers.AddRange(types);
 
                 } catch(ReflectionTypeLoadException) { }
+            }
+
 
             foreach(var handler in knowHandlers)
             {
-                var methods = handler.GetMethods().Where(x => x.GetCustomAttributes<HandlerAttribute>().Any());
+                var methods = handler.GetMethods().Where(x => 
+                    x.GetCustomAttributes<HandlerAttribute>().Any());
 
                 foreach(var methodInfo in methods)
                 {
                     var priority = methodInfo.GetCustomAttribute<PriorityAttribute>();
                     if(priority != null && methodInfo.ReturnType != typeof(Task<bool>))
+                    {
                         throw new Exception($"Method {methodInfo.Name} should return Task<bool> when priority attribute used");
+                    }
 
-                    var eHandler = new EventHandler
+                    var conditionType = methodInfo.GetCustomAttribute<HandleConditionAttribute>()?.ConditionType ??
+                                        ConditionType.Any;
+
+                    var method = new Method 
                         {
-                            Attribute = methodInfo.GetCustomAttribute<HandlerAttribute>(),
+                            Info = methodInfo,
                             Priority = priority?.Value ?? 0,
-                            Method = methodInfo,
-                            MethodOwner = handler,
+                            ConditionType = conditionType,
+                            Owner = handler
+
                         };
-                    eHandler.Parametrized = eHandler.Attribute is ParametrizedCommandAttribute;
-                    eHandler.Parameters = methodInfo.GetParameters();
-                    handlers.Add(eHandler);
+
+                    var attributes = methodInfo.GetCustomAttributes<HandlerAttribute>();
+                    foreach(var attribute in attributes)
+                    {
+                        var eHandler = new EventHandler 
+                            {
+                                Attribute = attribute,
+                                MethodOwner = handler,
+                                Method = methodInfo
+                            };
+
+                        eHandler.Parametrized = eHandler.Attribute is ParametrizedCommandAttribute;
+                        eHandler.Parameters = methodInfo.GetParameters();
+                        method.Handlers.Add(eHandler);
+                    }
+                    _methods.Add(method);
                 }
             }
         }
 
         public async Task ExecuteHandler(HandlerParams param)
         {
-            HandlerExec executed;
 
-            var availableHandlers = handlers
-                .Where(x => x.Attribute.CanHandleInternal(param))
-                .OrderByDescending(x => x.Priority)
-                .ToList();
+            var methods = _methods.OrderByDescending(m => m.Priority);// in case handlers was added in runtime
+            var availableHandlers = new List<EventHandler>();
+            foreach(var method in methods)
+            {
+                if(method.ConditionType == ConditionType.Any)
+                {
+                    var handlers = method.Handlers.Where(handler => handler.Attribute.CanHandleInternal(param));
+                    if(handlers.Any())
+                        availableHandlers.Add(handlers.First());
+                }
+                else if(method.Handlers.All(handler => handler.Attribute.CanHandleInternal(param)))
+                {
+                    availableHandlers.Add(method.Handlers.FirstOrDefault());
+                }
+            }
 
             foreach(var eventHandler in availableHandlers)
             {
-                executed = await Exec(eventHandler, param);
+                var executed = await Exec(eventHandler, param);
                 switch(executed)
                 {
                     case HandlerExec.Break:
@@ -119,7 +159,7 @@ namespace BotFramework
 
             try
             {
-                var instance = (BotEventHandler)ActivatorUtilities.CreateInstance(provider, method.DeclaringType);
+                var instance = (BotEventHandler)ActivatorUtilities.CreateInstance(provider, handler.MethodOwner);
                 instance.__Instantiate(param);
                 object[] paramObjects;
                 if(handler.Parameters.Length > 0 && handler.Parametrized && param.IsParametrizedCommand)
@@ -143,23 +183,24 @@ namespace BotFramework
                 {
                     paramObjects = null;
                 }
-
-                if(method.ReturnParameter.ParameterType == typeof(Task))
+                var task = method.Invoke(instance, paramObjects);
+                if(task == null)
                 {
-                    var task = method.Invoke(instance, paramObjects);
+                    return HandlerExec.Continue;
+                }
+
+                if(method.ReturnParameter?.ParameterType == typeof(Task))
+                {
+                    
                     await (Task)task;
                     return HandlerExec.Continue;
                 }
 
-                if(method.ReturnParameter.ParameterType == typeof(Task<bool>))
+                if(method.ReturnParameter?.ParameterType == typeof(Task<bool>))
                 {
-                    var task = method.Invoke(instance, paramObjects);
                     return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
                 }
 
-
-                method.Invoke(instance, paramObjects);
-                return HandlerExec.Continue;
             } catch(ArgumentException e)
             {
                 Console.WriteLine(e);

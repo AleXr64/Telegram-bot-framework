@@ -167,6 +167,7 @@ namespace BotFramework
             {
                 var fulltext = message.EntityValues?.FirstOrDefault() ??
                                message.CaptionEntityValues?.FirstOrDefault();
+                
 
                 var ent = message.Entities?.FirstOrDefault() ?? message.CaptionEntities?.FirstOrDefault();
                 ParametrizedCmd = new ParametrizedCommand
