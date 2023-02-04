@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Telegram.Bot.Types;
 
 namespace BotFramework
@@ -54,7 +55,8 @@ namespace BotFramework
 
         public static string[] GetCommandArgs(this string text)
         {
-            return text.Split(" ").Skip(1).ToArray();
+            var args = text.Split(" ").Skip(1).ToArray();
+            return args.Length > 0  ? args : new []{ string.Empty };
         }
     }
 }

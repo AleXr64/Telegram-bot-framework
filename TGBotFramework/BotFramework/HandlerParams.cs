@@ -88,7 +88,7 @@ namespace BotFramework
         }
 
         public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
-        public string[] CommandArgs { get; private set; } = Array.Empty<string>();
+        public string[] CommandArgs { get; private set; } = { string.Empty };
 
         public string CommandName { get; private set; } = string.Empty;
         public bool IsCommand { get; private set; }
@@ -140,6 +140,8 @@ namespace BotFramework
             var baseParserType = typeof(IParameterParser<>);
             var parserType = baseParserType.MakeGenericType(parameterType);
             var parser = getServiceMethod.Invoke(ServiceProvider, new object[] { parserType });
+
+
 
             if(parser != null)
                 try
