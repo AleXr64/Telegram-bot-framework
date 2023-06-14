@@ -6,24 +6,18 @@ namespace BotFramework.Attributes
     public class UpdateAttribute:HandlerAttribute
     {
         internal UpdateFlag UpdateFlags;
-        internal InChat InChatFlags;
 
         public UpdateAttribute()
         {
-            InChatFlags = InChat.All;
             UpdateFlags = UpdateFlag.All;
         }
-        public UpdateAttribute(InChat inChatFlags, UpdateFlag updateFlags)
+
+        public UpdateAttribute(UpdateFlag updateFlags)
         {
-            InChatFlags = inChatFlags;
             UpdateFlags = updateFlags;
         }
-
         protected override bool CanHandle(HandlerParams param)
         {
-
-            if(!CanHandleChat(param.InChat))
-                return false;
 
             if(UpdateFlags.HasFlag(UpdateFlag.All))
                 return true;
@@ -43,20 +37,6 @@ namespace BotFramework.Attributes
                     UpdateType.PollAnswer => UpdateFlags.HasFlag(UpdateFlag.PollAnswer),
                     UpdateType.MyChatMember => UpdateFlags.HasFlag(UpdateFlag.MyChatMember),
                     UpdateType.ChatMember => UpdateFlags.HasFlag(UpdateFlag.ChatMember),
-                    _ => false
-                };
-        }
-
-        private bool CanHandleChat(InChat flags)
-        {
-            if(InChatFlags == InChat.All)
-                return true;
-
-            return flags switch
-                {
-                    InChat.Public => InChatFlags.HasFlag(InChat.Public),
-                    InChat.Private => InChatFlags.HasFlag(InChat.Private),
-                    InChat.Channel => InChatFlags.HasFlag(InChat.Channel),
                     _ => false
                 };
         }

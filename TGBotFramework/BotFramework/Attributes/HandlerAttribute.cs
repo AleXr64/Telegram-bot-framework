@@ -7,7 +7,5 @@ namespace BotFramework.Attributes
     {
         protected abstract bool CanHandle(HandlerParams param);
         internal bool CanHandleInternal(HandlerParams param) => CanHandle(param);
-
-        public override object TypeId => Guid.NewGuid();
     }
 }

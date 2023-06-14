@@ -18,7 +18,7 @@ namespace BotFramework.Abstractions.Storage.InMemory
 #endif
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if(obj is BotUser another)
             {

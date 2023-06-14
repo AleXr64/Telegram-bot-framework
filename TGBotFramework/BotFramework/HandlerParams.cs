@@ -135,7 +135,7 @@ namespace BotFramework
         public bool HasChat => Chat != null;
         public bool HasFrom => From != null;
         public UpdateType Type => Update.Type;
-        public InChat InChat { get; set; }
+        public Enums.InChat InChat { get; set; }
 
         public CallbackQuery CallbackQuery { get; set; }
 
@@ -145,53 +145,57 @@ namespace BotFramework
             if(message == null || Update.Type != UpdateType.Message || message.Caption == null && message.Type != MessageType.Text)
                 return;
 
-            MessageEntity[] ents;
+            var ents = message.Entities ?? message.CaptionEntities;
+            var entValues = (message.EntityValues ?? message.CaptionEntityValues)?.ToList();
 
-            if(message.Caption == null)
-                ents = message.Entities?.Where((x, i) => 
-                                                   x.Type == MessageEntityType.BotCommand
-                                                   && CommandHelper.IsMyCommand(message.EntityValues?.ElementAtOrDefault(i), UserName))
-                              .ToArray();
-            else
-                ents = message.CaptionEntities?.Where((x, i) => 
-                                                          x.Type == MessageEntityType.BotCommand
-                                                          &&
-                                                          CommandHelper.IsMyCommand(message.CaptionEntityValues?.ElementAtOrDefault(i), UserName))
-                              .ToArray();
-
-            if(ents == null || ents.Length == 0)
+            if(ents == null || entValues == null) 
                 return;
 
-            IsParametrizedCommand = ents.Length == 1 && ents.First()?.Offset == 0;
-            if(IsParametrizedCommand)
+            var entDictionary = new Dictionary<MessageEntity, string>();
+            var index = 0;
+            foreach(var ent in ents)
             {
-                var fulltext = message.EntityValues?.FirstOrDefault() ??
-                               message.CaptionEntityValues?.FirstOrDefault();
-                
+                var value = entValues.ElementAt(index);
+                if(ent.Type == MessageEntityType.BotCommand 
+                   && CommandHelper.IsMyCommand(value, UserName))
+                {
+                    entDictionary.Add(ent, value);
+                }
 
-                var ent = message.Entities?.FirstOrDefault() ?? message.CaptionEntities?.FirstOrDefault();
+                index++;
+            }
+
+            if(!entDictionary.Any())
+                return;
+
+            if(entDictionary.Count == 1 && entDictionary.First().Key.Offset == 0)
+            {
+                IsParametrizedCommand = true;
+                var cmd = entDictionary.First();
+                var fulltext = cmd.Value;
+
                 ParametrizedCmd = new ParametrizedCommand
                     {
                         FullText = fulltext,
                         IsFullCommand = fulltext.Contains('@'),
-                        Length = ent.Length,
-                        Offset = ent.Offset,
+                        Length = cmd.Key.Length,
+                        Offset = cmd.Key.Offset,
                         Name = CommandHelper.GetShortName(fulltext),
                         Args = CommandHelper.GetCommandArgs(message.Text ?? message.Caption)
                     };
             }
 
             HasCommands = true;
-            foreach(var ent in ents)
+            foreach(var ent in entDictionary)
             {
-                var fulltext = CommandHelper.GetCommand(message.Text ?? message.Caption, ent.Offset, ent.Length);
+                var fulltext = ent.Value;
                 Commands.Add(new Command()
                     {
                         FullText = fulltext,
                         IsFullCommand = fulltext.Contains('@'),
-                        Length = ent.Length,
+                        Length = ent.Key.Length,
                         Name = CommandHelper.GetShortName(fulltext),
-                        Offset = ent.Offset
+                        Offset = ent.Key.Offset
                     });
             }
         }
@@ -213,59 +217,54 @@ namespace BotFramework
             return parameters.Length == CommandParameters.Count;
         }
 
-        private void MakeUser()
-        {
-
-        }
 
         private void GetParam(MethodInfo getServiceMethod, int position, Type parameterType)
         {
             var baseParserType = typeof(IParameterParser<>);
             var parserType = baseParserType.MakeGenericType(parameterType);
             var parser = getServiceMethod.Invoke(ServiceProvider, new object[] { parserType });
-
-
-
-            if(parser != null)
-                try
-                {
-                    var defaultInstance =
-                        parser.GetType().GetMethod("DefaultInstance")?.Invoke(parser, null);
-
-                    var parserParams = new[] { ParametrizedCmd.Args[position], defaultInstance };
-                    var result = parser.GetType().GetMethod("TryGetValue")?.Invoke(parser, parserParams);
-                    if(result != null && (bool)result)
-                    {
-                        var commandParameter = new CommandParameter(position, parserParams[1]);
-                        CommandParameters.Add(commandParameter);
-                        return;
-                    }
-                } catch
-                {
-                    throw new ArgumentException("Wrong parser! WTF??");
-                }
+            ParseParam(parser, position, false);
 
             var extendParametrType = typeof(IRawParameterParser<>);
             parserType = extendParametrType.MakeGenericType(parameterType);
             parser = getServiceMethod.Invoke(ServiceProvider, new object[] { parserType });
-            if(parser != null)
-                try
-                {
-                    var defaultInstance =
-                        parser.GetType().GetMethod("DefaultInstance")?.Invoke(parser, null);
+            ParseParam(parser, position, true);
+        }
 
-                    var parserParams = new[] { Update, defaultInstance };
-                    var result = parser.GetType().GetMethod("TryGetValueByRawUpdate")?.Invoke(parser, parserParams);
-                    if(result != null && (bool)result)
-                    {
-                        var commandParameter =
-                            new CommandParameter(position, parserParams[1]);
-                        CommandParameters.Add(commandParameter);
-                    }
-                } catch
+
+        private bool ParseParam(object parser, int position, bool isRaw)
+        {
+            if(parser == null)
+                return false;
+            try
+            {
+                var defaultInstance =
+                    parser.GetType().GetMethod("DefaultInstance")?.Invoke(parser, null);
+
+                object[] parserParams;
+                object result;
+                if(isRaw)
                 {
-                    throw new ArgumentException("Wrong parser! WTF??");
+                    parserParams = new[] { Update, defaultInstance };
+                    result = parser.GetType().GetMethod("TryGetValueByRawUpdate")?.Invoke(parser, parserParams);
                 }
+                else
+                {
+                    parserParams = new[] { ParametrizedCmd.Args[position], defaultInstance };
+                    result = parser.GetType().GetMethod("TryGetValue")?.Invoke(parser, parserParams);
+                }
+
+                if(result is true)
+                {
+                    var commandParameter = new CommandParameter(position, parserParams[1]);
+                    CommandParameters.Add(commandParameter);
+                    return true;
+                }
+            } catch
+            {
+                throw new ArgumentException("Wrong parser! WTF??");
+            }
+            return false;
         }
 
 
