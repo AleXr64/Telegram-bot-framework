@@ -1,40 +1,25 @@
-﻿using BotFramework.Enums;
+﻿using System;
+using BotFramework.Enums;
 using Telegram.Bot.Types.Enums;
 
 namespace BotFramework.Attributes
 {
-    public class ParametrizedCommandAttribute: CommandAttribute
+    public class ParametrizedCommandAttribute : CommandAttribute
     {
-
-        public ParametrizedCommandAttribute()
-            : base()
-        {
-            IsParametrized = true;
-        }
+        internal override bool IsParametrized => true;
+        public ParametrizedCommandAttribute() { }
 
         public ParametrizedCommandAttribute(string text)
-            : base(text)
-        {
-            IsParametrized = true;
-        }
+            : base(text)  { }
 
-        public ParametrizedCommandAttribute(InChat type, string text)
-            : base(type, text)
-        {
-            IsParametrized = true;
-        }
+        public ParametrizedCommandAttribute(string text, TextContent textContent)
+            : base(text, textContent)  { }
 
         public ParametrizedCommandAttribute(string text, CommandParseMode parseMode)
-            : base(text, parseMode)
-        {
-            IsParametrized = true;
-        }
+            : base(text, parseMode)  { }
 
-        public ParametrizedCommandAttribute(InChat type, string text, CommandParseMode parseMode)
-            : base(type, text, parseMode)
-        {
-            IsParametrized = true;
-        }
+        public ParametrizedCommandAttribute(string text, CommandParseMode parseMode, TextContent textContent)
+            : base(text, parseMode, textContent) { }
 
         protected override bool CanHandle(HandlerParams param) => base.CanHandle(param) && IsEqual(param);
 
@@ -43,12 +28,12 @@ namespace BotFramework.Attributes
             if(!hParams.IsParametrizedCommand)
                 return false;
 
-            if(Mode == CommandParseMode.WithUsername && (!hParams.ParametrizedCmd.IsFullCommand || hParams.Chat.Type == ChatType.Private)
-               || Mode == CommandParseMode.WithoutUsername && hParams.ParametrizedCmd.IsFullCommand)
-            return false;
-
-
-            return Text.Equals(hParams.ParametrizedCmd.Name);
+            return (Mode, hParams.ParametrizedCmd.IsFullCommand) switch
+                {
+                    (CommandParseMode.WithUsername, false) => false,
+                    (CommandParseMode.WithoutUsername, true) => false,
+                    _ => Text.Equals(hParams.ParametrizedCmd.Name)
+                };
         }
     }
 }
