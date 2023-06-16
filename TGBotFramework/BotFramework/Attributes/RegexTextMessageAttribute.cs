@@ -9,9 +9,8 @@ namespace BotFramework.Attributes
     public class RegexTextMessageAttribute: TextMessageAttribute
     {
         internal RegexOptions RegexOptions { get; set; } = RegexOptions.None;
-
         public RegexTextMessageAttribute(string regex_pattern)
-            : base(regex_pattern) { }
+            : base(regex_pattern) { IsRegex = true; }
 
         public RegexTextMessageAttribute(string regex_pattern, TextContent textContent)
             : this(regex_pattern)
@@ -21,7 +20,6 @@ namespace BotFramework.Attributes
         public RegexTextMessageAttribute(string regex_pattern, TextContent textContent, RegexOptions regexOptions)
             : this(regex_pattern, textContent)
         {
-            IsRegex = true;
             RegexOptions = regexOptions;
         }
 
