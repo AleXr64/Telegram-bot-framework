@@ -31,6 +31,7 @@ namespace BotFramework
         private TelegramBotClient client;
         private EventHandlerFactory factory;
 
+        private readonly CancellationTokenSource _stopPollingSource = new();
         private readonly LinkedList<Type> _wares;
 
         private string _userName;
@@ -55,6 +56,7 @@ namespace BotFramework
         {
             await client.DeleteWebhookAsync(cancellationToken:cancellationToken);
             await client.CloseAsync(cancellationToken);
+            _stopPollingSource.Cancel();
         }
 
         private async Task StartListen(CancellationToken cancellationToken)
@@ -109,7 +111,7 @@ namespace BotFramework
             }
             else
             {
-                client.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), cancellationToken);
+                client.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), _stopPollingSource.Token);
                 
             }
         }
