@@ -8,5 +8,7 @@
   "sockS5Port": null,
   "sockS5User": null,
   "sockS5Password": null,
-  "useSOCKS5": false
+  "useSOCKS5": false,
+  "useTestEnv": false,
+  "botApiUrl": null
 }
