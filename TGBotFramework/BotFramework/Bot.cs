@@ -32,7 +32,10 @@ namespace BotFramework
         private TelegramBotClient client;
 
         private EventHandlerFactory factory;
-        
+
+        private CancellationTokenSource _recieveToken = new CancellationTokenSource();
+
+
         public Bot(IServiceProvider services, IServiceScopeFactory scopeFactory, Type startupType = null)
         {
             this.services = services;
@@ -50,6 +53,7 @@ namespace BotFramework
         {
             await client.DeleteWebhookAsync(cancellationToken: cancellationToken);
             await client.CloseAsync(cancellationToken);
+            _recieveToken.Cancel();
         }
 
         public string UserName { get; private set; }
@@ -125,7 +129,7 @@ namespace BotFramework
                 await client.DeleteWebhookAsync(false, cancellationToken);
 
                 var receiverOptions = new ReceiverOptions { AllowedUpdates = { }, ThrowPendingUpdates = false };
-                client.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, cancellationToken);
+                client.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, _recieveToken.Token);
             }
         }
 
