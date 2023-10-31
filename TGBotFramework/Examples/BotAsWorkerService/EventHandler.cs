@@ -1,13 +1,11 @@
-﻿using System;
+﻿using BotFramework;
+using BotFramework.Attributes;
+using BotFramework.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BotFramework;
-using BotFramework.Attributes;
-using BotFramework.Setup;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using BotFramework.Enums;
-using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace BotAsWorkerService
@@ -20,7 +18,7 @@ namespace BotAsWorkerService
          * Higher value means higher priority. Default is 0.
          * Return false to prevent execution handlers with less priority, or return true to continue
          */
-        [Command(InChat.Private, "start", CommandParseMode.Both), Priority(10)]
+        [Command("start", CommandParseMode.Both), Priority(10)]
         public async Task<bool> Start()
         {
             await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
@@ -28,24 +26,24 @@ namespace BotAsWorkerService
         }
 
         //Answer on message with "ban" text
-        [Message("ban")]
+        [TextMessage("ban", textContent: TextContent.Caption)]
         public async Task Ban() => await Bot.SendTextMessageAsync(Chat, "I will ban you right now! Just kidding");
 
         //Answer on message that satisfy provided regex expression
-        [Message("^.*?(?i)python$", regex: true, messageFlags:MessageFlag.HasCaption | MessageFlag.HasText)]
+        [RegexTextMessage("^.*?(?i)python$")]
         public async Task Task() => await Bot.SendTextMessageAsync(Chat, "I hate snakes");
 
         //Answer on any update
-        [Update(InChat.All, UpdateFlag.All)]
+        [Update(UpdateFlag.All)]
         public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
 
-        [Update(InChat.Public, UpdateFlag.CallbackQuery)]
+        [Update(UpdateFlag.CallbackQuery)]
         public async Task CBQuery()
         {
             await Bot.SendTextMessageAsync(Chat, "callback");
         }
 
-        [Command(InChat.Public, "query", CommandParseMode.Both)]
+        [Command("query", CommandParseMode.Both)]
         public async Task HandleQuery()
         {
             var buttons = new List<InlineKeyboardButton>()
@@ -60,7 +58,7 @@ namespace BotAsWorkerService
         }
 
         //Answer on message that contains photo or video
-        [Message(InChat.All, MessageFlag.HasPhoto | MessageFlag.HasVideo)]
+        [Message(MessageFlag.HasPhoto | MessageFlag.HasVideo)]
         public async Task PhotoVideo() => await Bot.SendTextMessageAsync(Chat, "Send me more!");
 
         //Answer on command with parameters: "/me hello"
@@ -88,19 +86,33 @@ namespace BotAsWorkerService
             await Bot.SendTextMessageAsync(Chat, "Command1");
         }
 
+        [Message(MessageFlag.IsReply)]
         [Command("command2")]
         public async Task Command2()
         {
             await Bot.SendTextMessageAsync(Chat, "Command2");
         }
 
-        [Command("spoiler")]
-        public async Task Spoiler()
+        [HandleCondition(ConditionType.Any)]
+        [Message(MessageFlag.HasPhoto)]
+        [Message(MessageFlag.HasSticker)]
+        [Update(UpdateFlag.Message)]
+        [Message(MessageFlag.HasText)]
+        public async Task<bool> MultiAttr()
         {
-            await Bot.SendAnimationAsync(Chat.Id, animation: new InputFileUrl(@"https://file-examples.com/storage/fecd197fb063b33dd9d79e6/2017/04/file_example_MP4_480_1_5MG.mp4"), hasSpoiler: true);
+            await Bot.SendTextMessageAsync(Chat.Id, "multi attributes");
+            return true;
         }
-        
-        
+
+        [HandleCondition(ConditionType.All)]
+        [Message(MessageFlag.HasPhoto)]
+        [Message(MessageFlag.HasCaption)]
+        public async Task<bool> MultiAttr2()
+        {
+            await Bot.SendTextMessageAsync(Chat.Id, "Message with photo AND caption");
+            return true;
+        }
+
     }
 
     public class MeParam

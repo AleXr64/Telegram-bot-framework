@@ -35,6 +35,7 @@ namespace BotFramework
 
         private CancellationTokenSource _recieveToken = new CancellationTokenSource();
 
+
         public Bot(IServiceProvider services, IServiceScopeFactory scopeFactory, Type startupType = null)
         {
             this.services = services;
@@ -67,6 +68,11 @@ namespace BotFramework
 
             try
             {
+                var apiUrl = _config.BotApiUrl;
+                if(string.IsNullOrWhiteSpace(apiUrl))
+                    apiUrl = null;
+                var options = new TelegramBotClientOptions(_config.Token, apiUrl, _config.UseTestEnv);
+                
                 if(_config.UseSOCKS5)
                 {
                     var proxy = new HttpToSocks5Proxy(_config.SOCKS5Address, _config.SOCKS5Port, _config.SOCKS5User,
@@ -74,11 +80,11 @@ namespace BotFramework
                     var handler = new HttpClientHandler { Proxy = proxy };
                     var httpClient = new HttpClient(handler, true);
 
-                    client = new TelegramBotClient(_config.Token, httpClient);
+                    client = new TelegramBotClient(options, httpClient);
                 }
                 else
                 {
-                    client = new TelegramBotClient(_config.Token);
+                    client = new TelegramBotClient(options);
                 }
 
                 factory = new EventHandlerFactory();

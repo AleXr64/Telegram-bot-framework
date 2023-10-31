@@ -48,19 +48,19 @@ namespace BotFramework.Tests.Attributes
         }
 
         [Fact]
-        public void CanHandleCaptionMessages()
+        public void CanHandleCaptionTextMessages()
         {
             var paramses = new HandlerParams(null, new Update { Message = new Message { Caption = "Blah", Voice = new Voice() } },
                                              _serviceProvider, "testbot", _userProvider);
 
-            var attribute = new MessageAttribute(MessageFlag.HasCaption);
+            var attribute = new TextMessageAttribute(TextContent.Caption);
 
             Assert.True(attribute.CanHandleInternal(paramses));
 
-            attribute = new MessageAttribute("Foo");
+            attribute = new TextMessageAttribute("Foo", TextContent.Caption);
             Assert.False(attribute.CanHandleInternal(paramses));
 
-            attribute = new MessageAttribute("/test");
+            attribute = new TextMessageAttribute("/test", TextContent.Caption);
             Assert.False(attribute.CanHandleInternal(paramses));
         }
 
