@@ -5,10 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
-using BotFramework.Config;
 using BotFramework.Middleware;
 using BotFramework.Setup;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
@@ -18,7 +16,6 @@ namespace BotFramework
 {
     public class Bot: IHostedService, IBotInstance
     {
-        private readonly BotConfig _config = new BotConfig();
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IUpdateSource _updateSource;
         private readonly IUpdateProvider _updateProvider;
@@ -29,8 +26,7 @@ namespace BotFramework
         public string UserName { get; private set; }
         public ITelegramBotClient BotClient { get; }
 
-        public Bot(IConfiguration configuration, 
-                   IServiceScopeFactory scopeFactory, 
+        public Bot(IServiceScopeFactory scopeFactory, 
                    IUpdateSource updateSource, 
                    IUpdateProvider updateProvider,
                    ITelegramBotClient client,
@@ -46,9 +42,6 @@ namespace BotFramework
             {
                 _wares = ((BotStartup)Activator.CreateInstance(startupType, true)).__SetupInternal();
             }
-
-            configuration.GetSection("BotConfig")
-                         .Bind(_config);
         }
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)

@@ -6,9 +6,9 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
-namespace BotFramework;
+namespace BotFramework.UpdateProvider;
 
-public class PollingUpdateProvider : IUpdateProvider
+public class PollingUpdateProvider: IUpdateProvider
 {
     private readonly IUpdateSource _updateSource;
     private readonly ITelegramBotClient _client;
@@ -22,11 +22,11 @@ public class PollingUpdateProvider : IUpdateProvider
     public async Task StartAsync(CancellationToken token)
     {
         await _client.DeleteWebhookAsync(cancellationToken: token);
-        
+
         _client.StartReceiving(
-            HandleUpdateAsync, 
-            HandleErrorAsync, 
-            new ReceiverOptions { AllowedUpdates = { }, ThrowPendingUpdates = false }, 
+            HandleUpdateAsync,
+            HandleErrorAsync,
+            new ReceiverOptions { ThrowPendingUpdates = false },
             token
         );
     }
