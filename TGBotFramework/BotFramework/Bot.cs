@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions;
@@ -12,9 +11,7 @@ using BotFramework.Setup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MihaZupan;
 using Telegram.Bot;
-using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
 namespace BotFramework
@@ -22,76 +19,57 @@ namespace BotFramework
     public class Bot: IHostedService, IBotInstance
     {
         private readonly BotConfig _config = new BotConfig();
-
         private readonly IServiceScopeFactory _scopeFactory;
-
+        private readonly IUpdateSource _updateSource;
+        private readonly IUpdateProvider _updateProvider;
         private readonly LinkedList<Type> _wares;
+        private EventHandlerFactory _factory;
+        private readonly CancellationTokenSource _receiveToken = new();
 
-        private readonly IServiceProvider services;
+        public string UserName { get; private set; }
+        public ITelegramBotClient BotClient { get; }
 
-        private TelegramBotClient client;
-
-        private EventHandlerFactory factory;
-
-        private CancellationTokenSource _receiveToken = new CancellationTokenSource();
-
-
-        public Bot(IServiceProvider services, IServiceScopeFactory scopeFactory, Type startupType = null)
+        public Bot(IConfiguration configuration, 
+                   IServiceScopeFactory scopeFactory, 
+                   IUpdateSource updateSource, 
+                   IUpdateProvider updateProvider,
+                   ITelegramBotClient client,
+                   Type startupType = null
+            )
         {
-            this.services = services;
             _scopeFactory = scopeFactory;
+            _updateSource = updateSource;
+            _updateProvider = updateProvider;
+            BotClient = client;
 
             if(startupType != null)
             {
                 _wares = ((BotStartup)Activator.CreateInstance(startupType, true)).__SetupInternal();
             }
+
+            configuration.GetSection("BotConfig")
+                         .Bind(_config);
         }
 
-        async Task IHostedService.StartAsync(CancellationToken cancellationToken) { await StartListen(cancellationToken); }
+        async Task IHostedService.StartAsync(CancellationToken cancellationToken)
+        {
+            await _updateProvider.StartAsync(cancellationToken);
+            await StartListen(cancellationToken);
+        }
 
         async Task IHostedService.StopAsync(CancellationToken cancellationToken)
         {
-            await client.DeleteWebhookAsync(cancellationToken: cancellationToken);
-            await client.CloseAsync(cancellationToken);
+            await _updateProvider.StopAsync(cancellationToken);
             _receiveToken.Cancel();
         }
 
-        public string UserName { get; private set; }
-
-        public ITelegramBotClient BotClient => client;
 
         private async Task StartListen(CancellationToken cancellationToken)
         {
-            var configProvider = services.GetService<IConfiguration>();
-            var section = configProvider.GetSection("BotConfig");
-            section.Bind(_config);
-
             try
             {
-                var apiUrl = _config.BotApiUrl;
-                if(string.IsNullOrWhiteSpace(apiUrl))
-                {
-                    apiUrl = null;
-                }
-
-                var options = new TelegramBotClientOptions(_config.Token, apiUrl, _config.UseTestEnv);
-                
-                if(_config.UseSOCKS5)
-                {
-                    var proxy = new HttpToSocks5Proxy(_config.SOCKS5Address, _config.SOCKS5Port, _config.SOCKS5User,
-                                                      _config.SOCKS5Password);
-                    var handler = new HttpClientHandler { Proxy = proxy };
-                    var httpClient = new HttpClient(handler, true);
-
-                    client = new TelegramBotClient(options, httpClient);
-                }
-                else
-                {
-                    client = new TelegramBotClient(options);
-                }
-
-                factory = new EventHandlerFactory();
-                factory.Find();
+                _factory = new EventHandlerFactory();
+                _factory.Find();
 
                 var me = await GetMeSafeAsync(cancellationToken);
                 UserName = me.Username;
@@ -110,34 +88,35 @@ namespace BotFramework
                 Console.WriteLine(e);
             }
 
-            if(_config.EnableWebHook)
-            {
-                if(_config.UseCertificate)
-                {
-                    //TODO серт
-                    // await client.SetWebhookAsync(_config.WebHookURL, new InputFileStream(new FileStream(_config.WebHookCertPath)))
-                }
-                else
-                {
-                    //TODO подготовить и заспавнить контроллер
-                    await client.SetWebhookAsync(_config.WebHookURL, cancellationToken: cancellationToken);
-                }
-            }
-            else
-            {
-                // v16.x
-                // client.StartReceiving(new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync), cancellationToken);
+            var updateThread = new Thread(UpdateThread) { Name = "Update handler thread" };
+            updateThread.Start(_receiveToken.Token);
+        }
 
-                // v17.x
-                await client.DeleteWebhookAsync(false, cancellationToken);
+        private void UpdateThread(object token)
+        {
+            var cancellationToken = (CancellationToken) token;
+            while (true)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
 
-                var receiverOptions = new ReceiverOptions { AllowedUpdates = { }, ThrowPendingUpdates = false };
-                client.StartReceiving(HandleUpdateAsync, HandleErrorAsync, receiverOptions, _receiveToken.Token);
+                var wasSignaled = _updateSource.ShouldProcess.WaitOne(TimeSpan.FromSeconds(1));
+                if (wasSignaled)
+                {
+                    var update = _updateSource.Pull();
+                    if (update != null)
+                    {
+                        _ = HandleUpdateAsync(update, cancellationToken);
+                    }
+
+                    _updateSource.ShouldProcess.Reset();
+                }
             }
         }
 
-        private async Task HandleUpdateAsync(
-            ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        private async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
         {
             try
             {
@@ -154,7 +133,7 @@ namespace BotFramework
 
                         var param = new HandlerParams(this, update, scope.ServiceProvider, UserName, userProvider);
 
-                        var router = new Router(factory);
+                        var router = new Router(_factory);
                         router.__Setup(null, param);
 
                         wares.Push(router);
@@ -190,24 +169,15 @@ namespace BotFramework
                 // throw;
             }
         }
-
-        private async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
-        {
-            Console.WriteLine(exception);
-            await Task.Delay(5000, cancellationToken); //иначе будет долбиться и грузить проц на 100%
-        }
-
+        
         private async Task<User> GetMeSafeAsync(CancellationToken cancellationToken)
         {
             try
             {
-                var user = await BotClient.GetMeAsync(cancellationToken);
-
-                return user;
-            } catch(Exception e)
+                return await BotClient.GetMeAsync(cancellationToken);
+            } catch (Exception e)
             {
                 Console.WriteLine(e);
-
             }
 
             await Task.Delay(5000, cancellationToken);
