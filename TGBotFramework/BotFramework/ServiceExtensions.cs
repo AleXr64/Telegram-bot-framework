@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.UpdateProvider;
 using BotFramework.Config;
 using BotFramework.Middleware;
 using BotFramework.ParameterResolvers;
@@ -22,17 +23,12 @@ namespace BotFramework
     {
         public static void AddTelegramBot(this IServiceCollection collection)
         {
-            if (collection.Count(x => x.ServiceType == typeof(IUpdateProvider)) == 0)
-            {
-                // To maintain BC
-                collection.AddSingleton<IUpdateProvider, PollingUpdateProvider>();
-            }
+            collection.AddSingleton<IUpdateProvider, PollingUpdateProvider>();
 
             collection.AddOptions<BotConfig>()
                       .Configure<IConfiguration>((config, configuration) => configuration.GetSection("BotConfig").Bind(config));
 
             collection.AddDefaultParameterParsers();
-            collection.AddSingleton<IUpdateSource, ConcurrentQueueUpdateSource>();
 
             collection.AddHttpClient<ITelegramBotClient>()
                       .AddTypedClient<ITelegramBotClient>((client, provider) =>
@@ -69,6 +65,7 @@ namespace BotFramework
 
             collection.AddSingleton<IBotInstance, Bot>();
             collection.AddTransient<IHostedService>(x => (Bot)x.GetService<IBotInstance>());
+            collection.AddSingleton<IUpdateTarget>(x => (Bot)x.GetService<IBotInstance>());
             
             //won't break existent 0.5 users
             collection.AddTelegramBotInMemoryStorage();
@@ -83,12 +80,6 @@ namespace BotFramework
                 collection.AddScoped(typeof(IMiddleware),ware);
             }
 
-            collection.AddTelegramBot();
-        }
-
-        public static void AddTelegramBotPolling(this IServiceCollection collection)
-        {
-            collection.AddSingleton<IUpdateProvider, PollingUpdateProvider>();
             collection.AddTelegramBot();
         }
 

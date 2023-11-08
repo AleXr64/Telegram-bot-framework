@@ -1,4 +1,4 @@
-﻿using BotFramework.Abstractions;
+﻿using BotFramework.Abstractions.UpdateProvider;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BotFramework.Webhook;
@@ -7,7 +7,8 @@ public static class ServiceCollectionExtensions
 {
     public static void AddTelegramBotWebhookUpdateProvider(this IServiceCollection collection)
     {
-        collection.AddSingleton<IUpdateProvider, WebhookUpdateProvider>();
+        collection.AddSingleton<IWebhookProvider, WebhookUpdateProvider>();
+        // collection.AddSingleton<IWebhookProvider>(x => x.GetService<WebhookUpdateProvider>()!);
     }
 
     public static void AddTelegramBotWebhook(this IServiceCollection collection)

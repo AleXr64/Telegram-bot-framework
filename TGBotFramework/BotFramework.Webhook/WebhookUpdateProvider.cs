@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BotFramework.Abstractions;
+using BotFramework.Abstractions.UpdateProvider;
 using BotFramework.Config;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -11,16 +11,16 @@ using WatsonWebserver.Core;
 
 namespace BotFramework.Webhook;
 
-public class WebhookUpdateProvider : IUpdateProvider
+public class WebhookUpdateProvider : IWebhookProvider
 {
     private readonly ITelegramBotClient _client;
-    private readonly IUpdateSource _updateSource;
+    private readonly IUpdateTarget _updateTarget;
     private readonly BotConfig _config;
 
-    public WebhookUpdateProvider(ITelegramBotClient client, IUpdateSource updateSource, IOptions<BotConfig> config)
+    public WebhookUpdateProvider(ITelegramBotClient client, IUpdateTarget updateTarget, IOptions<BotConfig> config)
     {
         _client = client;
-        _updateSource = updateSource;
+        _updateTarget = updateTarget;
         _config = config.Value;
     }
 
@@ -44,7 +44,7 @@ public class WebhookUpdateProvider : IUpdateProvider
             var obj = JsonConvert.DeserializeObject<Update>(ctx.Request.DataAsString);
             if (obj != null)
             {
-                _updateSource.Push(obj);
+                _updateTarget.Push(obj);
             }
         } catch(Exception e)
         {

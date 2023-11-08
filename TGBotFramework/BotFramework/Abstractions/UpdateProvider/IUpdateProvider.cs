@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace BotFramework.Abstractions;
+namespace BotFramework.Abstractions.UpdateProvider;
 
 public interface IUpdateProvider
 {

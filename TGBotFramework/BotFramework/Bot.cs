@@ -1,24 +1,29 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.UpdateProvider;
+using BotFramework.Config;
 using BotFramework.Middleware;
 using BotFramework.Setup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace BotFramework
 {
-    public class Bot: IHostedService, IBotInstance
+    public class Bot: IHostedService, IBotInstance, IUpdateTarget
     {
+        private readonly BotConfig botConfig;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IUpdateSource _updateSource;
-        private readonly IUpdateProvider _updateProvider;
+        private IUpdateProvider _updateProvider;
         private readonly LinkedList<Type> _wares;
         private EventHandlerFactory _factory;
         private readonly CancellationTokenSource _receiveToken = new();
@@ -26,17 +31,21 @@ namespace BotFramework
         public string UserName { get; private set; }
         public ITelegramBotClient BotClient { get; }
 
-        public Bot(IServiceScopeFactory scopeFactory, 
-                   IUpdateSource updateSource, 
-                   IUpdateProvider updateProvider,
+        private readonly ConcurrentQueue<Update> _updateQueue = new();
+        private readonly ManualResetEvent _shouldProcess = new(false);
+
+        public Bot(IServiceProvider serviceProvider,
+                   IOptions<BotConfig> options,
+                   IServiceScopeFactory scopeFactory, 
                    ITelegramBotClient client,
                    Type startupType = null
             )
         {
+            _serviceProvider = serviceProvider;
             _scopeFactory = scopeFactory;
-            _updateSource = updateSource;
-            _updateProvider = updateProvider;
             BotClient = client;
+            botConfig = options.Value;
+
 
             if(startupType != null)
             {
@@ -46,6 +55,14 @@ namespace BotFramework
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
+            if(botConfig.Webhook.Enabled)
+            {
+                _updateProvider = _serviceProvider.GetService<IWebhookProvider>();
+            }
+
+            _updateProvider ??= _serviceProvider.GetService<IUpdateProvider>();
+            // TODO: do smth if there are no registered provider?
+
             await _updateProvider.StartAsync(cancellationToken);
             await StartListen(cancellationToken);
         }
@@ -95,16 +112,15 @@ namespace BotFramework
                     break;
                 }
 
-                var wasSignaled = _updateSource.ShouldProcess.WaitOne(TimeSpan.FromSeconds(1));
+                var wasSignaled = _shouldProcess.WaitOne(TimeSpan.FromSeconds(1));
                 if (wasSignaled)
                 {
-                    var update = _updateSource.Pull();
-                    if (update != null)
+                    if (_updateQueue.TryDequeue(out var update))
                     {
                         _ = HandleUpdateAsync(update, cancellationToken);
                     }
 
-                    _updateSource.ShouldProcess.Reset();
+                    _shouldProcess.Reset();
                 }
             }
         }
@@ -176,6 +192,12 @@ namespace BotFramework
             await Task.Delay(5000, cancellationToken);
 
             return await GetMeSafeAsync(cancellationToken);
+        }
+
+        public void Push(Update update)
+        {
+            _updateQueue.Enqueue(update);
+            _shouldProcess.Set();
         }
     }
 }

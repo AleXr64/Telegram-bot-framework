@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using BotFramework.Abstractions;
+using BotFramework.Abstractions.UpdateProvider;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -10,12 +10,12 @@ namespace BotFramework.UpdateProvider;
 
 public class PollingUpdateProvider: IUpdateProvider
 {
-    private readonly IUpdateSource _updateSource;
+    private readonly IUpdateTarget _updateTarget;
     private readonly ITelegramBotClient _client;
 
-    public PollingUpdateProvider(ITelegramBotClient client, IUpdateSource updateSource)
+    public PollingUpdateProvider(ITelegramBotClient client, IUpdateTarget updateTarget)
     {
-        _updateSource = updateSource;
+        _updateTarget = updateTarget;
         _client = client;
     }
 
@@ -33,7 +33,7 @@ public class PollingUpdateProvider: IUpdateProvider
 
     private Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        _updateSource.Push(update);
+        _updateTarget.Push(update);
 
         return Task.CompletedTask;
     }
