@@ -13,6 +13,8 @@ public class PollingUpdateProvider: IUpdateProvider
     private readonly IUpdateTarget _updateTarget;
     private readonly ITelegramBotClient _client;
 
+    private readonly CancellationTokenSource _canRunTokenSource = new();
+
     public PollingUpdateProvider(ITelegramBotClient client, IUpdateTarget updateTarget)
     {
         _updateTarget = updateTarget;
@@ -22,12 +24,12 @@ public class PollingUpdateProvider: IUpdateProvider
     public async Task StartAsync(CancellationToken token)
     {
         await _client.DeleteWebhookAsync(cancellationToken: token);
-
+        token.ThrowIfCancellationRequested();
         _client.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
             new ReceiverOptions { ThrowPendingUpdates = false },
-            token
+            _canRunTokenSource.Token
         );
     }
 
@@ -46,6 +48,7 @@ public class PollingUpdateProvider: IUpdateProvider
 
     public Task StopAsync(CancellationToken token)
     {
+        _canRunTokenSource.Cancel();
         return Task.CompletedTask;
     }
 }

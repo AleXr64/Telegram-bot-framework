@@ -29,6 +29,7 @@ namespace BotFramework
         private readonly CancellationTokenSource _receiveToken = new();
 
         public string UserName { get; private set; }
+
         public ITelegramBotClient BotClient { get; }
 
         private readonly ConcurrentQueue<Update> _updateQueue = new();
@@ -70,6 +71,7 @@ namespace BotFramework
         async Task IHostedService.StopAsync(CancellationToken cancellationToken)
         {
             await _updateProvider.StopAsync(cancellationToken);
+            _shouldProcess.Set();
             _receiveToken.Cancel();
         }
 
@@ -105,27 +107,23 @@ namespace BotFramework
         private void UpdateThread(object token)
         {
             var cancellationToken = (CancellationToken) token;
-            while (true)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
+            while (!cancellationToken.IsCancellationRequested)
+            { 
+                _shouldProcess.WaitOne();
 
-                var wasSignaled = _shouldProcess.WaitOne(TimeSpan.FromSeconds(1));
-                if (wasSignaled)
+                while(!_updateQueue.IsEmpty)
                 {
-                    if (_updateQueue.TryDequeue(out var update))
+                    if(_updateQueue.TryDequeue(out var update))
                     {
-                        _ = HandleUpdateAsync(update, cancellationToken);
+                        _ = HandleUpdateAsync(update);
                     }
-
-                    _shouldProcess.Reset();
                 }
+
+                _shouldProcess.Reset();
             }
         }
 
-        private async Task HandleUpdateAsync(Update update, CancellationToken cancellationToken)
+        private async Task HandleUpdateAsync(Update update)
         {
             try
             {
@@ -171,7 +169,7 @@ namespace BotFramework
 
                         var runWare = wares.Pop();
                         await ((BaseMiddleware)runWare).__ProcessInternal();
-                    }, cancellationToken);
+                    });
             } catch(Exception exception)
             {
                 Console.WriteLine(exception);
