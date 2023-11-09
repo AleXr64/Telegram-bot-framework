@@ -8,7 +8,6 @@ public static class ServiceCollectionExtensions
     public static void AddTelegramBotWebhookUpdateProvider(this IServiceCollection collection)
     {
         collection.AddSingleton<IWebhookProvider, WebhookUpdateProvider>();
-        // collection.AddSingleton<IWebhookProvider>(x => x.GetService<WebhookUpdateProvider>()!);
     }
 
     public static void AddTelegramBotWebhook(this IServiceCollection collection)

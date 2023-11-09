@@ -20,7 +20,7 @@ namespace BotFramework
 {
     public class Bot: IHostedService, IBotInstance, IUpdateTarget
     {
-        private readonly BotConfig botConfig;
+        private readonly BotConfig _botConfig;
         private readonly IServiceProvider _serviceProvider;
         private readonly IServiceScopeFactory _scopeFactory;
         private IUpdateProvider _updateProvider;
@@ -34,6 +34,7 @@ namespace BotFramework
 
         private readonly ConcurrentQueue<Update> _updateQueue = new();
         private readonly ManualResetEvent _shouldProcess = new(false);
+        private readonly Thread _updateThread;
 
         public Bot(IServiceProvider serviceProvider,
                    IOptions<BotConfig> options,
@@ -45,8 +46,9 @@ namespace BotFramework
             _serviceProvider = serviceProvider;
             _scopeFactory = scopeFactory;
             BotClient = client;
-            botConfig = options.Value;
+            _botConfig = options.Value;
 
+            _updateThread = new Thread(UpdateThread) { Name = "Update handler thread" };
 
             if(startupType != null)
             {
@@ -56,7 +58,7 @@ namespace BotFramework
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            if(botConfig.Webhook.Enabled)
+            if(_botConfig.Webhook.Enabled)
             {
                 _updateProvider = _serviceProvider.GetService<IWebhookProvider>();
             }
@@ -73,6 +75,9 @@ namespace BotFramework
             await _updateProvider.StopAsync(cancellationToken);
             _shouldProcess.Set();
             _receiveToken.Cancel();
+            _shouldProcess.Set();
+            
+            while (_updateThread.IsAlive) { }
         }
 
 
@@ -100,8 +105,7 @@ namespace BotFramework
                 Console.WriteLine(e);
             }
 
-            var updateThread = new Thread(UpdateThread) { Name = "Update handler thread" };
-            updateThread.Start(_receiveToken.Token);
+            _updateThread.Start(_receiveToken.Token);
         }
 
         private void UpdateThread(object token)
