@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.UpdateProvider;
@@ -13,9 +14,13 @@ namespace BotFramework.Webhook;
 
 public class WebhookUpdateProvider : IWebhookProvider
 {
+    private const string SecretTokenHeader = "X-Telegram-Bot-Api-Secret-Token";
+
     private readonly ITelegramBotClient _client;
     private readonly IUpdateTarget _updateTarget;
     private readonly BotConfig _config;
+
+    private readonly string? _secretToken;
 
     private readonly CancellationTokenSource _canRunTokenSource = new ();
 
@@ -24,6 +29,12 @@ public class WebhookUpdateProvider : IWebhookProvider
         _client = client;
         _updateTarget = updateTarget;
         _config = config.Value;
+
+        _secretToken = _config.Webhook.SecretToken;
+        if (string.IsNullOrWhiteSpace(_secretToken))
+        {
+            _secretToken = null;
+        }
     }
 
     public async Task StartAsync(CancellationToken token)
@@ -32,7 +43,7 @@ public class WebhookUpdateProvider : IWebhookProvider
         var server = new WatsonWebserver.Webserver(GetWebserverSettings(), Route);
         _ = server.StartAsync(_canRunTokenSource.Token);
 
-        await _client.SetWebhookAsync(_config.Webhook.Url, cancellationToken: token);
+        await _client.SetWebhookAsync(_config.Webhook.Url, secretToken: _secretToken, cancellationToken: token);
     }
     
     public async Task StopAsync(CancellationToken token)
@@ -43,9 +54,18 @@ public class WebhookUpdateProvider : IWebhookProvider
 
     private async Task Route(HttpContextBase ctx)
     {
+        var request = ctx.Request;
+        if (_secretToken != null && request.RetrieveHeaderValue(SecretTokenHeader) != _secretToken)
+        {
+            ctx.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            
+            await ctx.Response.Send("Missing or invalid secret_token");
+            return;
+        }
+
         try
         {
-            var obj = JsonConvert.DeserializeObject<Update>(ctx.Request.DataAsString);
+            var obj = JsonConvert.DeserializeObject<Update>(request.DataAsString);
             if (obj != null)
             {
                 _updateTarget.Push(obj);
