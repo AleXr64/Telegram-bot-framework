@@ -1,9 +1,8 @@
 ﻿{
   "token": null,
   "webHookURL": null,
-  "useSertificate": false,
-  "webHookSertPath": null,
-  "enableWebHook": false,
+  "useCertificate": false,
+  "webHookСertPath": null,
   "sockS5Address": null,
   "sockS5Port": null,
   "sockS5User": null,

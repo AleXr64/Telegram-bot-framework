@@ -3,10 +3,7 @@
     public class BotConfig
     {
         public string Token { get; set; }
-        public string WebHookURL { get; set; }
-        public bool UseCertificate { get; set; }
-        public string WebHookCertPath { get; set; }
-        public bool EnableWebHook { get; set; }
+        public WebhookConfig Webhook { get; set; }
         public string SOCKS5Address { get; set; }
         public int SOCKS5Port { get; set; }
         public string SOCKS5User { get; set; }
