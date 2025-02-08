@@ -21,26 +21,26 @@ namespace BotAsWorkerService
         [Command("start", CommandParseMode.Both), Priority(10)]
         public async Task<bool> Start()
         {
-            await Bot.SendTextMessageAsync(Chat, "Hello! U started me =)");
+            await Bot.SendMessage(Chat, "Hello! U started me =)");
             return false;
         }
 
         //Answer on message with "ban" text
         [TextMessage("ban", textContent: TextContent.Caption)]
-        public async Task Ban() => await Bot.SendTextMessageAsync(Chat, "I will ban you right now! Just kidding");
+        public async Task Ban() => await Bot.SendMessage(Chat, "I will ban you right now! Just kidding");
 
         //Answer on message that satisfy provided regex expression
         [RegexTextMessage("^.*?(?i)python$")]
-        public async Task Task() => await Bot.SendTextMessageAsync(Chat, "I hate snakes");
+        public async Task Task() => await Bot.SendMessage(Chat, "I hate snakes");
 
         //Answer on any update
         [Update(UpdateFlag.All)]
-        public async Task Update() => await Bot.SendTextMessageAsync(Chat, "Hello");
+        public async Task Update() => await Bot.SendMessage(Chat, "Hello");
 
         [Update(UpdateFlag.CallbackQuery)]
         public async Task CBQuery()
         {
-            await Bot.SendTextMessageAsync(Chat, "callback");
+            await Bot.SendMessage(Chat, "callback");
         }
 
         [Command("query", CommandParseMode.Both)]
@@ -54,12 +54,12 @@ namespace BotAsWorkerService
                         }
                 };
 
-            await Bot.SendTextMessageAsync(Chat.Id, "123", replyMarkup: new InlineKeyboardMarkup(buttons));
+            await Bot.SendMessage(Chat.Id, "123", replyMarkup: new InlineKeyboardMarkup(buttons));
         }
 
         //Answer on message that contains photo or video
         [Message(MessageFlag.HasPhoto | MessageFlag.HasVideo)]
-        public async Task PhotoVideo() => await Bot.SendTextMessageAsync(Chat, "Send me more!");
+        public async Task PhotoVideo() => await Bot.SendMessage(Chat, "Send me more!");
 
         //Answer on command with parameters: "/me hello"
         [ParametrizedCommand("me", CommandParseMode.Both)]
@@ -70,27 +70,27 @@ namespace BotAsWorkerService
             {
                 user += $" {From.LastName}";
             }
-            await Bot.SendTextMessageAsync(Chat, $"<code>{user} says: {me.Text}</code>", parseMode: ParseMode.Html);
+            await Bot.SendMessage(Chat, $"<code>{user} says: {me.Text}</code>", parseMode: ParseMode.Html);
         }
 
         //Parametrized command with int parameter: "/status 2"
         [ParametrizedCommand("status", CommandParseMode.Both)]
         public async Task Status(int status)
         {
-            await Bot.SendTextMessageAsync(Chat, "status " + status);
+            await Bot.SendMessage(Chat, "status " + status);
         }
 
         [Command("command1", CommandParseMode.WithUsername)]
         public async Task Command1()
         {
-            await Bot.SendTextMessageAsync(Chat, "Command1");
+            await Bot.SendMessage(Chat, "Command1");
         }
 
         [Message(MessageFlag.IsReply)]
         [Command("command2")]
         public async Task Command2()
         {
-            await Bot.SendTextMessageAsync(Chat, "Command2");
+            await Bot.SendMessage(Chat, "Command2");
         }
 
         [HandleCondition(ConditionType.Any)]
@@ -100,7 +100,7 @@ namespace BotAsWorkerService
         [Message(MessageFlag.HasText)]
         public async Task<bool> MultiAttr()
         {
-            await Bot.SendTextMessageAsync(Chat.Id, "multi attributes");
+            await Bot.SendMessage(Chat.Id, "multi attributes");
             return true;
         }
 
@@ -109,7 +109,7 @@ namespace BotAsWorkerService
         [Message(MessageFlag.HasCaption)]
         public async Task<bool> MultiAttr2()
         {
-            await Bot.SendTextMessageAsync(Chat.Id, "Message with photo AND caption");
+            await Bot.SendMessage(Chat.Id, "Message with photo AND caption");
             return true;
         }
 

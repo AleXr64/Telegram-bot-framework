@@ -23,12 +23,12 @@ public class PollingUpdateProvider: IUpdateProvider
 
     public async Task StartAsync(CancellationToken token)
     {
-        await _client.DeleteWebhookAsync(cancellationToken: token);
+        await _client.DeleteWebhook(cancellationToken: token);
         token.ThrowIfCancellationRequested();
         _client.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
-            new ReceiverOptions { ThrowPendingUpdates = false },
+            new ReceiverOptions { DropPendingUpdates = false },
             _canRunTokenSource.Token
         );
     }
