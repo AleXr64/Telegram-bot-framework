@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.UpdateProvider;
 using BotFramework.Config;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using WatsonWebserver.Core;
@@ -65,7 +65,7 @@ public class WebhookUpdateProvider : IWebhookProvider
 
         try
         {
-            var obj = JsonConvert.DeserializeObject<Update>(request.DataAsString);
+            var obj = JsonSerializer.Deserialize<Update>(request.DataAsString);
             if (obj != null)
             {
                 _updateTarget.Push(obj);
