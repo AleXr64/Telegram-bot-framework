@@ -74,7 +74,7 @@ namespace BotFramework
         public static void AddTelegramBot<T>(this IServiceCollection collection) where T: BotStartup, new()
         {
             var startup = new T();
-
+            
             foreach (var ware in startup.__SetupInternal())
             {
                 collection.AddScoped(typeof(IMiddleware),ware);

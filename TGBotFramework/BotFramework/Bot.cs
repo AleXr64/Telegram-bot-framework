@@ -185,7 +185,7 @@ namespace BotFramework
         {
             try
             {
-                return await BotClient.GetMeAsync(cancellationToken);
+                return await BotClient.GetMe(cancellationToken);
             } catch (Exception e)
             {
                 Console.WriteLine(e);

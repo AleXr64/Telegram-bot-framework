@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.UpdateProvider;
 using BotFramework.Config;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using WatsonWebserver.Core;
@@ -43,13 +43,13 @@ public class WebhookUpdateProvider : IWebhookProvider
         var server = new WatsonWebserver.Webserver(GetWebserverSettings(), Route);
         _ = server.StartAsync(_canRunTokenSource.Token);
 
-        await _client.SetWebhookAsync(_config.Webhook.Url, secretToken: _secretToken, cancellationToken: token);
+        await _client.SetWebhook(_config.Webhook.Url, secretToken: _secretToken, cancellationToken: token);
     }
     
     public async Task StopAsync(CancellationToken token)
     {
         _canRunTokenSource.Cancel();
-        await _client.DeleteWebhookAsync(cancellationToken: token);
+        await _client.DeleteWebhook(cancellationToken: token);
     }
 
     private async Task Route(HttpContextBase ctx)
@@ -65,7 +65,7 @@ public class WebhookUpdateProvider : IWebhookProvider
 
         try
         {
-            var obj = JsonConvert.DeserializeObject<Update>(request.DataAsString);
+            var obj = JsonSerializer.Deserialize<Update>(request.DataAsString);
             if (obj != null)
             {
                 _updateTarget.Push(obj);

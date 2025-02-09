@@ -20,7 +20,7 @@ namespace MsgDumpBot
             if(msg.ReplyToMessage != null)
             {
                 string jmsg = JsonConvert.SerializeObject(msg, Formatting.Indented);
-                await Bot.SendTextMessageAsync(Chat.Id, $"<code>{jmsg}</code>", parseMode: ParseMode.Html);
+                await Bot.SendMessage(Chat.Id, $"<code>{jmsg}</code>", parseMode: ParseMode.Html);
             }
         }
 
@@ -54,7 +54,7 @@ namespace MsgDumpBot
 
             Context.SessionProvider.SaveSession(session);
 
-            await Context.Instance.BotClient.SendTextMessageAsync(Chat, "Stored!");
+            await Context.Instance.BotClient.SendMessage(Chat, "Stored!");
         }
 
         [ParametrizedCommand("get", CommandParseMode.Both)]
@@ -64,11 +64,11 @@ namespace MsgDumpBot
 
             if(session.SessionData.ContainsKey(arg))
             {
-                await Bot.SendTextMessageAsync(Chat, $"Data is: {(session.SessionData[arg] as SessionData).Data.Data}");
+                await Bot.SendMessage(Chat, $"Data is: {(session.SessionData[arg] as SessionData).Data.Data}");
             }
             else
             {
-                await Bot.SendTextMessageAsync(Chat, "No data!");
+                await Bot.SendMessage(Chat, "No data!");
             }
 
         }
