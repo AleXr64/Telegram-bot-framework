@@ -1,7 +1,5 @@
 ﻿using BotFramework.Enums;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BotFramework.Attributes
 {

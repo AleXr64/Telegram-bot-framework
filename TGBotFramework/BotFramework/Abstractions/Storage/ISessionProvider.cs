@@ -1,6 +1,4 @@
-﻿using BotFramework.Abstractions.Storage;
-
-namespace BotFramework.Abstractions
+﻿namespace BotFramework.Abstractions.Storage
 {
     public interface ISessionProvider
     {

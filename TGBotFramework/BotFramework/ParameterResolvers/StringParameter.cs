@@ -1,6 +1,6 @@
 ﻿namespace BotFramework.ParameterResolvers
 {
-    public class StringParametr: IParameterParser<string>
+    public class StringParameter: IParameterParser<string>
     {
         public string DefaultInstance() { return string.Empty; }
 

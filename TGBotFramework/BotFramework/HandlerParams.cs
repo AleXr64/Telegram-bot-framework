@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using BotFramework.Abstractions;
@@ -135,7 +134,7 @@ namespace BotFramework
         public bool HasChat => Chat != null;
         public bool HasFrom => From != null;
         public UpdateType Type => Update.Type;
-        public Enums.InChat InChat { get; set; }
+        public InChat InChat { get; set; }
 
         public CallbackQuery CallbackQuery { get; set; }
 

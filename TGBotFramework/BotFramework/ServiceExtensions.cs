@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Net.Http;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.Storage.InMemory;
 using BotFramework.Abstractions.UpdateProvider;
 using BotFramework.Config;
 using BotFramework.Middleware;
@@ -102,7 +102,7 @@ namespace BotFramework
         {
             collection.AddTelegramBotParameterParser<long, LongParameter>()
                       .AddTelegramBotParameterParser<int, IntParameter>()
-                      .AddTelegramBotParameterParser<string, StringParametr>()
+                      .AddTelegramBotParameterParser<string, StringParameter>()
                       .AddTelegramBotParameterParser<bool, BoolParameter>()
                       .AddTelegramBotParameterParser<float, FloatParameter>()
                       .AddTelegramBotParameterParser<double, DoubleParameter>()
