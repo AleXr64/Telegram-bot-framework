@@ -13,7 +13,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace BotFramework
 {
-    public sealed class HandlerParams : IBotRequestContext
+    public sealed partial class HandlerParams : IBotRequestContext
     {
         internal readonly IServiceProvider ServiceProvider;
         private readonly string UserName;
@@ -33,80 +33,6 @@ namespace BotFramework
                 BotUser = userProvider.GetUser(From.Id, Chat?.Id ?? From.Id);
 
             SessionProvider = serviceProvider.GetService<ISessionProvider>() ?? new InMemorySessionProvider();
-        }
-
-        private void PrepareChat()
-        {
-            
-            switch(Update.Type)
-            {
-                case UpdateType.Unknown:
-                    break;
-                case UpdateType.Message:
-                    From = Update.Message.From;
-                    Chat = Update.Message.Chat;
-
-                    break;
-                case UpdateType.InlineQuery:
-                    From = Update.InlineQuery.From;
-
-                    break;
-                case UpdateType.ChosenInlineResult:
-                    From = Update.ChosenInlineResult.From;
-
-                    break;
-                case UpdateType.CallbackQuery:
-                    From = Update.CallbackQuery.From;
-                    Chat = Update.CallbackQuery.Message.Chat;
-                    //     var __chat = Bot.GetChatAsync(update.CallbackQuery.ChatInstance);
-                    //   __chat.Wait();
-                    //     Chat = __chat.Result;
-                    CallbackQuery = Update.CallbackQuery;
-
-                    break;
-                case UpdateType.EditedMessage:
-                    From = Update.EditedMessage.From;
-                    Chat = Update.EditedMessage.Chat;
-
-                    break;
-                case UpdateType.ChannelPost:
-                    From = Update.ChannelPost.From;
-                    Chat = Update.ChannelPost.Chat;
-
-                    break;
-                case UpdateType.EditedChannelPost:
-                    From = Update.EditedChannelPost.From;
-                    Chat = Update.EditedChannelPost.Chat;
-
-                    break;
-                case UpdateType.ShippingQuery:
-                    From = Update.ShippingQuery.From;
-
-                    break;
-                case UpdateType.PreCheckoutQuery:
-                    From = Update.PreCheckoutQuery.From;
-
-                    break;
-                case UpdateType.Poll:
-                case UpdateType.PollAnswer:
-                case UpdateType.MyChatMember:
-                case UpdateType.ChatMember:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            if(HasChat)
-            {
-                InChat = Chat.Type switch
-                             {
-                                 ChatType.Private => InChat.Private,
-                                 ChatType.Group => InChat.Public,
-                                 ChatType.Channel => InChat.Channel,
-                                 ChatType.Supergroup => InChat.Public,
-                                 _ => InChat.All
-                             };
-            }
         }
 
         public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
@@ -133,10 +59,99 @@ namespace BotFramework
 
         public bool HasChat => Chat != null;
         public bool HasFrom => From != null;
+        
+        public bool HasMessage => Update.Message != null;
+        
         public UpdateType Type => Update.Type;
         public InChat InChat { get; set; }
 
         public CallbackQuery CallbackQuery { get; set; }
+        
+        private void PrepareChat()
+        {
+            if(HasMessage)
+            {
+                From = Update.Message?.From;
+                Chat = Update.Message?.Chat;
+            }
+            
+            switch(Update.Type)
+            {
+                case UpdateType.Unknown:
+                    break;
+                
+                case UpdateType.InlineQuery:
+                    From = Update.InlineQuery?.From;
+                    break;
+                
+                case UpdateType.ChosenInlineResult:
+                    From = Update.ChosenInlineResult?.From;
+
+                    break;
+                case UpdateType.CallbackQuery:
+                    From = Update.CallbackQuery?.From;
+                    Chat = Update.CallbackQuery?.Message?.Chat;
+                    CallbackQuery = Update.CallbackQuery;
+
+                    break;
+                case UpdateType.EditedMessage:
+                    From = Update.EditedMessage?.From;
+                    Chat = Update.EditedMessage?.Chat;
+
+                    break;
+                case UpdateType.ChannelPost:
+                    From = Update.ChannelPost?.From;
+                    Chat = Update.ChannelPost?.Chat;
+
+                    break;
+                case UpdateType.EditedChannelPost:
+                    From = Update.EditedChannelPost?.From;
+                    Chat = Update.EditedChannelPost?.Chat;
+
+                    break;
+                case UpdateType.ShippingQuery:
+                    From = Update.ShippingQuery?.From;
+                    break;
+                
+                case UpdateType.PreCheckoutQuery:
+                    From = Update.PreCheckoutQuery?.From;
+                    break;
+                
+                case UpdateType.Poll:
+                    From = Update.Message?.From;
+                    Chat = Update.Message?.Chat;
+                    break;
+                
+                case UpdateType.Message:
+                case UpdateType.PollAnswer:
+                case UpdateType.MyChatMember:
+                case UpdateType.ChatMember:
+                case UpdateType.ChatJoinRequest:
+                case UpdateType.MessageReaction:
+                case UpdateType.MessageReactionCount:
+                case UpdateType.ChatBoost:
+                case UpdateType.RemovedChatBoost:
+                case UpdateType.BusinessConnection:
+                case UpdateType.BusinessMessage:
+                case UpdateType.EditedBusinessMessage:
+                case UpdateType.DeletedBusinessMessages:
+                case UpdateType.PurchasedPaidMedia:
+                default:
+                    break;
+            }
+
+            if(HasChat)
+            {
+                InChat = Chat?.Type switch
+                             {
+                                 ChatType.Private => InChat.Private,
+                                 ChatType.Group => InChat.Public,
+                                 ChatType.Channel => InChat.Channel,
+                                 ChatType.Supergroup => InChat.Public,
+                                 _ => InChat.All
+                             };
+            }
+        }
 
         private void CheckForCommand()
         {
@@ -266,58 +281,6 @@ namespace BotFramework
             return false;
         }
 
-
-        internal static class CommandHelper
-        {
-            public static string GetCommand(string text, int offset, int length) => text.Substring(offset, length);
-
-
-            public static bool IsMyCommand(string command, string username)
-            {
-                var name = command.Split('@').ElementAtOrDefault(1);
-                return name?.Equals(username, StringComparison.InvariantCultureIgnoreCase) ?? true;
-            }
-
-            public static string[] GetCommandArgs(string text)
-            {
-                var args = text.Split(' ').Skip(1).ToArray();
-                return args.Length > 0 ? args : new[] { string.Empty };
-            }
-
-            public static string GetShortName(string text)
-            {
-                return (text.Split('@').FirstOrDefault() ?? text).Substring(1);
-            }
-        }
-
-        public class Command
-        {
-            /// <summary>
-            /// Short name without leading slash
-            /// </summary>
-            public string Name { get; set; }
-            public int Offset { get; set; }
-            public int Length { get; set; }
-            /// <summary>
-            /// Full command with slash and username if exists
-            /// </summary>
-            public string FullText { get; set; }
-            /// <summary>
-            /// Command contains username
-            /// </summary>
-            public bool IsFullCommand { get; set; }
-
-
-        }
-
-        public class ParametrizedCommand: Command
-        {
-            public ParametrizedCommand()
-            {
-                Offset = 0;
-            }
-            public string[] Args { get; set; }
-        }
     }
 
 
