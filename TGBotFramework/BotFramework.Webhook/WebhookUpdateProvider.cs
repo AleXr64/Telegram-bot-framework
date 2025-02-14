@@ -65,7 +65,7 @@ public class WebhookUpdateProvider : IWebhookProvider
 
         try
         {
-            var obj = JsonSerializer.Deserialize<Update>(request.DataAsString);
+            var obj = JsonSerializer.Deserialize<Update>(request.DataAsString, JsonBotAPI.Options);
             if (obj != null)
             {
                 _updateTarget.Push(obj);
