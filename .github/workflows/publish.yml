@@ -1,5 +1,6 @@
 name: Publish to NuGet
 on:
+  workflow_dispatch:
   push:
     branches:
       - beta/**
@@ -13,16 +14,14 @@ jobs:
    # env:
      # NBGV_GitEngine: LibGit2
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: |
-            6.x.x
-            8.x.x
+          dotnet-version: 8.x.x
           
       - uses: dotnet/nbgv@master
         with:
@@ -31,7 +30,7 @@ jobs:
       # Publish
       - name: publish on version change
         id: publish_nuget
-        uses: alirezanet/publish-nuget@v3.0.4
+        uses: alirezanet/publish-nuget@v3.1.0
         with:
           # Filepath of the project to be packaged, relative to root of repository
           PROJECT_FILE_PATH: ./TGBotFramework/BotFramework/BotFramework.csproj
