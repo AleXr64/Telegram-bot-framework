@@ -35,15 +35,15 @@ namespace BotFramework
             SessionProvider = serviceProvider.GetService<ISessionProvider>() ?? new InMemorySessionProvider();
         }
 
-        public List<CommandParameter> CommandParameters { get; } = new List<CommandParameter>();
+        public List<CommandParameter> CommandParameters { get; } = [];
 
-        public List<Command> Commands { get; private set; } =  new List<Command>();
+        public List<Command> Commands { get; private set; } = [];
         public ParametrizedCommand ParametrizedCmd { get; private set; }
         public bool IsParametrizedCommand { get; private set; }
         public bool HasCommands { get; private set; }
-        public Chat Chat { get; set; }
+        public Chat? Chat { get; set; }
 
-        public User From { get; set; }
+        public User? From { get; set; }
 
         public IBotInstance Instance { get; }
 
@@ -117,13 +117,13 @@ namespace BotFramework
                     From = Update.PreCheckoutQuery?.From;
                     break;
                 
-                case UpdateType.Poll:
-                    From = Update.Message?.From;
-                    Chat = Update.Message?.Chat;
+                case UpdateType.PollAnswer:
+                    From = Update.PollAnswer?.User;
+                    Chat = Update.PollAnswer?.VoterChat;
                     break;
                 
                 case UpdateType.Message:
-                case UpdateType.PollAnswer:
+                case UpdateType.Poll:
                 case UpdateType.MyChatMember:
                 case UpdateType.ChatMember:
                 case UpdateType.ChatJoinRequest:
