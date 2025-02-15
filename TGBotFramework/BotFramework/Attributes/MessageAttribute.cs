@@ -105,6 +105,10 @@ namespace BotFramework.Attributes
                     MessageFlag.HasVideoChatStarted => message.VideoChatStarted != null,
                     MessageFlag.HasVideoChatEnded => message.VideoChatEnded != null,
                     MessageFlag.HasVideoChatParticipantsInvited => message.VideoChatParticipantsInvited != null,
+                    MessageFlag.HasMediaSpoiler => message.HasMediaSpoiler,
+                    MessageFlag.HasInvoice => message.Invoice != null,
+                    MessageFlag.HasPassportData => message.PassportData != null,
+                    MessageFlag.HasSuccessfulPayment => message.SuccessfulPayment != null,
 
                     _ => false
                 };
