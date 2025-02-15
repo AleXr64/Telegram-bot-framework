@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using BotFramework.Enums;
 using Telegram.Bot.Types.Enums;
 

@@ -1,6 +1,4 @@
-﻿using BotFramework.Abstractions.Storage.InMemory;
-
-namespace BotFramework.Abstractions.Storage
+﻿namespace BotFramework.Abstractions.Storage.InMemory
 {
     internal class DefaultUserProvider: IUserProvider
     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.Storage.InMemory;
 using BotFramework.Attributes;
 using BotFramework.Enums;
 using BotFramework.Session;
