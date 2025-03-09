@@ -1,6 +1,5 @@
-﻿using System;
-using BotFramework.Enums;
-using Telegram.Bot.Types.Enums;
+﻿using BotFramework.Enums;
+
 
 namespace BotFramework.Attributes
 {

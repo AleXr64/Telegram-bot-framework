@@ -20,16 +20,20 @@ jobs:
         fetch-depth: 0
         
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: |
-          8.x.x
+        dotnet-version: 8.x.x
         
     - name: Restore dependencies
       run: |
         cd TGBotFramework/BotFramework
         dotnet restore
-      
+
+    - name: Build EnumGenerator first
+      run: |
+        cd TGBotFramework/EnumGenerator
+        dotnet build --no-restore
+        
     - name: Build
       run: |
         cd TGBotFramework/BotFramework

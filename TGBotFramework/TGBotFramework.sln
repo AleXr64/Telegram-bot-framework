@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotFramework.Webhook", "Bot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webhooks", "Examples\Webhooks\Webhooks.csproj", "{32A8CB0D-78C5-4B1C-A705-9F571BCFEF51}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnumGenerator", "EnumGenerator\EnumGenerator.csproj", "{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,12 @@ Global
 		{32A8CB0D-78C5-4B1C-A705-9F571BCFEF51}.Deploy|Any CPU.Build.0 = Debug|Any CPU
 		{32A8CB0D-78C5-4B1C-A705-9F571BCFEF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32A8CB0D-78C5-4B1C-A705-9F571BCFEF51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}.Deploy|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}.Deploy|Any CPU.Build.0 = Debug|Any CPU
+		{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E316B28-FD9A-4A58-B2F5-4D2BEA44E13C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

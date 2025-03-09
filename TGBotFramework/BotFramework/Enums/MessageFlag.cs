@@ -3,81 +3,70 @@
 namespace BotFramework.Enums
 {
     [Flags]
-    public enum MessageFlag : long
+    public enum MessageFlag : ulong
     {
-        HasForward = 1 << 0,
-        IsReply = 1 << 1,
-        HasText = 1 << 2,
-        HasEntity = 1 << 3,
-        HasAudio = 1 << 4,
-        HasDocument = 1 << 5,
-        HasAnimation = 1 << 6,
-        HasGame = 1 << 7,
-        HasPhoto = 1 << 8,
-        HasSticker = 1 << 9,
-        HasVideo = 1 << 10,
-        HasVoice = 1 << 11,
-        HasVideoNote = 1 << 12,
-        HasCaption = 1 << 13,
-        HasContact = 1 << 14,
-        HasLocation = 1 << 15,
-        HasVenue = 1 << 16,
-        HasPoll = 1 << 17,
-        HasDice = 1 << 18,
-        HasKeyboard = 1 << 19,
-        HasNewChatMembers = 1 << 20,
-        HasLeftChatMember = 1 << 21,
-        HasNewChatTitle = 1 << 22,
-        HasNewChatPhoto = 1 << 23,
-        HasDeleteChatPhoto = 1 << 24,
-        HasGroupChatCreated = 1 << 25,
-        HasSupergroupChatCreated = 1 << 26,
-        HasPinnedMessage = 1 << 27,
-        HasVideoChatScheduled = 1 << 28,
-        HasVideoChatStarted = 1 << 29,
-        HasVideoChatEnded = 1 << 30,
-        HasVideoChatParticipantsInvited = 1 << 31,
-        HasMediaSpoiler = (long)1 << 32,
-        HasInvoice = (long)1 << 33,
-        HasPassportData = (long)1 << 34,
-        HasSuccessfulPayment = (long)1 << 35,
+        HasForward = 1L << 0,
+        IsReply = 1L << 1,
+        HasEntity = 1L << 2,
+        HasCaption = 1L << 3,
+        HasKeyboard = 1L << 4,
+        HasMediaSpoiler = 1L << 5,
+        HasText = 1L << 6,
+        HasAnimation = 1L << 7,
+        HasAudio = 1L << 8,
+        HasDocument = 1L << 9,
+        HasPaidMedia = 1L << 10,
+        HasPhoto = 1L << 11,
+        HasSticker = 1L << 12,
+        HasStory = 1L << 13,
+        HasVideo = 1L << 14,
+        HasVideoNote = 1L << 15,
+        HasVoice = 1L << 16,
+        HasContact = 1L << 17,
+        HasDice = 1L << 18,
+        HasGame = 1L << 19,
+        HasPoll = 1L << 20,
+        HasVenue = 1L << 21,
+        HasLocation = 1L << 22,
+        HasNewChatMembers = 1L << 23,
+        HasLeftChatMember = 1L << 24,
+        HasNewChatTitle = 1L << 25,
+        HasNewChatPhoto = 1L << 26,
+        HasDeleteChatPhoto = 1L << 27,
+        HasGroupChatCreated = 1L << 28,
+        HasSupergroupChatCreated = 1L << 29,
+        HasChannelChatCreated = 1L << 30,
+        HasAutoDeleteTimerChanged = 1L << 31,
+        HasMigrateToChatId = 1L << 32,
+        HasMigrateFromChatId = 1L << 33,
+        HasPinnedMessage = 1L << 34,
+        HasInvoice = 1L << 35,
+        HasSuccessfulPayment = 1L << 36,
+        HasRefundedPayment = 1L << 37,
+        HasUsersShared = 1L << 38,
+        HasChatShared = 1L << 39,
+        HasConnectedWebsite = 1L << 40,
+        WriteAccessAllowed = 1L << 41,
+        HasPassportData = 1L << 42,
+        HasProximityAlert = 1L << 43,
+        HasBoostAdded = 1L << 44,
+        HasChatBackgroundSet = 1L << 45,
+        HasForumTopicCreated = 1L << 46,
+        HasForumTopicEdited = 1L << 47,
+        HasForumTopicClosed = 1L << 48,
+        HasForumTopicReopened = 1L << 49,
+        HasGeneralForumTopicHidden = 1L << 50,
+        HasGeneralForumTopicUnhidden = 1L << 51,
+        HasGiveawayCreated = 1L << 52,
+        HasGiveaway = 1L << 53,
+        HasGiveawayWinners = 1L << 54,
+        HasGiveawayCompleted = 1L << 55,
+        HasVideoChatScheduled = 1L << 56,
+        HasVideoChatStarted = 1L << 57,
+        HasVideoChatEnded = 1L << 58,
+        HasVideoChatParticipantsInvited = 1L << 59,
 
+        All = ~0UL
 
-        All = HasForward |
-              IsReply |
-              HasText |
-              HasEntity |
-              HasAudio |
-              HasDocument |
-              HasAnimation |
-              HasGame |
-              HasPhoto |
-              HasSticker |
-              HasVideo |
-              HasVoice |
-              HasVideoNote |
-              HasCaption |
-              HasContact |
-              HasLocation |
-              HasVenue |
-              HasPoll |
-              HasDice |
-              HasKeyboard |
-              HasLeftChatMember |
-              HasNewChatMembers |
-              HasNewChatTitle |
-              HasNewChatPhoto |
-              HasDeleteChatPhoto |
-              HasGroupChatCreated |
-              HasSupergroupChatCreated |
-              HasPinnedMessage |
-              HasVideoChatScheduled |
-              HasVideoChatStarted |
-              HasVideoChatEnded |
-              HasVideoChatParticipantsInvited |
-              HasMediaSpoiler | 
-              HasInvoice |
-              HasPassportData |
-              HasSuccessfulPayment
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.Storage.InMemory;
 using Telegram.Bot.Types;
 using Xunit;
 

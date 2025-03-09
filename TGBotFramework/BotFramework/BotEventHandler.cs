@@ -41,7 +41,7 @@ namespace BotFramework
 
     internal class Method
     {
-        public List<EventHandler> Handlers = new();
+        public List<EventHandler> Handlers = [];
         public MethodInfo Info;
         public InChat InChat;
         public short Priority;
@@ -51,8 +51,8 @@ namespace BotFramework
 
     internal class EventHandlerFactory
     {
-        private readonly List<Method> _methods = new();
-        
+        private readonly List<Method> _methods = [];
+
         public void Find()
         {
             var knowHandlers = new List<Type>();
@@ -62,7 +62,6 @@ namespace BotFramework
                                       .Select(g => g.First())
                                       .ToArray(); //workaround for duplicated assemblies
 
-
             foreach(var assembly in assemblies)
             {
                 try
@@ -70,29 +69,30 @@ namespace BotFramework
                     var types = assembly.GetTypes()
                                         .Where(x => !x.IsAbstract && x.IsSubclassOf(typeof(BotEventHandler)));
                     knowHandlers.AddRange(types);
-
                 } catch(ReflectionTypeLoadException) { }
             }
 
-
             foreach(var handler in knowHandlers)
             {
-                var methods = handler.GetMethods().Where(x => 
-                    x.GetCustomAttributes<HandlerAttribute>().Any());
+                var methods = handler.GetMethods()
+                                     .Where(x =>
+                                                x.GetCustomAttributes<HandlerAttribute>().Any());
 
                 foreach(var methodInfo in methods)
                 {
                     var priority = methodInfo.GetCustomAttribute<PriorityAttribute>();
                     var inchat = methodInfo.GetCustomAttribute<InChatAttribute>();
+
                     if(priority != null && methodInfo.ReturnType != typeof(Task<bool>))
                     {
-                        throw new Exception($"Method {methodInfo.Name} should return Task<bool> when priority attribute used");
+                        throw new Exception(
+                            $"Method {methodInfo.Name} should return Task<bool> when priority attribute used");
                     }
 
                     var conditionType = methodInfo.GetCustomAttribute<HandleConditionAttribute>()?.ConditionType ??
                                         ConditionType.Any;
 
-                    var method = new Method 
+                    var method = new Method
                         {
                             Info = methodInfo,
                             Priority = priority?.Value ?? 0,
@@ -104,11 +104,9 @@ namespace BotFramework
                     var attributes = methodInfo.GetCustomAttributes<HandlerAttribute>();
                     foreach(var attribute in attributes)
                     {
-                        var eHandler = new EventHandler 
+                        var eHandler = new EventHandler
                             {
-                                Attribute = attribute,
-                                MethodOwner = handler,
-                                Method = methodInfo
+                                Attribute = attribute, MethodOwner = handler, Method = methodInfo
                             };
 
                         eHandler.Parametrized = eHandler.Attribute is ParametrizedCommandAttribute;
@@ -123,22 +121,26 @@ namespace BotFramework
         public async Task ExecuteHandler(HandlerParams param)
         {
             var methods = _methods
-                         .Where(m => m.InChat == InChat.All || m.InChat == param.InChat )
-                         .OrderByDescending(m => m.Priority);// in case handlers was added in runtime
+                         .Where(m => m.InChat == InChat.All || m.InChat == param.InChat)
+                         .OrderByDescending(m => m.Priority); // in case handlers was added in runtime
 
             var availableHandlers = new List<EventHandler>();
             foreach(var method in methods)
             {
                 if(method.ConditionType == ConditionType.Any)
                 {
-                    var handlers = method.Handlers.Where(handler => handler.Attribute.CanHandleInternal(param)).ToList();
+                    var handlers = method
+                                  .Handlers
+                                         .Where(handler => handler.Attribute.CanHandleInternal(param))
+                                         .ToList();
                     if(handlers.Any())
                         availableHandlers.Add(handlers.First());
                 }
-                else if(method.Handlers.All(handler => handler.Attribute.CanHandleInternal(param)))
-                {
-                    availableHandlers.Add(method.Handlers.FirstOrDefault());
-                }
+                else
+                    if(method.Handlers.All(handler => handler.Attribute.CanHandleInternal(param)))
+                    {
+                        availableHandlers.Add(method.Handlers.FirstOrDefault());
+                    }
             }
 
             foreach(var eventHandler in availableHandlers)
@@ -153,7 +155,6 @@ namespace BotFramework
                         break;
                 }
             }
-
         }
 
         private async Task<HandlerExec> Exec(EventHandler handler, HandlerParams param)
@@ -187,6 +188,7 @@ namespace BotFramework
                 {
                     paramObjects = null;
                 }
+
                 var task = method.Invoke(instance, paramObjects);
                 if(task == null)
                 {
@@ -195,7 +197,6 @@ namespace BotFramework
 
                 if(method.ReturnParameter?.ParameterType == typeof(Task))
                 {
-                    
                     await (Task)task;
                     return HandlerExec.Continue;
                 }
@@ -204,7 +205,6 @@ namespace BotFramework
                 {
                     return await (Task<bool>)task ? HandlerExec.Continue : HandlerExec.Break;
                 }
-
             } catch(ArgumentException e)
             {
                 Console.WriteLine(e);

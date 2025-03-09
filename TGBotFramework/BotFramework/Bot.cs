@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions;
 using BotFramework.Abstractions.Storage;
+using BotFramework.Abstractions.Storage.InMemory;
 using BotFramework.Abstractions.UpdateProvider;
 using BotFramework.Config;
 using BotFramework.Middleware;
