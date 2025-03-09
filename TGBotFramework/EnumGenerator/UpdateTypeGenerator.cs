@@ -5,6 +5,11 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace EnumGenerator;
 
+
+/// Generate enum based on the UpdateType enum from the
+/// <see href="https://github.com/TelegramBots/Telegram.Bot/blob/master/src/Telegram.Bot/Types/Enums/UpdateType.cs">Telegram.Bot</see>
+/// library
+
 [Generator]
 public class UpdateTypeGenerator: IIncrementalGenerator
 {
