@@ -28,7 +28,12 @@ jobs:
       run: |
         cd TGBotFramework/BotFramework
         dotnet restore
-      
+
+    - name: Build EnumGenerator first
+      run: |
+        cd TGBotFramework/EnumGenerator
+        dotnet build --no-restore
+        
     - name: Build
       run: |
         cd TGBotFramework/BotFramework
