@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BotFramework.Abstractions.UpdateProvider;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace BotFramework.UpdateProvider;
 
@@ -28,7 +30,13 @@ public class PollingUpdateProvider: IUpdateProvider
         _client.StartReceiving(
             HandleUpdateAsync,
             HandleErrorAsync,
-            new ReceiverOptions { DropPendingUpdates = false },
+            new ReceiverOptions { 
+                DropPendingUpdates = false, 
+                AllowedUpdates = Enum.GetValues(typeof(UpdateType))
+                                     .Cast<UpdateType>()
+                                     .Where(ut => ut != UpdateType.Unknown)
+                                     .ToArray() 
+            },
             _canRunTokenSource.Token
         );
     }
