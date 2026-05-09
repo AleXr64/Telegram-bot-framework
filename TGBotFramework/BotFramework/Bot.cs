@@ -58,13 +58,30 @@ namespace BotFramework
 
         async Task IHostedService.StartAsync(CancellationToken cancellationToken)
         {
-            if(_botConfig.Webhook.Enabled)
+            if (_botConfig is null)
+            {
+                throw new InvalidOperationException("Bot configuration is missing.");
+            }
+
+            if (_botConfig.Webhook?.Enabled == true)
             {
                 _updateProvider = _serviceProvider.GetService<IWebhookProvider>();
+
+                if (_updateProvider is null)
+                {
+
+                    throw new InvalidOperationException(
+                        $"Webhook is enabled, but no {nameof(IWebhookProvider)} is registered.");
+                }
             }
 
             _updateProvider ??= _serviceProvider.GetService<IUpdateProvider>();
-            // TODO: do smth if there are no registered provider?
+
+            if (_updateProvider is null)
+            {
+                throw new InvalidOperationException(
+                    $"No update provider is registered. Register either {nameof(IWebhookProvider)} or {nameof(IUpdateProvider)}.");
+            }
 
             await _updateProvider.StartAsync(cancellationToken);
             await StartListen(cancellationToken);
