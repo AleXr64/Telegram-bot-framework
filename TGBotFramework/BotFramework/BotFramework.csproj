@@ -30,14 +30,14 @@
 
   <ItemGroup>
     <PackageReference Include="HttpToSocks5Proxy" Version="1.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.7" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.10.91">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Telegram.Bot" Version="22.9.6.2" />
+    <PackageReference Include="Telegram.Bot" Version="22.10.1.1" />
   </ItemGroup>
 </Project>
