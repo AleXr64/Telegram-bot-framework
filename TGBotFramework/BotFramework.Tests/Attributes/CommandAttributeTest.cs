@@ -123,10 +123,37 @@ namespace BotFramework.Tests.Attributes
         }
 
         [Fact]
+        public void CanHandleAnyCommand()
+        {
+            var command = new ParametrizedCommandAttribute();
+            var paramses = new HandlerParams(null, new Update
+                                                 {
+                                                     Message = new Message
+                                                         {
+                                                             Text = "/test",
+                                                             Entities = new MessageEntity[]
+                                                                 {
+                                                                     new MessageEntity()
+                                                                         {
+                                                                             Length = 5,
+                                                                             Offset = 0,
+                                                                             Type = MessageEntityType.BotCommand
+                                                                         }
+                                                                 }
+                                                         },
+                                                     
+                                                 },
+                                             
+                                             _serviceProvider, "testbot", _userProvider);
+            Assert.True(command.CanHandleInternal(paramses));
+        }
+        [Fact]
         public void CanHandleByTextWithUsername()
         {
             var command = new ParametrizedCommandAttribute("test");
-            var paramses = new HandlerParams(null, new Update { Message = new Message { Text = "/test@testbot",
+            var paramses = new HandlerParams(null, new Update { Message = new Message { 
+                                                         Text = "/test@testbot",
+                                                         Chat = new Chat() { Type = ChatType.Group },
                                                          Entities = new MessageEntity[]
                                                              {
                                                                  new MessageEntity()

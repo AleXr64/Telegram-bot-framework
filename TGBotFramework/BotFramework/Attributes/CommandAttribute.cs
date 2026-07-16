@@ -77,8 +77,6 @@ namespace BotFramework.Attributes
             if(!hParams.HasCommands)
                 return false;
             
-
-            
             if(IsParametrized)
                 return true;
             
