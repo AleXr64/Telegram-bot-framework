@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BotFramework.Enums;
 using Telegram.Bot.Types.Enums;
@@ -56,24 +57,38 @@ namespace BotFramework.Attributes
             return base.CanHandle(param) && IsCommandEqual(param);
         }
 
-        private bool IsCommandEqual(HandlerParams hParams)
+        protected bool CanHandleChatType(ChatType chatType, List<HandlerParams.Command> commands)
         {
-            if(IsParametrized)
-                return true;
-
-            if(!hParams.HasCommands)
-                return false;
-            if(hParams.Chat.Type == ChatType.Private ||
+            if(chatType == ChatType.Private ||
                Mode == CommandParseMode.Both)
             {
 
-                return hParams.Commands.Any(x => x.Name.Equals(Text));
+                return commands.Any(x => x.Name.Equals(Text));
             }
 
-            return hParams.Commands.Any(x => x.Name.Equals(Text) &&
+            return commands.Any(x => x.Name.Equals(Text) &&
                                              (Mode == CommandParseMode.WithUsername
                                                  ? x.IsFullCommand
                                                  : !x.IsFullCommand));
         }
+
+        private bool IsCommandEqual(HandlerParams hParams)
+        {
+            if(!hParams.HasCommands)
+                return false;
+            
+
+            
+            if(IsParametrized)
+                return true;
+            
+            if(Text == null)
+                return true;
+            
+            return CanHandleChatType(hParams.Chat.Type, hParams.Commands);
+
+        }
+        
+        
     }
 }
