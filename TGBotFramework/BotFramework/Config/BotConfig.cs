@@ -1,4 +1,6 @@
-﻿namespace BotFramework.Config
+﻿using Microsoft.Extensions.Configuration;
+
+namespace BotFramework.Config
 {
     public class BotConfig
     {
@@ -11,5 +13,7 @@
         public bool UseSOCKS5 { get; set; }
         public bool UseTestEnv { get; set; }
         public string BotApiUrl { get; set; }
+        
+        public IConfigurationSection? TelegramBotConfig { get; set; }
     }
 }

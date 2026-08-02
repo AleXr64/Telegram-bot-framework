@@ -34,6 +34,7 @@ namespace BotFramework
                       .AddTypedClient<ITelegramBotClient>((client, provider) =>
                            {
                                var botConfig = provider.GetService<IOptions<BotConfig>>().Value;
+                               var configuration = provider.GetRequiredService<IConfiguration>();
                                
                                var apiUrl = botConfig.BotApiUrl;
                                if (string.IsNullOrWhiteSpace(apiUrl))
@@ -43,7 +44,8 @@ namespace BotFramework
 
                                var options =
                                    new TelegramBotClientOptions(botConfig.Token, apiUrl, botConfig.UseTestEnv);
-
+                               
+                               configuration.Bind("BotConfig:TelegramBotConfig", options);
                                return new TelegramBotClient(options, client);
                            })
                       .ConfigurePrimaryHttpMessageHandler(provider =>
